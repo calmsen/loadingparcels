@@ -21,7 +21,7 @@ public class ParcelsController {
     public void listen() {
         var scanner = new Scanner(System.in);
 
-        log.info("Введите команду/по умолчанию load input.txt");
+        log.info("Введите команду / по умолчанию load input.txt");
         while(scanner.hasNextLine()){
             String command = scanner.nextLine();
             if (command.equals("exit")) {
@@ -42,6 +42,7 @@ public class ParcelsController {
 
             String filePath = matcher.group(1);
             tryLoadParcels(filePath, loadingMode);
+            log.info("Введите команду / по умолчанию load input.txt");
         }
     }
 
@@ -54,26 +55,27 @@ public class ParcelsController {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+
         log.info("Погрузка посылок из файла {} завершена", filePath);
     }
 
     private static LoadingMode scannerLoadingMode(Scanner scanner) {
-        log.info("Выберете режим погрузки (simple|efficient)/по умолчанию simple");
+        log.info("Выберете режим погрузки (simple|efficient) / по умолчанию efficient");
         while(scanner.hasNextLine()){
             String mode = scanner.nextLine();
             if (mode.equals("exit")) {
                 System.exit(0);
             }
-            if (mode.equals("simple") || mode.isBlank()) {
+            if (mode.equals("simple")) {
                 return LoadingMode.SIMPLE;
             }
-            if (mode.equals("efficient")) {
+            if (mode.equals("efficient") || mode.isBlank()) {
                 return LoadingMode.EFFICIENT;
             }
 
             log.error("Нет реализации для режима погрузки: {}", mode);
         }
-        return LoadingMode.SIMPLE;
+        return LoadingMode.EFFICIENT;
     }
 
 }

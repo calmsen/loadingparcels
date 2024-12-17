@@ -3,30 +3,54 @@ package calmsen.model.domain;
 import calmsen.model.domain.enums.ParcelDimensionsType;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Data
-@Builder
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+@Getter
 public class Parcel {
-    /**
-     * Тип посылки. От 1 до 9.
-     */
-    private int type;
-    /**
-     * Ширина посылки.
-     */
-    private int width;
-    /**
-     * Высота посылки.
-     */
-    private int height;
+    private final List<List<Character>> content;
+    private final int height;
+    private final int dimensions;
+    private final ParcelDimensionsType dimensionsType;
 
-    /**
-     * Верхняя ширина посылки.
-     */
-    private int topWidth;
+    public Parcel(List<List<Character>> content) {
+        this(content, false);
 
-    /**
-     * Тип размеров.
-     */
-    private ParcelDimensionsType dimensionsType;
+    }
+
+    public Parcel(List<List<Character>> content, boolean isExtra) {
+        this.content = content;
+        this.height = content.size();
+        this.dimensions = (int)content.stream()
+                .flatMap(Collection::stream)
+                .count();
+
+        if (!isExtra) {
+            this.dimensionsType = ParcelDimensionsType.findDimensionsType(this.dimensions);
+
+        } else {
+            this.dimensionsType = null;
+        }
+
+    }
+
+    public int getWidth(int rowNumber) {
+        return content.get(rowNumber).size();
+    }
+
+    @Override
+    public String toString(){
+        var sb = new StringBuilder();
+        for (List<Character> row : content) {
+            for (Character character : row) {
+                sb.append(character);
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 }
