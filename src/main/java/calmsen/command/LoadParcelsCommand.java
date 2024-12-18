@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class LoadParcelsCommand extends Command {
     private final ParcelsService parcelsService;
+    private final TrucksView trucksView;
     private final Pattern LOAD_COMMAND_PATTERN = Pattern.compile("load (.+\\.txt)");
 
     @Override
@@ -38,8 +39,7 @@ public class LoadParcelsCommand extends Command {
         log.info("Начало погрузки посылок из файла {}", filePath);
         try {
             var trucks = parcelsService.loadParcels(filePath, loadingMode);
-            var trucksView = new TrucksView(trucks);
-            trucksView.showTrucks();
+            trucksView.showTrucks(trucks);
             log.info("Погрузка посылок из файла {} успешно завершена", filePath);
         } catch (Exception e) {
             log.error("Погрузка посылок из файла {} завершена с ошибкой", filePath);

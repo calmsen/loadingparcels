@@ -6,11 +6,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public class TrucksView {
-    private final List<Truck> trucks;
-
-    public void showTrucks(){
+    public void showTrucks(List<Truck> trucks){
         for (var truck : trucks){
             System.out.println();
             var loadingHeight = truck.getBoxes().stream().mapToInt(Box::getHeight).sum();
