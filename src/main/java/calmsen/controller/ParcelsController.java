@@ -16,7 +16,6 @@ public class ParcelsController {
 
     private final ParcelsService parcelsService;
     private final Pattern LOAD_COMMAND_PATTERN = Pattern.compile("load (.+\\.txt)");
-    private final Pattern LOADING_MODE_PATTERN = Pattern.compile("(simple|efficient)");
 
     public void listen() {
         var scanner = new Scanner(System.in);

@@ -1,6 +1,7 @@
 package calmsen;
 
 import calmsen.controller.ParcelsController;
+import calmsen.loadingalgorithm.LoadingAlgorithmFactory;
 import calmsen.service.ParcelsService;
 import calmsen.util.FileLinesReader;
 import calmsen.util.ParcelsParser;
@@ -20,7 +21,8 @@ public class Main {
         var consoleController = new ParcelsController(
                 new ParcelsService(
                         new ParcelsParser(new FileLinesReader()),
-                        new ParcelValidator()
+                        new ParcelValidator(),
+                        new LoadingAlgorithmFactory()
                 ));
         consoleController.listen();
     }

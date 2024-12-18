@@ -38,11 +38,6 @@ public enum ParcelDimensionsType {
 
     Dimensions6X6From6X3( 36, ParcelDimensionsType.Dimensions6X3, ParcelDimensionsType.Dimensions6X3, ParcelJoinType.VERTICAL, true),
     Dimensions6X6From6X4( 36, ParcelDimensionsType.Dimensions6X2, ParcelDimensionsType.Dimensions6X4, ParcelJoinType.VERTICAL, true),
-
-    // не стандартные посылки
-    Dimensions15From9( 15, ParcelDimensionsType.Dimensions3X3, ParcelDimensionsType.Dimensions3X2, ParcelJoinType.HORIZONTAL, true),
-    Dimensions10From8( 10, ParcelDimensionsType.Dimensions4X2, ParcelDimensionsType.Dimensions2X1, ParcelJoinType.HORIZONTAL, true),
-    Dimensions9From7( 9, ParcelDimensionsType.Dimensions7, ParcelDimensionsType.Dimensions2X1, ParcelJoinType.HORIZONTAL, true),
     ;
 
     private final int dimensions;
