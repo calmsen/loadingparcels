@@ -2,28 +2,34 @@ package calmsen.view;
 
 import calmsen.model.domain.Box;
 import calmsen.model.domain.Truck;
+import calmsen.util.ConsoleLinesWriter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class TrucksView {
+    private final ConsoleLinesWriter consoleLinesWriter;
     public void showTrucks(List<Truck> trucks){
+        var linesToOutput = new ArrayList<String>();
         for (var truck : trucks){
-            System.out.println();
+            linesToOutput.add("\n");
             var loadingHeight = truck.getBoxes().stream().mapToInt(Box::getHeight).sum();
             var emptySpaceHeight =  truck.getHeight() - loadingHeight;
             while(emptySpaceHeight > 0){
-                System.out.println("+" + " ".repeat(truck.getWidth()) + "+");
+                linesToOutput.add("+" + " ".repeat(truck.getWidth()) + "+");
                 emptySpaceHeight--;
             }
 
             for (var box : truck.getBoxes()){
                 for (var row : box.getContent()){
                     var extraSpacesForWidth = truck.getWidth() - row.size();
-                    System.out.println("+" + mapRowToString(row) + " ".repeat(extraSpacesForWidth) + "+");
+                    linesToOutput.add("+" + mapRowToString(row) + " ".repeat(extraSpacesForWidth) + "+");
                 }
             }
-            System.out.println("+" + "+".repeat(truck.getWidth()) + "+");
+            linesToOutput.add("+" + "+".repeat(truck.getWidth()) + "+");
+            this.consoleLinesWriter.writeAllLines(linesToOutput);
         }
     }
 

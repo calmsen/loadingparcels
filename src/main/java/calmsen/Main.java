@@ -6,6 +6,7 @@ import calmsen.command.LoadParcelsCommand;
 import calmsen.controller.ParcelsController;
 import calmsen.loadingalgorithm.LoadingAlgorithmFactory;
 import calmsen.service.ParcelsService;
+import calmsen.util.ConsoleLinesWriter;
 import calmsen.util.FileLinesReader;
 import calmsen.parser.ParcelsParser;
 import calmsen.validator.ParcelValidator;
@@ -28,7 +29,7 @@ public class Main {
                         new ParcelsParser(new FileLinesReader()),
                         new ParcelValidator(),
                         new LoadingAlgorithmFactory()),
-                        new TrucksView()
+                        new TrucksView(new ConsoleLinesWriter())
                 )
         );
         var commandProvider = new CommandProvider(commands);
