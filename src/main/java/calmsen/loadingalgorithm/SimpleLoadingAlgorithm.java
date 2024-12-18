@@ -1,9 +1,8 @@
 package calmsen.loadingalgorithm;
 
-import calmsen.model.domain.Parcel;
+import calmsen.model.domain.Box;
 import calmsen.model.domain.Truck;
 import calmsen.model.domain.enums.LoadingMode;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public class SimpleLoadingAlgorithm extends LoadingAlgorithm {
     }
 
     @Override
-    public List<Truck> loadParcels(List<Parcel> parcels, int truckWidth, int truckHeight) {
-        return parcels.stream().map(x -> new Truck(truckWidth, truckHeight, x)).collect(Collectors.toList());
+    public List<Truck> loadBoxes(List<Box> boxes, int truckWidth, int truckHeight) {
+        return boxes.stream().map(x -> new Truck(truckWidth, truckHeight, x)).collect(Collectors.toList());
     }
 }

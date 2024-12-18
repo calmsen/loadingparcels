@@ -7,25 +7,25 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
-public class Parcel implements Box {
-    private final List<List<Character>> content;
-    private final int dimensions;
-    private final BoxDimensionsType dimensionsType;
-
-    public Parcel(List<List<Character>> content) {
+public class BoxWrapper implements Box {
+    public BoxWrapper(List<List<Character>> content) {
         this.content = content;
         this.dimensions = (int)content.stream()
                 .flatMap(Collection::stream)
                 .count();
-
-        this.dimensionsType = BoxDimensionsType.findDimensionsType(this.dimensions);
-
+        this.dimensionsType = null;
     }
 
+    private final List<List<Character>> content;
+    private final int dimensions;
+    private final BoxDimensionsType dimensionsType;
+
+    @Override
     public int getHeight() {
         return content.size();
     }
 
+    @Override
     public int getWidth(int rowNumber) {
         return content.get(rowNumber).size();
     }

@@ -9,29 +9,30 @@ import java.util.List;
 public class Truck {
     private int width;
     private int height;
-    private final List<Parcel> parcels;
+    private final List<Box> boxes;
 
-    public Truck(int width, int height, Parcel parcel) {
+    public Truck(int width, int height, Box box) {
         this.width = width;
         this.height = height;
-        this.parcels = Collections.singletonList(parcel);
+        this.boxes = Collections.singletonList(box);
     }
 
-    public Truck(int width, int height, List<Parcel> parcels) {
+    public Truck(int width, int height, List<Box> boxes) {
         this.width = width;
         this.height = height;
-        this.parcels = parcels;
+        this.boxes = boxes;
     }
 
-    public void loadParcel(Parcel parcel) {
-        this.parcels.add(parcel);
+    public void loadBox(Box box) {
+        this.boxes.add(box);
     }
 
-    public boolean canLoadParcel(Parcel parcel) {
-        return this.parcels.stream().mapToInt(Parcel::getHeight).sum() + parcel.getHeight() <= this.height;
+    public boolean canLoadBox(Box box) {
+        return this.boxes.stream().mapToInt(Box::getHeight).sum() + box.getHeight() <= this.height
+                && box.getContent().stream().allMatch(x -> x.size() <= this.width);
     }
 
     public boolean isEmpty() {
-        return this.parcels.isEmpty();
+        return this.boxes.isEmpty();
     }
 }

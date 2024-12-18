@@ -1,6 +1,6 @@
 package calmsen.model.domain.enums;
 
-public enum ParcelJoinType {
+public enum BoxJoinType {
     VERTICAL,
     HORIZONTAL
 }

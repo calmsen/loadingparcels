@@ -1,10 +1,9 @@
 package calmsen.view;
 
-import calmsen.model.domain.Parcel;
+import calmsen.model.domain.Box;
 import calmsen.model.domain.Truck;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -14,15 +13,15 @@ public class TrucksView {
     public void showTrucks(){
         for (var truck : trucks){
             System.out.println();
-            var loadingHeight = truck.getParcels().stream().mapToInt(Parcel::getHeight).sum();
+            var loadingHeight = truck.getBoxes().stream().mapToInt(Box::getHeight).sum();
             var emptySpaceHeight =  truck.getHeight() - loadingHeight;
             while(emptySpaceHeight > 0){
                 System.out.println("+" + " ".repeat(truck.getWidth()) + "+");
                 emptySpaceHeight--;
             }
 
-            for (var parcel : truck.getParcels()){
-                for (var row : parcel.getContent()){
+            for (var box : truck.getBoxes()){
+                for (var row : box.getContent()){
                     var extraSpacesForWidth = truck.getWidth() - row.size();
                     System.out.println("+" + mapRowToString(row) + " ".repeat(extraSpacesForWidth) + "+");
                 }

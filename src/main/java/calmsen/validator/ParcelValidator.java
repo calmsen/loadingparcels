@@ -1,9 +1,7 @@
 package calmsen.validator;
 
 import calmsen.model.domain.Parcel;
-import calmsen.model.domain.enums.ParcelDimensionsType;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
