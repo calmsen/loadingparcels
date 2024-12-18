@@ -1,6 +1,7 @@
-package calmsen.util;
+package calmsen.parser;
 
 import calmsen.model.domain.Parcel;
+import calmsen.util.FileLinesReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

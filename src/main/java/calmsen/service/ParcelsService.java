@@ -6,7 +6,7 @@ import calmsen.loadingalgorithm.LoadingAlgorithmFactory;
 import calmsen.model.domain.Box;
 import calmsen.model.domain.Truck;
 import calmsen.model.domain.enums.LoadingMode;
-import calmsen.util.ParcelsParser;
+import calmsen.parser.ParcelsParser;
 import calmsen.validator.ParcelValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
