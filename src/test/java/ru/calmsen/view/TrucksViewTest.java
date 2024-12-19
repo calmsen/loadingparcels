@@ -1,7 +1,5 @@
 package ru.calmsen.view;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.calmsen.model.domain.Box;
@@ -10,6 +8,8 @@ import ru.calmsen.util.ConsoleLinesWriter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TrucksViewTest {
     private TrucksView view;
