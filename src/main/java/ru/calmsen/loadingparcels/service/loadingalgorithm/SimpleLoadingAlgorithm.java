@@ -1,13 +1,17 @@
 package ru.calmsen.loadingparcels.service.loadingalgorithm;
 
-import ru.calmsen.loadingparcels.domain.Box;
-import ru.calmsen.loadingparcels.domain.Truck;
-import ru.calmsen.loadingparcels.domain.enums.LoadingMode;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.exception.BusinessException;
+import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Truck;
+import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Простая погрузка посылок.
+ */
 @Slf4j
 public class SimpleLoadingAlgorithm implements LoadingAlgorithm {
     private final LoadingMode mode = LoadingMode.SIMPLE;
@@ -18,7 +22,14 @@ public class SimpleLoadingAlgorithm implements LoadingAlgorithm {
     }
 
     @Override
-    public List<Truck> loadBoxes(List<Box> boxes, int truckWidth, int truckHeight) {
-        return boxes.stream().map(x -> new Truck(truckWidth, truckHeight, x)).collect(Collectors.toList());
+    public List<Truck> loadBoxes(List<Box> boxes, int truckWidth, int truckHeight, int trucksCount) {
+        TruckLoaderHelper.checkMinTrucksCountBeforeLoad(boxes, truckWidth, truckHeight, trucksCount);
+
+        // отсортируем коробки по размерности
+        boxes = boxes.stream().sorted(Comparator.comparingInt(Box::getDimensions).reversed()).collect(Collectors.toList());
+        var trucks = TruckLoaderHelper.loadBoxes(boxes, truckWidth, truckHeight);
+
+        TruckLoaderHelper.checkMinTrucksCountAfterLoad(trucksCount, trucks);
+        return trucks;
     }
 }

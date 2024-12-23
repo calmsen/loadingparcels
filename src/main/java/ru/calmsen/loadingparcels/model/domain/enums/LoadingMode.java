@@ -1,7 +1,9 @@
-package ru.calmsen.loadingparcels.domain.enums;
+package ru.calmsen.loadingparcels.model.domain.enums;
 
 public enum LoadingMode {
+    ONEBOX,
     SIMPLE,
+    UNIFORM,
     EFFICIENT;
 
     public static LoadingMode fromString(String value) {
@@ -9,7 +11,7 @@ public enum LoadingMode {
             return valueOf(value.toUpperCase());
         }
         catch(Exception e){
-            return null;
+            return LoadingMode.EFFICIENT;
         }
     }
 }

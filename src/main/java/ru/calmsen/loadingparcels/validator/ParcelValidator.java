@@ -1,6 +1,6 @@
 package ru.calmsen.loadingparcels.validator;
 
-import ru.calmsen.loadingparcels.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Box;
 
 import java.util.ArrayList;
 import java.util.Collection;

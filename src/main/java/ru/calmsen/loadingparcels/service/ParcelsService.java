@@ -1,12 +1,14 @@
 package ru.calmsen.loadingparcels.service;
 
 
+import ru.calmsen.loadingparcels.model.domain.PlacedBox;
+import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.exception.ParcelValidatorException;
 import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithmFactory;
-import ru.calmsen.loadingparcels.domain.Box;
-import ru.calmsen.loadingparcels.domain.Truck;
-import ru.calmsen.loadingparcels.domain.enums.LoadingMode;
-import ru.calmsen.loadingparcels.service.parser.ParcelsParser;
+import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
+import ru.calmsen.loadingparcels.service.parser.JsonTrucksParser;
+import ru.calmsen.loadingparcels.service.parser.TxtParcelsParser;
 import ru.calmsen.loadingparcels.validator.ParcelValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,16 +21,25 @@ public class ParcelsService {
     public static final int TRUCK_WIDTH = 6;
     public static final int TRUCK_HEIGHT = 6;
 
-    private final ParcelsParser parcelsParser;
+    private final TxtParcelsParser txtParcelsParser;
+    private final JsonTrucksParser jsonTrucksParser;
     private final ParcelValidator parcelValidator;
     private final LoadingAlgorithmFactory loadingAlgorithmFactory;
 
-    public List<Truck> loadParcels(String filePath, LoadingMode loadingMode) {
-        var parcels = parcelsParser.parseParcelsFromFile(filePath);
+    public List<Truck> loadParcels(String fileName, LoadingMode loadingMode, int trucksCount) {
+        var parcels = txtParcelsParser.parseParcelsFromFile(fileName);
         validateParcels(parcels);
 
         var loadingAlgorithm = loadingAlgorithmFactory.Create(loadingMode);
-        return loadingAlgorithm.loadBoxes(parcels, TRUCK_WIDTH, TRUCK_HEIGHT);
+        return loadingAlgorithm.loadBoxes(parcels, TRUCK_WIDTH, TRUCK_HEIGHT, trucksCount);
+    }
+
+    public List<Box> unloadTrucks(String fileName) {
+        var trucks = jsonTrucksParser.parseTrucksFromFile(fileName);
+        return trucks.stream()
+                .flatMap(truck -> truck.getBoxes().stream())
+                .map(PlacedBox::getBox)
+                .toList();
     }
 
     private void validateParcels(List<Box> parcels) {
