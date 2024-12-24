@@ -80,7 +80,7 @@ public class TruckLoaderHelper {
     }
 
     public static void checkMinTrucksCountAfterLoad(int trucksCount, List<Truck> trucks) {
-        if (trucksCount > trucks.size()) {
+        if (trucksCount < trucks.size()) {
             throw new BusinessException("Не достаточно машин для погрузки. Необходимое количество: " + trucks.size());
         }
     }

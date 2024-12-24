@@ -26,6 +26,10 @@ public class EfficientLoadingAlgorithm implements LoadingAlgorithm {
 
     @Override
     public List<Truck> loadBoxes(List<Box> boxes, int truckWidth, int truckHeight, int trucksCount) {
+        if (boxes == null || boxes.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         TruckLoaderHelper.checkMinTrucksCountBeforeLoad(boxes, truckWidth, truckHeight, trucksCount);
 
         boxes = packBoxes(boxes, truckWidth, truckHeight);

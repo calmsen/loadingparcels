@@ -22,6 +22,10 @@ public class UniformLoadingAlgorithm implements LoadingAlgorithm {
 
     @Override
     public List<Truck> loadBoxes(List<Box> boxes, int truckWidth, int truckHeight, int trucksCount) {
+        if (boxes == null || boxes.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         TruckLoaderHelper.checkMinTrucksCountBeforeLoad(boxes, truckWidth, truckHeight, trucksCount);
 
         List<Truck> trucks = new ArrayList<>();

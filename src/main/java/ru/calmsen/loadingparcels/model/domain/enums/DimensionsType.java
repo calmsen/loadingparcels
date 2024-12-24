@@ -2,6 +2,9 @@ package ru.calmsen.loadingparcels.model.domain.enums;
 
 import lombok.Getter;
 
+/**
+ * Данное перечисление необходимо для алгоритма: EfficientLoadingAlgorithm (Максимально плотная погрузка).
+ */
 @Getter
 public enum DimensionsType {
     Dimensions1X1(1, 1),

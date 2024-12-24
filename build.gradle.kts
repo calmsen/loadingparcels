@@ -23,6 +23,8 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.assertj:assertj-core:3.26.3")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 }

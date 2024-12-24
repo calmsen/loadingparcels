@@ -28,11 +28,11 @@ public class TxtTrucksView implements TrucksView {
             }
 
             // передадим содержимое на вывод
-            output.append("\n");
+            output.append("\n\n");
             for (var row : content) {
                 output.append("+").append(new String(row)).append("+").append("\n");
             }
-            output.append("+".repeat(truck.getWidth() + 2)).append("\n");
+            output.append("+".repeat(truck.getWidth() + 2));
         }
 
         return output.toString();

@@ -71,12 +71,11 @@ public class Box {
     @Override
     public String toString() {
         var sb = new StringBuilder();
-        sb.append("\n");
         for (var row : content) {
+            sb.append("\n");
             for (Character ch : row) {
                 sb.append(ch);
             }
-            sb.append("\n");
         }
         return sb.toString();
     }

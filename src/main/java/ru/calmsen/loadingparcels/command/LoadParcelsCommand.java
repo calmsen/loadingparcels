@@ -24,8 +24,7 @@ public class LoadParcelsCommand implements Command {
     @Override
     public void execute(CommandContext context) {
         var outputFileName = getOutputFileName(context);
-        // переопределим параметры по умолчанию
-        var outputType = outputFileName.isBlank() ? OutputType.CONSOLE : OutputType.FILE;
+        // переопределим параметр для формата по умолчанию
         var defaultFormat = outputFileName.isBlank() ? ViewFormat.TXT : ViewFormat.JSON;
 
         var inputFileName = getInputFileName(context);

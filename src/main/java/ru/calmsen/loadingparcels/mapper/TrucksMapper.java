@@ -19,7 +19,7 @@ public abstract class TrucksMapper {
 
     public Truck toTruckDomain(TruckDto truckDto) {
         var placedBoxes = truckDto.getBoxes().stream()
-                .map(this::toBoxDomain)
+                .map(this::toPlacedBoxDomain)
                 .toList();
         var truck = new Truck(truckDto.getWidth(), truckDto.getHeight());
         for (var placeBox : placedBoxes) {
@@ -28,7 +28,7 @@ public abstract class TrucksMapper {
         return truck;
     }
 
-    private PlacedBox toBoxDomain(PlacedBoxDto placedBoxDto) {
+    private PlacedBox toPlacedBoxDomain(PlacedBoxDto placedBoxDto) {
         var charSymbol = (Character) (char)(placedBoxDto.getBox().getDimensions() + '0');
         List<List<Character>> boxContent = new ArrayList<>();
         var currentDimensions = 0;
