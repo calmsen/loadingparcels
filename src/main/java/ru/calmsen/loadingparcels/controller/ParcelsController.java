@@ -1,9 +1,9 @@
 package ru.calmsen.loadingparcels.controller;
 
-import ru.calmsen.loadingparcels.command.CommandContext;
-import ru.calmsen.loadingparcels.command.CommandProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.command.CommandContext;
+import ru.calmsen.loadingparcels.command.CommandProvider;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 import ru.calmsen.loadingparcels.util.ConsoleOutputDataWriter;
 
@@ -30,11 +30,9 @@ public class ParcelsController {
             if (foundCommand.isPresent()) {
                 try {
                     foundCommand.get().execute(new CommandContext(command));
-                }
-                catch (BusinessException e) {
+                } catch (BusinessException e) {
                     consoleWriter.write(e.getMessage());
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     log.error("При выполнении команды {} произошла ошибка", command, e);
                 }
             }

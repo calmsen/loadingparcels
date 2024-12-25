@@ -53,7 +53,7 @@ public class UniformLoadingAlgorithm implements LoadingAlgorithm {
     }
 
 
-    public static int countFilledPlaces(Truck truck, Map<Truck, boolean[][]> filledPlaces){
+    public int countFilledPlaces(Truck truck, Map<Truck, boolean[][]> filledPlaces) {
         int count = 0;
         for (int i = 0; i < filledPlaces.get(truck).length; i++) {
             for (int j = 0; j < filledPlaces.get(truck)[i].length; j++) {

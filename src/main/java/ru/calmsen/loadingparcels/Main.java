@@ -1,10 +1,12 @@
 package ru.calmsen.loadingparcels;
 
+import org.mapstruct.factory.Mappers;
 import ru.calmsen.loadingparcels.command.CommandProvider;
 import ru.calmsen.loadingparcels.command.ExitCommand;
 import ru.calmsen.loadingparcels.command.LoadParcelsCommand;
 import ru.calmsen.loadingparcels.command.UnloadParcelsCommand;
 import ru.calmsen.loadingparcels.controller.ParcelsController;
+import ru.calmsen.loadingparcels.mapper.TrucksMapper;
 import ru.calmsen.loadingparcels.mapper.TrucksMapperImpl;
 import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithmFactory;
 import ru.calmsen.loadingparcels.service.ParcelsService;
@@ -35,7 +37,7 @@ public class Main {
         var fileReader = new FileReader();
         var outputDataWriterFactory = new OutputDataWriterFactory();
 
-        var trucksMapper = new TrucksMapperImpl();
+        var trucksMapper = Mappers.getMapper(TrucksMapper.class);
 
         var parcelsService = new ParcelsService(
                 new TxtParcelsParser(fileReader),

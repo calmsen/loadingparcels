@@ -1,11 +1,8 @@
 package ru.calmsen.loadingparcels.command;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.Arrays;
-import java.util.Scanner;
 
 public class CommandContext {
     @Getter

@@ -1,17 +1,17 @@
 package ru.calmsen.loadingparcels.service;
 
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.exception.ParcelValidatorException;
+import ru.calmsen.loadingparcels.model.domain.Box;
 import ru.calmsen.loadingparcels.model.domain.PlacedBox;
 import ru.calmsen.loadingparcels.model.domain.Truck;
-import ru.calmsen.loadingparcels.exception.ParcelValidatorException;
-import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithmFactory;
-import ru.calmsen.loadingparcels.model.domain.Box;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
+import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithmFactory;
 import ru.calmsen.loadingparcels.service.parser.JsonTrucksParser;
 import ru.calmsen.loadingparcels.service.parser.TxtParcelsParser;
 import ru.calmsen.loadingparcels.validator.ParcelValidator;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 

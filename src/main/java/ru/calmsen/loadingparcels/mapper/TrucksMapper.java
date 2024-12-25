@@ -13,6 +13,7 @@ import java.util.List;
 @Mapper
 public abstract class TrucksMapper {
     public abstract List<TruckDto> toTrucksDto(List<Truck> trucks);
+
     public abstract TruckDto toTruckDto(Truck truck);
 
     public abstract List<Truck> toTruckDomain(List<TruckDto> trucks);
@@ -29,7 +30,7 @@ public abstract class TrucksMapper {
     }
 
     private PlacedBox toPlacedBoxDomain(PlacedBoxDto placedBoxDto) {
-        var charSymbol = (Character) (char)(placedBoxDto.getBox().getDimensions() + '0');
+        var charSymbol = (Character) (char) (placedBoxDto.getBox().getDimensions() + '0');
         List<List<Character>> boxContent = new ArrayList<>();
         var currentDimensions = 0;
         for (int i = 0; i < placedBoxDto.getBox().getHeight(); i++) {

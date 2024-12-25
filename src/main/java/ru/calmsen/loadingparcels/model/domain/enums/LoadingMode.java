@@ -19,10 +19,9 @@ public enum LoadingMode {
     EFFICIENT;
 
     public static LoadingMode fromString(String value) {
-        try{
+        try {
             return valueOf(value.toUpperCase());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return LoadingMode.EFFICIENT;
         }
     }

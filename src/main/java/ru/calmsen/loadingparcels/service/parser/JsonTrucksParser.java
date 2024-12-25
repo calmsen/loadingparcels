@@ -14,6 +14,7 @@ import java.util.List;
 public class JsonTrucksParser {
     private final FileReader fileReader;
     private final TrucksMapper trucksMapper;
+
     public List<Truck> parseTrucksFromFile(String fileName) {
         var json = fileReader.readString(fileName);
         var trucksDto = Arrays.stream(JsonUtil.fromJson(json, TruckDto[].class)).toList();

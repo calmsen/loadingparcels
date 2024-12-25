@@ -16,7 +16,7 @@ dependencies {
 
     implementation("org.mapstruct:mapstruct:1.6.2")
     implementation("org.projectlombok:lombok:1.18.34")
-    implementation("ch.qos.logback:logback-classic:1.4.12")
+    implementation("ch.qos.logback:logback-classic:1.5.15")
     implementation("commons-cli:commons-cli:1.3.1")
     implementation("com.google.code.gson:gson:2.11.0")
 

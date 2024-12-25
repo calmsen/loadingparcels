@@ -8,7 +8,10 @@ import ru.calmsen.loadingparcels.model.domain.enums.DimensionsType;
 import ru.calmsen.loadingparcels.model.domain.enums.JoinType;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,7 +47,7 @@ public class EfficientLoadingAlgorithm implements LoadingAlgorithm {
         for (var box : readyToLoadBoxes) {
             var truck = new Truck(truckWidth, truckHeight);
             var placedBoxes = flatPlacedBoxes(new PlacedBox(box)).toList();
-            for (var placedBox : placedBoxes){
+            for (var placedBox : placedBoxes) {
                 truck.loadBox(placedBox);
             }
             trucks.add(truck);
@@ -164,11 +167,11 @@ public class EfficientLoadingAlgorithm implements LoadingAlgorithm {
     }
 
     private Stream<PlacedBox> flatPlacedBoxes(PlacedBox placeBox) {
-        if (placeBox.getBox().getInner().isEmpty()){
+        if (placeBox.getBox().getInner().isEmpty()) {
             return Stream.of(placeBox);
         }
 
-        if(placeBox.getBox().getInner().size() > 2){
+        if (placeBox.getBox().getInner().size() > 2) {
             throw new IllegalArgumentException();
         }
 
@@ -178,10 +181,9 @@ public class EfficientLoadingAlgorithm implements LoadingAlgorithm {
         var firstBox = new PlacedBox(placeBox.getBox().getInner().get(0), x, y);
         var secondBox = new PlacedBox(placeBox.getBox().getInner().get(1), x, y);
 
-        if (placeBox.getBox().getJoinType() == JoinType.HORIZONTAL){
+        if (placeBox.getBox().getJoinType() == JoinType.HORIZONTAL) {
             secondBox.setPositionX(x + firstBox.getBox().getWidth(0));
-        }
-        else {
+        } else {
             firstBox.setPositionY(y + secondBox.getBox().getHeight());
 
             var offsetX = placeBox.getBox().getWidth(0) - secondBox.getBox().getWidth(0);

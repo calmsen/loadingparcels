@@ -5,10 +5,9 @@ public enum ViewFormat {
     JSON;
 
     public static ViewFormat fromString(String value) {
-        try{
+        try {
             return valueOf(value.toUpperCase());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return TXT;
         }
     }

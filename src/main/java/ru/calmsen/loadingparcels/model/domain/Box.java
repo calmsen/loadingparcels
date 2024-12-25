@@ -28,6 +28,7 @@ public class Box {
         this.inner = new ArrayList<>();
 
     }
+
     public Box(Box firstBox, Box secondBox, JoinType joinType) {
         this.joinType = joinType;
         if (joinType == JoinType.HORIZONTAL) {
@@ -38,8 +39,7 @@ public class Box {
                         secondBox.getContent().get(i).stream()
                 ).toList());
             }
-        }
-        else {
+        } else {
             this.content = new ArrayList<>(firstBox.getContent());
             content.addAll(secondBox.getContent());
         }

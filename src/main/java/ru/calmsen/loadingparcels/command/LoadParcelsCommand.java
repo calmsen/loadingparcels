@@ -46,11 +46,11 @@ public class LoadParcelsCommand implements Command {
     }
 
     private String getInputFileName(CommandContext context) {
-        return context.getArgValue( "load", "input.txt");
+        return context.getArgValue("load", "input.txt");
     }
 
     private String getOutputFileName(CommandContext context) {
-        return context.getArgValueIfFound( "--out", "trucks.json");
+        return context.getArgValueIfFound("--out", "trucks.json");
     }
 
     private LoadingMode getLoadingMode(CommandContext context) {

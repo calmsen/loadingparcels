@@ -75,7 +75,7 @@ public class TruckLoaderHelper {
     public static void checkMinTrucksCountBeforeLoad(List<Box> boxes, int truckWidth, int truckHeight, int trucksCount) {
         var minDimensions = boxes.stream().mapToInt(Box::getDimensions).sum();
         if (trucksCount * truckWidth * truckHeight < minDimensions) {
-            throw new BusinessException("Не достаточно машин для погрузки. Минимальное количество: " + (int)Math.ceil(minDimensions / truckWidth / truckHeight));
+            throw new BusinessException("Не достаточно машин для погрузки. Минимальное количество: " + (int) Math.ceil(minDimensions / truckWidth / truckHeight));
         }
     }
 
