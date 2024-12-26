@@ -1,22 +1,25 @@
 package ru.calmsen.loadingparcels.controller;
 
-import ru.calmsen.loadingparcels.command.CommandContext;
-import ru.calmsen.loadingparcels.command.CommandProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.command.CommandContext;
+import ru.calmsen.loadingparcels.command.CommandProvider;
+import ru.calmsen.loadingparcels.exception.BusinessException;
+import ru.calmsen.loadingparcels.util.ConsoleOutputDataWriter;
 
 import java.util.Scanner;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ParcelsController {
-    private final String DEFAULT_COMMAND = "load input.txt";
     private final CommandProvider commandProvider;
+    private final ConsoleOutputDataWriter consoleWriter;
 
     public void listen() {
         var scanner = new Scanner(System.in);
 
-        log.info("Введите команду / по умолчанию {}", DEFAULT_COMMAND);
+        var DEFAULT_COMMAND = "load input.txt";
+        consoleWriter.write("Введите команду / по умолчанию " + DEFAULT_COMMAND);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
             if (command.isEmpty()) {
@@ -24,15 +27,17 @@ public class ParcelsController {
             }
 
             var foundCommand = commandProvider.findCommand(command);
-            if (foundCommand != null) {
+            if (foundCommand.isPresent()) {
                 try {
-                    foundCommand.execute(new CommandContext(command, scanner));
+                    foundCommand.get().execute(new CommandContext(command));
+                } catch (BusinessException e) {
+                    consoleWriter.write(e.getMessage());
                 } catch (Exception e) {
                     log.error("При выполнении команды {} произошла ошибка", command, e);
                 }
             }
 
-            log.info("Введите команду / по умолчанию {}", DEFAULT_COMMAND);
+            consoleWriter.write("Введите команду / по умолчанию " + DEFAULT_COMMAND);
         }
     }
 }

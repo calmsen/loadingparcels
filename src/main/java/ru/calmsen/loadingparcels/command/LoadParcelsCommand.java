@@ -2,56 +2,67 @@ package ru.calmsen.loadingparcels.command;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.calmsen.loadingparcels.domain.enums.LoadingMode;
+import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
+import ru.calmsen.loadingparcels.model.domain.enums.OutputType;
+import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.view.TrucksView;
-
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import ru.calmsen.loadingparcels.util.OutputDataWriterFactory;
+import ru.calmsen.loadingparcels.view.TrucksViewFactory;
 
 @Slf4j
 @RequiredArgsConstructor
 public class LoadParcelsCommand implements Command {
     private final ParcelsService parcelsService;
-    private final TrucksView trucksView;
-    private final Pattern LOAD_COMMAND_PATTERN = Pattern.compile("load (.+\\.txt)");
+    private final TrucksViewFactory trucksViewFactory;
+    private final OutputDataWriterFactory outputDataWriterFactory;
 
     @Override
     public boolean isMatch(String command) {
-        Matcher matcher = LOAD_COMMAND_PATTERN.matcher(command);
-        return matcher.matches();
+        return command.startsWith("load");
     }
 
     @Override
     public void execute(CommandContext context) {
-        Matcher matcher = LOAD_COMMAND_PATTERN.matcher(context.getCommand());
-        if (matcher.matches()) {
-            String filePath = matcher.group(1);
+        var outputFileName = getOutputFileName(context);
+        // переопределим параметр для формата по умолчанию
+        var defaultFormat = outputFileName.isBlank() ? ViewFormat.TXT : ViewFormat.JSON;
 
-            var loadingMode = scannerLoadingMode(context.getScanner());
-            processParcels(filePath, loadingMode);
-        }
+        var inputFileName = getInputFileName(context);
+        var loadingMode = getLoadingMode(context);
+        var viewFormat = getViewFormat(context, defaultFormat);
+        var trucksCount = getTrucksCount(context);
+
+
+        log.info("Начало погрузки посылок из файла {}", inputFileName);
+        var trucks = parcelsService.loadParcels(inputFileName, loadingMode, trucksCount);
+        var output = trucksViewFactory.createView(viewFormat).getOutputData(trucks);
+        writeOutputData(outputFileName, output);
+        log.info("Погрузка посылок из файла {} успешно завершена", inputFileName);
     }
 
-    private void processParcels(String filePath, LoadingMode loadingMode) {
-        log.info("Начало погрузки посылок из файла {}", filePath);
-        var trucks = parcelsService.loadParcels(filePath, loadingMode);
-        trucksView.showTrucks(trucks);
-        log.info("Погрузка посылок из файла {} успешно завершена", filePath);
+    private void writeOutputData(String fileName, String output) {
+        var outputType = fileName.isBlank() ? OutputType.CONSOLE : OutputType.FILE;
+        outputDataWriterFactory.create(outputType, fileName).write(output);
     }
 
-    private LoadingMode scannerLoadingMode(Scanner scanner) {
-        log.info("Выберете режим погрузки (simple|efficient) / по умолчанию simple");
-        if (scanner.hasNextLine()) {
-            String text = scanner.nextLine();
-            var mode = LoadingMode.fromString(text);
-            if (mode != null) {
-                return mode;
-            }
-            log.error("Нет реализации для режима погрузки: {}. Выбран режим по умолчанию", text);
-            return LoadingMode.SIMPLE;
-        }
-        return LoadingMode.SIMPLE;
+    private String getInputFileName(CommandContext context) {
+        return context.getArgValue("load", "input.txt");
+    }
+
+    private String getOutputFileName(CommandContext context) {
+        return context.getArgValueIfFound("--out", "trucks.json");
+    }
+
+    private LoadingMode getLoadingMode(CommandContext context) {
+        return LoadingMode.fromString(context.getArgValue("--mode", "onebox"));
+    }
+
+    private ViewFormat getViewFormat(CommandContext context, ViewFormat defaultFormat) {
+        return ViewFormat.fromString(context.getArgValue("--format", defaultFormat.toString()));
+    }
+
+    private int getTrucksCount(CommandContext context) {
+        var count = context.getArgValue("--count", "10");
+        return Integer.parseInt(count);
     }
 }

@@ -1,6 +1,6 @@
 package ru.calmsen.loadingparcels.validator;
 
-import ru.calmsen.loadingparcels.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Box;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +12,7 @@ public class ParcelValidator {
 
         if (isParcelEmpty(parcel)) {
             errors.add("Посылка пустая: " + parcel);
+            return errors;
         }
 
         if (!isAllDigitSymbols(parcel)) {
@@ -23,7 +24,7 @@ public class ParcelValidator {
         }
 
         if (!isDimensionsEqualsFirstDigit(parcel)) {
-            errors.add("Количество символов в посылке должно быть равно цифре в посылке: " + parcel);
+            errors.add("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel);
         }
 
         return errors;

@@ -1,9 +1,9 @@
 package ru.calmsen.loadingparcels.service.parser;
 
-import ru.calmsen.loadingparcels.domain.Box;
-import ru.calmsen.loadingparcels.util.FileLinesReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.util.FileReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
-public class ParcelsParser {
-    private final FileLinesReader fileLinesReader;
+public class TxtParcelsParser {
+    private final FileReader fileReader;
 
-    public List<Box> parseParcelsFromFile(String filePath) {
-        var lines = fileLinesReader.readAllLines(filePath)
+    public List<Box> parseParcelsFromFile(String fileName) {
+        var lines = fileReader.readAllLines(fileName)
                 .stream()
                 .iterator();
         List<Box> parcels = new ArrayList<>();

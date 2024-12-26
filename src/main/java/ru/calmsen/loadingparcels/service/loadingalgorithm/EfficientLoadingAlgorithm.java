@@ -1,17 +1,23 @@
 package ru.calmsen.loadingparcels.service.loadingalgorithm;
 
-import ru.calmsen.loadingparcels.domain.Box;
-import ru.calmsen.loadingparcels.domain.Truck;
-import ru.calmsen.loadingparcels.domain.enums.BoxDimensionsType;
-import ru.calmsen.loadingparcels.domain.enums.BoxJoinType;
-import ru.calmsen.loadingparcels.domain.enums.LoadingMode;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.PlacedBox;
+import ru.calmsen.loadingparcels.model.domain.Truck;
+import ru.calmsen.loadingparcels.model.domain.enums.DimensionsType;
+import ru.calmsen.loadingparcels.model.domain.enums.JoinType;
+import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Максимально плотная погрузка.
+ */
 @Slf4j
 public class EfficientLoadingAlgorithm implements LoadingAlgorithm {
     private final LoadingMode mode = LoadingMode.EFFICIENT;
@@ -22,159 +28,101 @@ public class EfficientLoadingAlgorithm implements LoadingAlgorithm {
     }
 
     @Override
-    public List<Truck> loadBoxes(List<Box> boxes, int truckWidth, int truckHeight) {
-        boxes = packBoxes(boxes, truckWidth);
+    public List<Truck> loadBoxes(List<Box> boxes, int truckWidth, int truckHeight, int trucksCount) {
+        if (boxes == null || boxes.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        TruckLoaderHelper.checkMinTrucksCountBeforeLoad(boxes, truckWidth, truckHeight, trucksCount);
+
+        boxes = packBoxes(boxes, truckWidth, truckHeight);
 
         List<Truck> trucks = new ArrayList<>();
-        loadTrucks(boxes, trucks, truckWidth, truckHeight);
-        return trucks;
-    }
 
-    private List<Box> packBoxes(List<Box> boxes, int truckWidth) {
-        List<Box> newBoxes = new ArrayList<>();
-
-        log.info("Упакуем блоки до 6X3");
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X3From3X3, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-
-        log.info("Упакуем блоки до 6X2");
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X2From3X2, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X2From7, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X2From4X2, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-
-        log.info("Упакуем блоки до 6X1");
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X1From5X1, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X1From4X1, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-
-        log.info("Упакуем блоки до 6X6");
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X6From6X3, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X6From6X4, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X6From6X3, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-        while (canJoinBoxes(BoxDimensionsType.Dimensions6X6From6X4, boxes, newBoxes, truckWidth)) {
-            boxes = newBoxes;
-            newBoxes = new ArrayList<>();
-        }
-
-        return boxes;
-    }
-
-    private void loadTrucks(List<Box> boxes, List<Truck> trucks, int truckWidth, int truckHeight) {
         var truckDimensions = truckWidth * truckHeight;
-        log.info("Загрузим блоки 6X6");
+        log.info("Загрузим сортированные посылки");
         var readyToLoadBoxes = boxes.stream()
                 .filter(x -> x.getDimensions() == truckDimensions)
                 .toList();
         for (var box : readyToLoadBoxes) {
-            trucks.add(new Truck(truckWidth, truckHeight, box));
-        }
-
-        log.info("Загрузим оставшееся блоки");
-        var remainedBoxes = boxes.stream()
-                .filter(x -> x.getDimensions() < truckDimensions)
-                .sorted(Comparator.comparingInt(x -> x.getWidth(0))).toList();
-
-        var currentTruck = new Truck(truckWidth, truckHeight, new ArrayList<>());
-        for (var currentBox : remainedBoxes) {
-            if (currentTruck.canLoadBox(currentBox)) {
-                currentTruck.loadBox(currentBox);
-            } else {
-                trucks.add(currentTruck);
-                currentTruck = new Truck(truckWidth, truckHeight, new ArrayList<>());
-                currentTruck.loadBox(currentBox);
+            var truck = new Truck(truckWidth, truckHeight);
+            var placedBoxes = flatPlacedBoxes(new PlacedBox(box)).toList();
+            for (var placedBox : placedBoxes) {
+                truck.loadBox(placedBox);
             }
+            trucks.add(truck);
         }
 
-        if (!currentTruck.isEmpty()) {
-            trucks.add(currentTruck);
+        log.info("Загрузим оставшееся посылки");
+        boxes = boxes.stream()
+                .filter(x -> x.getDimensions() < truckDimensions)
+                .sorted(Comparator.comparingInt(Box::getDimensions).reversed())
+                .toList();
+        trucks.addAll(TruckLoaderHelper.loadBoxes(boxes, truckWidth, truckHeight));
+
+        TruckLoaderHelper.checkMinTrucksCountAfterLoad(trucksCount, trucks);
+        return trucks;
+    }
+
+    private List<Box> packBoxes(List<Box> boxes, int truckWidth, int truckHeight) {
+        // отсортируем коробки по размерности
+        boxes = boxes.stream().sorted(Comparator.comparingInt(Box::getDimensions).reversed()).collect(Collectors.toList());
+
+//        var capacity = boxes.stream().mapToInt(Box::getDimensions).sum();
+//        log.info("Весь объем равен: {}", capacity);
+
+        List<Box> newBoxes = new ArrayList<>();
+        while (canJoinBoxes(DimensionsType.Dimensions6X6, boxes, newBoxes, truckWidth, truckHeight)) {
+            boxes = newBoxes;
+            newBoxes = new ArrayList<>();
         }
+
+//         var capacityAfterPack = boxes.stream().mapToInt(Box::getDimensions).sum();
+//         log.info("Весь объем после сортировки равен: {}", capacityAfterPack);
+
+        return boxes;
     }
 
     private boolean canJoinBoxes(
-            BoxDimensionsType targetDimensions,
+            DimensionsType targetDimensions,
             List<Box> boxes,
             List<Box> newBoxes,
-            int truckWidth) {
+            int truckWidth,
+            int truckHeight) {
 
         if (!newBoxes.isEmpty()) {
             throw new IllegalArgumentException("Список newBoxes должен быть пустой.");
         }
 
-        var firstDimensionType = targetDimensions.getFirstDimensionsForJoin();
-        var secondDimensionType = targetDimensions.getSecondDimensionsForJoin();
+        for (var i = 0; i < targetDimensions.getJoinPairs().length; i++) {
+            var joinPair = targetDimensions.getJoinPairs()[i];
+            var firstDimensionType = joinPair.getFirstDimensions();
+            var secondDimensionType = joinPair.getSecondDimensions();
 
-        if (firstDimensionType == null || secondDimensionType == null) {
-            return false;
-        }
-        var firstBox = boxes.stream()
-                .filter(x -> x.getDimensions() == firstDimensionType.getDimensions() &&
-                        (x.getDimensionsType() == null || x.getDimensionsType() == firstDimensionType))
-                .findFirst().orElse(null);
-        var secondBox = boxes.stream()
-                .filter(x -> x != firstBox && x.getDimensions() == secondDimensionType.getDimensions() &&
-                        (x.getDimensionsType() == null || x.getDimensionsType() == secondDimensionType))
-                .findFirst().orElse(null);
-
-        if (firstBox != null && secondBox != null) {
-            var newBox = joinBoxes(firstBox, secondBox, targetDimensions.getJoinType(), truckWidth);
-            if (newBox == null) {
-                return false;
-            }
-            newBoxes.addAll(boxes.stream().filter(x -> x != firstBox && x != secondBox).toList());
-            newBoxes.add(newBox);
-            return true;
-        }
-
-        if (firstBox != null) {
-            var boxesWithoutFirstBox = boxes.stream().filter(x -> x != firstBox).toList();
-            List<Box> newInnerBoxes = new ArrayList<>();
-            if (canJoinBoxes(secondDimensionType, boxesWithoutFirstBox, newInnerBoxes, truckWidth)) {
-                var innerSecondBox = newInnerBoxes.getLast();
-                var newBox = joinBoxes(firstBox, innerSecondBox, targetDimensions.getJoinType(), truckWidth);
-                if (newBox == null) {
-                    return false;
+            var firstBox = findBox(boxes, firstDimensionType, null);
+            if (firstBox.isEmpty()) {
+                List<Box> newInnerBoxes = new ArrayList<>();
+                if (canJoinBoxes(firstDimensionType, boxes, newInnerBoxes, truckWidth, truckHeight)) {
+                    boxes = newInnerBoxes;
+                    i--; //повторяем повторно, но уже с измененным списком
                 }
-                newBoxes.addAll(newInnerBoxes.stream().filter(x -> x != firstBox && x != innerSecondBox).toList());
-                newBoxes.add(newBox);
-                return true;
+                continue;
             }
-        }
-
-        if (secondBox != null) {
-            var boxesWithoutSecondBox = boxes.stream().filter(x -> x != secondBox).toList();
-            List<Box> newInnerBoxes = new ArrayList<>();
-            if (canJoinBoxes(firstDimensionType, boxesWithoutSecondBox, newInnerBoxes, truckWidth)) {
-                var innerFirstBox = newInnerBoxes.getLast();
-                var newBox = joinBoxes(innerFirstBox, secondBox, targetDimensions.getJoinType(), truckWidth);
-                if (newBox == null) {
-                    return false;
+            var secondBox = findBox(boxes, secondDimensionType, firstBox.get());
+            if (secondBox.isEmpty()) {
+                var boxesWithoutFirstBox = boxes.stream().filter(x -> x != firstBox.get()).toList();
+                List<Box> newInnerBoxes = new ArrayList<>();
+                if (canJoinBoxes(secondDimensionType, boxesWithoutFirstBox, newInnerBoxes, truckWidth, truckHeight)) {
+                    boxes = newInnerBoxes;
+                    newInnerBoxes.add(firstBox.get()); // возвращаем первый бокс
+                    i--; //повторяем повторно, но уже с измененным списком
                 }
-                newBoxes.addAll(newInnerBoxes.stream().filter(x -> x != secondBox && x != innerFirstBox).toList());
+                continue;
+            }
+
+            if (canJoinBoxes(firstBox.get(), secondBox.get(), joinPair.getJoinType(), truckWidth, truckHeight)) {
+                var newBox = new Box(firstBox.get(), secondBox.get(), joinPair.getJoinType());
+                newBoxes.addAll(boxes.stream().filter(x -> x != firstBox.get() && x != secondBox.get()).toList());
                 newBoxes.add(newBox);
                 return true;
             }
@@ -183,29 +131,65 @@ public class EfficientLoadingAlgorithm implements LoadingAlgorithm {
         return false;
     }
 
-    private Box joinBoxes(Box firstBox, Box secondBox, BoxJoinType mergeType, int truckWidth) {
-        if (mergeType == BoxJoinType.HORIZONTAL) {
-            if (firstBox.getHeight() != secondBox.getHeight()) {
-                return null;
-            }
-
-            List<List<Character>> content = new ArrayList<>();
-            for (int i = 0, j = 0; i < firstBox.getHeight(); i++) {
-                if (firstBox.getWidth(i) + secondBox.getWidth(i) > truckWidth) {
-                    return null;
-                }
-
-                content.add(Stream.concat(
-                        firstBox.getContent().get(i).stream(),
-                        secondBox.getContent().get(i).stream()
-                ).toList());
-            }
-
-            return new Box(content, true);
+    private boolean canJoinBoxes(Box firstBox, Box secondBox, JoinType joinType, int truckWidth, int truckHeight) {
+        if (joinType == JoinType.VERTICAL) {
+            return firstBox.getHeight() + secondBox.getHeight() <= truckHeight;
         }
 
-        var content = new ArrayList<>(firstBox.getContent());
-        content.addAll(secondBox.getContent());
-        return new Box(content, true);
+        if (firstBox.getHeight() != secondBox.getHeight()) {
+            log.warn("Боксы не совпадают по высоте: {}, {}", firstBox.getHeight(), secondBox.getHeight());
+            return false;
+        }
+
+        for (int i = 0, j = 0; i < firstBox.getHeight(); i++) {
+            if (firstBox.getWidth(i) + secondBox.getWidth(i) <= truckWidth) {
+                continue;
+            }
+
+            log.warn("Боксы не совпадают по ширине: {}, {}", firstBox.getWidth(i), secondBox.getWidth(i));
+            return false;
+        }
+
+        return true;
+    }
+
+    private Optional<Box> findBox(List<Box> boxes, DimensionsType dimensionType, Box exclude) {
+        for (Box x : boxes) {
+            if (x.getDimensions() == dimensionType.getDimensions() &&
+                    //x.getWidth(0) == dimensionType.getWidth() &&
+                    x.getHeight() == dimensionType.getHeight() &&
+                    x != exclude) {
+                return Optional.of(x);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private Stream<PlacedBox> flatPlacedBoxes(PlacedBox placeBox) {
+        if (placeBox.getBox().getInner().isEmpty()) {
+            return Stream.of(placeBox);
+        }
+
+        if (placeBox.getBox().getInner().size() > 2) {
+            throw new IllegalArgumentException();
+        }
+
+        var x = placeBox.getPositionX();
+        var y = placeBox.getPositionY();
+
+        var firstBox = new PlacedBox(placeBox.getBox().getInner().get(0), x, y);
+        var secondBox = new PlacedBox(placeBox.getBox().getInner().get(1), x, y);
+
+        if (placeBox.getBox().getJoinType() == JoinType.HORIZONTAL) {
+            secondBox.setPositionX(x + firstBox.getBox().getWidth(0));
+        } else {
+            firstBox.setPositionY(y + secondBox.getBox().getHeight());
+
+            var offsetX = placeBox.getBox().getWidth(0) - secondBox.getBox().getWidth(0);
+            secondBox.setPositionX(x + offsetX);
+        }
+
+        return Stream.of(firstBox, secondBox).flatMap(this::flatPlacedBoxes);
     }
 }
