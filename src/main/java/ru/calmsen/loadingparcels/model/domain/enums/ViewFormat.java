@@ -1,8 +1,12 @@
 package ru.calmsen.loadingparcels.model.domain.enums;
 
+/**
+ * Формат вывода данных
+ */
 public enum ViewFormat {
     TXT,
-    JSON;
+    JSON,
+    CSV;
 
     public static ViewFormat fromString(String value) {
         try {
@@ -10,5 +14,23 @@ public enum ViewFormat {
         } catch (Exception e) {
             return TXT;
         }
+    }
+
+    public static ViewFormat redefineFormat(String outFileName, ViewFormat format) {
+        if (outFileName == null) {
+            return format;
+        }
+
+        if (outFileName.toLowerCase().endsWith("txt")){
+            return ViewFormat.TXT;
+        }
+
+        if (outFileName.toLowerCase().endsWith("json")){
+            return ViewFormat.JSON;
+        }
+
+        return outFileName.toLowerCase().endsWith("csv")
+                ? ViewFormat.CSV
+                : format;
     }
 }

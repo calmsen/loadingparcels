@@ -2,7 +2,7 @@ package ru.calmsen.loadingparcels.service.loadingalgorithm;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 
 import java.util.List;
@@ -20,17 +20,17 @@ class SimpleLoadingAlgorithmTest {
     }
 
     @Test
-    void loadBoxes_EnoughTrucks_LoadsBoxesSuccessfully() {
+    void loadParcels_EnoughTrucks_LoadsParcelsSuccessfully() {
         // Arrange
-        var boxes = List.of(
-                new Box(List.of(
+        var parcels = List.of(
+                new Parcel(List.of(
                         List.of('1')
                 )),
-                new Box(List.of(
+                new Parcel(List.of(
                         List.of('6', '6', '6'),
                         List.of('6', '6', '6')
                 )),
-                new Box(List.of(
+                new Parcel(List.of(
                         List.of('9', '9', '9'),
                         List.of('9', '9', '9'),
                         List.of('9', '9', '9')
@@ -40,31 +40,34 @@ class SimpleLoadingAlgorithmTest {
         int truckHeight = 3;
         int trucksCount = 2;
 
+        var trucks = LoadingAlgorithmTestHelper.createTrucks(trucksCount, truckWidth, truckHeight);
+
         // Act
-        var result = algorithm.loadBoxes(boxes, truckWidth, truckHeight, trucksCount);
+        algorithm.loadParcels(parcels, trucks);
+        var result = trucks.stream().filter(x -> !x.isEmpty()).toList();
 
         // Assert
         assertThat(result).hasSize(2);
         var truck = result.get(0);
-        assertThat(truck.getBoxes()).hasSize(1);
+        assertThat(truck.getParcels()).hasSize(1);
         truck = result.get(1);
-        assertThat(truck.getBoxes()).hasSize(2);
+        assertThat(truck.getParcels()).hasSize(2);
     }
 
     @Test
-    void loadBoxes_NotEnoughTrucks_ThrowsBusinessException() {
+    void loadParcels_NotEnoughTrucks_ThrowsBusinessException() {
         // Arrange
 
-        var boxes = List.of(
-                new Box(List.of(
+        var parcels = List.of(
+                new Parcel(List.of(
                         List.of('6', '6', '6'),
                         List.of('6', '6', '6')
                 )),
-                new Box(List.of(
+                new Parcel(List.of(
                         List.of('6', '6', '6'),
                         List.of('6', '6', '6')
                 )),
-                new Box(List.of(
+                new Parcel(List.of(
                         List.of('9', '9', '9'),
                         List.of('9', '9', '9'),
                         List.of('9', '9', '9')
@@ -74,37 +77,42 @@ class SimpleLoadingAlgorithmTest {
         int truckHeight = 3;
         int trucksCount = 2;
 
+        var trucks = LoadingAlgorithmTestHelper.createTrucks(trucksCount, truckWidth, truckHeight);
+
         // Act & Assert
-        Throwable thrown = catchThrowable(() -> algorithm.loadBoxes(boxes, truckWidth, truckHeight, trucksCount));
+        Throwable thrown = catchThrowable(() -> algorithm.loadParcels(parcels, trucks));
 
         // Assert
         assertThat(thrown).isInstanceOf(BusinessException.class)
-                .hasMessageContaining("Не достаточно машин для погрузки.");
+                .hasMessageContaining("Не достаточно машин для погрузки");
     }
 
     @Test
-    void loadBoxes_NoBoxes_ReturnsEmptyList() {
+    void loadParcels_NoParcels_ReturnsEmptyList() {
         // Arrange
         int truckWidth = 6;
         int truckHeight = 6;
         int trucksCount = 0;
 
+        var trucks = LoadingAlgorithmTestHelper.createTrucks(trucksCount, truckWidth, truckHeight);
+
         // Act
-        var result = algorithm.loadBoxes(List.of(), truckWidth, truckHeight, trucksCount);
+        algorithm.loadParcels(List.of(), trucks);
+        var result = trucks.stream().filter(x -> !x.isEmpty()).toList();
 
         // Assert
         assertThat(result).isEmpty();
     }
 
     @Test
-    void loadBoxes_TwoBoxesFitInOneTruck_LoadsTwoBoxesIntoOneTruck() {
+    void loadParcels_TwoParcelsFitInOneTruck_LoadsTwoParcelsIntoOneTruck() {
         // Arrange
-        var boxes = List.of(
-                new Box(List.of(
+        var parcels = List.of(
+                new Parcel(List.of(
                         List.of('6', '6', '6'),
                         List.of('6', '6', '6')
                 )),
-                new Box(List.of(
+                new Parcel(List.of(
                         List.of('9', '9', '9'),
                         List.of('9', '9', '9'),
                         List.of('9', '9', '9')
@@ -114,22 +122,25 @@ class SimpleLoadingAlgorithmTest {
         int truckHeight = 6;
         int trucksCount = 1;
 
+        var trucks = LoadingAlgorithmTestHelper.createTrucks(trucksCount, truckWidth, truckHeight);
+
         // Act
-        var result = algorithm.loadBoxes(boxes, truckWidth, truckHeight, trucksCount);
+        algorithm.loadParcels(parcels, trucks);
+        var result = trucks.stream().filter(x -> !x.isEmpty()).toList();
 
         // Assert
         assertThat(result).hasSize(1);
         var truck = result.getFirst();
-        assertThat(truck.getBoxes()).hasSize(2);
-        var placedBox = truck.getBoxes().get(0);
-        assertThat(placedBox.getBox()).isEqualTo(boxes.get(1));
-        assertThat(placedBox.getPositionX()).isEqualTo(0);
-        assertThat(placedBox.getPositionY()).isEqualTo(0);
+        assertThat(truck.getParcels()).hasSize(2);
+        var placedParcel = truck.getParcels().get(0);
+        assertThat(placedParcel.getParcel()).isEqualTo(parcels.get(1));
+        assertThat(placedParcel.getPositionX()).isEqualTo(0);
+        assertThat(placedParcel.getPositionY()).isEqualTo(0);
 
-        placedBox = truck.getBoxes().get(1);
-        assertThat(placedBox.getBox()).isEqualTo(boxes.get(0));
+        placedParcel = truck.getParcels().get(1);
+        assertThat(placedParcel.getParcel()).isEqualTo(parcels.get(0));
 
-        assertThat(placedBox.getPositionX()).isEqualTo(3);
-        assertThat(placedBox.getPositionY()).isEqualTo(0);
+        assertThat(placedParcel.getPositionX()).isEqualTo(3);
+        assertThat(placedParcel.getPositionY()).isEqualTo(0);
     }
 }

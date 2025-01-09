@@ -7,10 +7,19 @@ import ru.calmsen.loadingparcels.util.JsonUtil;
 
 import java.util.List;
 
+/**
+ * Json представление для списка машин
+ */
 @RequiredArgsConstructor
 public class JsonTrucksView implements TrucksView {
     private final TrucksMapper trucksMapper;
 
+    /**
+     * Возвращает данные для представления списка машин в json.
+     *
+     * @param trucks список машин
+     * @return данные в виде json
+     */
     public String getOutputData(List<Truck> trucks) {
         var trucksDto = trucksMapper.toTrucksDto(trucks);
         return JsonUtil.toJson(trucksDto);

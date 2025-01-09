@@ -1,8 +1,11 @@
 package ru.calmsen.loadingparcels.view;
 
-import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
 
 import java.util.List;
 
-public interface ParcelsView extends View<List<Box>> {
+/**
+ * Представление для списка посылок
+ */
+public interface ParcelsView extends View<List<Parcel>> {
 }

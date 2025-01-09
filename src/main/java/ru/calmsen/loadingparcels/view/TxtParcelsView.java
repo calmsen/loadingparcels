@@ -1,28 +1,30 @@
 package ru.calmsen.loadingparcels.view;
 
-import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
 
 import java.util.List;
 
+/**
+ * Текстовое представление для списка посылок
+ */
 public class TxtParcelsView implements ParcelsView {
+    /**
+     * Возвращает данные для представления списка посылок в txt.
+     *
+     * @param parcels список посылок
+     * @return данные в виде txt
+     */
     @Override
-    public String getOutputData(List<Box> boxes) {
+    public String getOutputData(List<Parcel> parcels) {
         var output = new StringBuilder();
-        for (var box : boxes) {
-            for (var row : box.getContent()){
-                output.append(mapRowToString(row)).append("\n");
+        for (Parcel parcel : parcels) {
+            if (!output.isEmpty()) {
+                output.append("\n\n");
             }
-            output.append("\n");
+
+            output.append(parcel.toString());
         }
 
-        return output.toString().trim();
-    }
-
-    private String mapRowToString(List<Character> row) {
-        var sb = new StringBuilder();
-        for (Character ch : row) {
-            sb.append(ch);
-        }
-        return sb.toString();
+        return output.toString();
     }
 }

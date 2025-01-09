@@ -2,11 +2,20 @@ package ru.calmsen.loadingparcels.service.loadingalgorithm;
 
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 
+/**
+ * Фабрика создания объекта алгоритма погрузки.
+ */
 public class LoadingAlgorithmFactory {
+    /**
+     * Создает объект алгоритма погрузки
+     *
+     * @param mode тип погрузки
+     * @return объект алгоритма погрузки
+     */
     public LoadingAlgorithm Create(LoadingMode mode) {
         switch (mode) {
-            case ONEBOX -> {
-                return new OneBoxLoadingAlgorithm();
+            case ONEPARCEL -> {
+                return new OneParcelLoadingAlgorithm();
             }
             case SIMPLE -> {
                 return new SimpleLoadingAlgorithm();

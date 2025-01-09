@@ -1,7 +1,7 @@
 package ru.calmsen.loadingparcels.validator;
 
 import org.junit.jupiter.api.Test;
-import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,7 @@ class ParcelValidatorTest {
     void validate_ParcelIsNull_ReturnsError() {
         // Arrange
         ParcelValidator validator = new ParcelValidator();
-        Box parcel = null;
+        Parcel parcel = null;
 
         // Act
         List<String> errors = validator.validate(parcel);
@@ -29,7 +29,7 @@ class ParcelValidatorTest {
     void validate_ParcelHasNoContent_ReturnsError() {
         // Arrange
         ParcelValidator validator = new ParcelValidator();
-        Box parcel = new Box(Collections.emptyList());
+        Parcel parcel = new Parcel(Collections.emptyList());
 
         // Act
         List<String> errors = validator.validate(parcel);
@@ -43,7 +43,7 @@ class ParcelValidatorTest {
     void validate_ParcelContainsNonDigitSymbols_ReturnsError() {
         // Arrange
         ParcelValidator validator = new ParcelValidator();
-        Box parcel = new Box(List.of(
+        Parcel parcel = new Parcel(List.of(
                 List.of('A', 'B', 'C')
         ));
 
@@ -61,7 +61,7 @@ class ParcelValidatorTest {
     void validate_AllDigitsAreNotTheSame_ReturnsError() {
         // Arrange
         ParcelValidator validator = new ParcelValidator();
-        Box parcel = new Box(List.of(
+        Parcel parcel = new Parcel(List.of(
                 List.of('1', '2', '3')
         ));
 
@@ -78,7 +78,7 @@ class ParcelValidatorTest {
     void validate_DimensionsDoNotEqualFirstDigit_ReturnsError() {
         // Arrange
         ParcelValidator validator = new ParcelValidator();
-        Box parcel = new Box(List.of(
+        Parcel parcel = new Parcel(List.of(
                 List.of('2', '2', '2')
         ));
 
@@ -94,7 +94,7 @@ class ParcelValidatorTest {
     void validate_AllValidationsPass_NoErrorsReturned() {
         // Arrange
         ParcelValidator validator = new ParcelValidator();
-        Box parcel = new Box(List.of(
+        Parcel parcel = new Parcel(List.of(
                 List.of('3', '3', '3')
         ));
 
@@ -109,7 +109,7 @@ class ParcelValidatorTest {
     void validate_ComplexCase_MultipleErrors() {
         // Arrange
         ParcelValidator validator = new ParcelValidator();
-        Box parcel = new Box(List.of(
+        Parcel parcel = new Parcel(List.of(
                 List.of('1', 'A', '1'),
                 List.of('1', '1', '1')
         ));

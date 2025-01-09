@@ -41,7 +41,15 @@ bin/
 ### Mac OS ###
 .DS_Store
 .idea
+input
+input.*
 output
 output.*
-parcels.txt
-trucks.json
+parcel
+parcel.*
+parcels
+parcels.*
+parcels_with_count
+parcels_with_count.*
+trucks
+trucks.*

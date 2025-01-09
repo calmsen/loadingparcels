@@ -1,36 +1,25 @@
 package ru.calmsen.loadingparcels.service.loadingalgorithm;
 
 import ru.calmsen.loadingparcels.exception.BusinessException;
-import ru.calmsen.loadingparcels.model.domain.Box;
-import ru.calmsen.loadingparcels.model.domain.PlacedBox;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TruckLoaderHelper {
-    public static List<Truck> loadBoxes(List<Box> boxes, int truckWidth, int truckHeight) {
-        List<Truck> trucks = new ArrayList<>();
-        var currentTruck = new Truck(truckWidth, truckHeight);
-        var filledPlaces = new boolean[truckWidth][truckHeight];
-
-        for (Box box : boxes) {
-            if (!TruckLoaderHelper.canLoadBox(box, currentTruck, filledPlaces)) {
-                trucks.add(currentTruck);
-                currentTruck = new Truck(truckWidth, truckHeight);
-                filledPlaces = new boolean[truckWidth][truckHeight];
-            }
-            TruckLoaderHelper.loadBox(box, currentTruck, filledPlaces);
-        }
-
-        trucks.add(currentTruck);
-        return trucks;
-    }
-
-    public static boolean canLoadBox(Box box, Truck truck, boolean[][] filledPlaces) {
-        for (int currentY = 0; currentY <= truck.getHeight() - box.getHeight(); currentY++) {
-            for (int currentX = 0; currentX <= truck.getWidth() - box.getWidth(); currentX++) {
-                if (isFreePlace(box, filledPlaces, currentY, currentX)) {
+    /**
+     * Проверяет можно ли загрузить посылку.
+     *
+     * @param parcel       объект посылки
+     * @param truck        объект машины
+     * @param filledPlaces заполненные места
+     * @return true если можно, иначе false
+     */
+    public static boolean canLoadParcel(Parcel parcel, Truck truck, boolean[][] filledPlaces) {
+        for (int currentY = 0; currentY <= truck.getHeight() - parcel.getHeight(); currentY++) {
+            for (int currentX = 0; currentX <= truck.getWidth() - parcel.getWidth(); currentX++) {
+                if (isFreePlace(parcel, filledPlaces, currentY, currentX)) {
                     return true;
                 }
             }
@@ -39,11 +28,27 @@ public class TruckLoaderHelper {
         return false;
     }
 
-    private static boolean isFreePlace(Box box, boolean[][] filledPlaces, int y, int x) {
-        for (int i = box.getHeight() - 1, currentY = y; i >= 0; i--, y++) {
-            for (int j = 0, currentX = x; j < box.getWidth(i); j++, currentX++) {
-                if (filledPlaces[currentY][currentX]) {
-                    return false;
+    /**
+     * Проверяет свободно ли место для размещения посылки по указанной позиции.
+     *
+     * @param parcel       объект посылки
+     * @param filledPlaces заполненные места
+     * @param y            координата
+     * @param x            координата
+     * @return true если можно, иначе false
+     */
+    private static boolean isFreePlace(Parcel parcel, boolean[][] filledPlaces, int y, int x) {
+        for (int i = parcel.getHeight() - 1, currentY = y; i >= 0; i--, currentY++) {
+            for (int j = 0, currentX = x; j < parcel.getWidth(i); j++, currentX++) {
+                if (parcel.getContent().get(i).get(j) == ' ') {
+                    continue;
+                }
+                try {
+                    if (filledPlaces[currentY][currentX]) {
+                        return false;
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    throw e;
                 }
             }
         }
@@ -51,37 +56,70 @@ public class TruckLoaderHelper {
         return true;
     }
 
-    public static void loadBox(Box box, Truck truck, boolean[][] filledPlaces) {
-        for (int currentY = 0; currentY <= truck.getHeight() - box.getHeight(); currentY++) {
-            for (int currentX = 0; currentX <= truck.getWidth() - box.getWidth(); currentX++) {
-                if (isFreePlace(box, filledPlaces, currentY, currentX)) {
-                    loadBox(box, truck, filledPlaces, currentY, currentX);
+    /**
+     * Загружает посылку в машину.
+     *
+     * @param parcel       объект посылки
+     * @param truck        объект машины
+     * @param filledPlaces заполненные места
+     */
+    public static void loadParcel(Parcel parcel, Truck truck, boolean[][] filledPlaces) {
+        for (int currentY = 0; currentY <= truck.getHeight() - parcel.getHeight(); currentY++) {
+            for (int currentX = 0; currentX <= truck.getWidth() - parcel.getWidth(); currentX++) {
+                if (isFreePlace(parcel, filledPlaces, currentY, currentX)) {
+                    loadParcel(parcel, truck, filledPlaces, currentY, currentX);
                     return;
                 }
             }
         }
     }
 
-    private static void loadBox(Box box, Truck truck, boolean[][] filledPlaces, int y, int x) {
-        for (int i = box.getHeight() - 1, currentY = y; i >= 0; i--, currentY++) {
-            for (int j = 0, currentX = x; j < box.getWidth(i); j++, currentX++) {
+    /**
+     * Загружает посылку в машину в указанную позицию.
+     *
+     * @param parcel       объект посылки
+     * @param filledPlaces заполненные места
+     * @param y            координата
+     * @param x            координата
+     */
+    private static void loadParcel(Parcel parcel, Truck truck, boolean[][] filledPlaces, int y, int x) {
+        for (int i = parcel.getHeight() - 1, currentY = y; i >= 0; i--, currentY++) {
+            for (int j = 0, currentX = x; j < parcel.getWidth(i); j++, currentX++) {
+                if (parcel.getContent().get(i).get(j) == ' ') {
+                    continue;
+                }
                 filledPlaces[currentY][currentX] = true;
             }
         }
 
-        truck.loadBox(new PlacedBox(box, x, y));
+        truck.loadParcel(new PlacedParcel(parcel, x, y));
     }
 
-    public static void checkMinTrucksCountBeforeLoad(List<Box> boxes, int truckWidth, int truckHeight, int trucksCount) {
-        var minDimensions = boxes.stream().mapToInt(Box::getDimensions).sum();
-        if (trucksCount * truckWidth * truckHeight < minDimensions) {
-            throw new BusinessException("Не достаточно машин для погрузки. Минимальное количество: " + (int) Math.ceil(minDimensions / truckWidth / truckHeight));
+    /**
+     * Проверяет достаточно ли машин для погрузки перед началом погрузки.
+     *
+     * @param parcels список посылок
+     * @param trucks  список машин
+     */
+    public static void checkMinTrucksCountBeforeLoad(List<Parcel> parcels, List<Truck> trucks) {
+        var parcelsDimensions = parcels.stream().mapToInt(Parcel::getDimensions).sum();
+        var trucksDimensions = trucks.stream().mapToInt(x -> x.getWidth() * x.getHeight()).sum();
+        if (trucksDimensions < parcelsDimensions) {
+            throw new BusinessException("Не достаточно машин для погрузки");
         }
     }
 
-    public static void checkMinTrucksCountAfterLoad(int trucksCount, List<Truck> trucks) {
-        if (trucksCount < trucks.size()) {
-            throw new BusinessException("Не достаточно машин для погрузки. Необходимое количество: " + trucks.size());
+    /**
+     * Проверяет достаточно ли машин для погрузки после погрузки.
+     *
+     * @param parcels список посылок
+     * @param trucks  список машин
+     */
+    public static void checkMinTrucksCountAfterLoad(List<Parcel> parcels, List<Truck> trucks) {
+        var parcelsDimensions = parcels.stream().mapToInt(Parcel::getDimensions).sum();
+        var trucksFilledPlaces = trucks.stream().mapToInt(Truck::getFilledPlaces).sum();
+        if (trucksFilledPlaces < parcelsDimensions) {
+            throw new BusinessException("Не достаточно машин для погрузки");
         }
     }
 }
