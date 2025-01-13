@@ -26,14 +26,26 @@ public class Truck {
         this.parcels = List.of(parcel);
     }
 
+    /**
+     * Загружает посылку в машину
+     * @param parcel информация о посылке с координатами.
+     */
     public void loadParcel(PlacedParcel parcel) {
         this.parcels.add(parcel);
     }
 
+    /**
+     * Получается количество заполненные мест в машине.
+     * @return количество заполненные мест
+     */
     public int getFilledPlaces() {
         return this.parcels.stream().mapToInt(x -> x.getParcel().getDimensions()).sum();
     }
 
+    /**
+     * Проверяет пустая ли машина
+     * @return true если машина пустая. Иначе false
+     */
     public boolean isEmpty() {
         return this.parcels.isEmpty();
     }

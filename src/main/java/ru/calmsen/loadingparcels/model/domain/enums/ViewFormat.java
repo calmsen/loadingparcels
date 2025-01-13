@@ -8,6 +8,12 @@ public enum ViewFormat {
     JSON,
     CSV;
 
+    /**
+     * Преобразует строковое значение в перечисление. Не зависит от регистра. В случае ошибки возвращается TXT.
+     *
+     * @param value строковое представление
+     * @return перечисление
+     */
     public static ViewFormat fromString(String value) {
         try {
             return valueOf(value.toUpperCase());
@@ -16,6 +22,13 @@ public enum ViewFormat {
         }
     }
 
+    /**
+     * Переопределяет перечисление, если расширение файла соответствует перечислению.
+     *
+     * @param outFileName наименование файла
+     * @param format текущий формат
+     * @return переопределенный формат
+     */
     public static ViewFormat redefineFormat(String outFileName, ViewFormat format) {
         if (outFileName == null) {
             return format;

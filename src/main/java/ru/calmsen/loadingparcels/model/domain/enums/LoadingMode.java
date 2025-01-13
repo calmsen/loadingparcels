@@ -21,6 +21,12 @@ public enum LoadingMode {
      */
     EFFICIENT;
 
+    /**
+     * Преобразует строковое значение в перечисление. Не зависит от регистра. В случае ошибки возвращается ONEPARCEL.
+     *
+     * @param value строковое представление
+     * @return перечисление
+     */
     public static LoadingMode fromString(String value) {
         try {
             return valueOf(value.toUpperCase());

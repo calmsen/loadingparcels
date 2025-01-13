@@ -16,7 +16,10 @@ public class ParcelsController {
     private final CommandProvider commandProvider;
 
     /**
-     * Слушает команды из командной строки.
+     * Выполняет команды
+     *
+     * @param command командная строка, содержащая название команды и аргументы.
+     * @return объект с результатом. Содержит данные или ошибку.
      */
     public ResultWrapper handleCommand(String command) {
         if (command.isEmpty()) {

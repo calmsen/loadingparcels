@@ -22,6 +22,11 @@ public class LoadingParcelsTgBot extends TelegramLongPollingBot {
         this.parcelsController = parcelsController;
     }
 
+    /**
+     * Получает сообщения от бота
+     *
+     * @param update информация от бота
+     */
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -29,21 +34,29 @@ public class LoadingParcelsTgBot extends TelegramLongPollingBot {
             long chatId = update.getMessage().getChatId();
 
             var result = parcelsController.handleCommand(message);
-            if (result.data() != null){
+            if (result.data() != null) {
                 sendMessage(chatId, result.data());
             }
 
-            if (result.error() != null){
+            if (result.error() != null) {
                 sendMessage(chatId, result.error());
             }
         }
     }
 
+    /**
+     * Получает имя бота
+     *
+     * @return имя бота
+     */
     @Override
     public String getBotUsername() {
         return this.botName;
     }
 
+    /**
+     * Запускает слушателя бота
+     */
     public void listen() {
         try {
             var botsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -53,6 +66,12 @@ public class LoadingParcelsTgBot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Отправляет сообщения боту
+     *
+     * @param chatId  идентификатор чата
+     * @param message текст сообщения
+     */
     private void sendMessage(long chatId, String message) {
         try {
             var sendMessage = new SendMessage();
