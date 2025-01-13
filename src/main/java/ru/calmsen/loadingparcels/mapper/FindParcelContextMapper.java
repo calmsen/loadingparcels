@@ -13,7 +13,6 @@ import java.util.Map;
 @Mapper
 public abstract class FindParcelContextMapper {
     @Mapping(target = "parcelName", source = "find")
-    @Mapping(target = "outFile", source = "out-file")
     @Mapping(target = "viewFormat", source = "out-format", defaultValue = "TXT")
     public abstract FindParcelCommand.Context toContext(Map<String, String> map);
 

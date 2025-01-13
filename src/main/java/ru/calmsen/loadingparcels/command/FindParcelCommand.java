@@ -9,7 +9,7 @@ import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.enums.OutputType;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.util.OutputDataWriterFactory;
+import ru.calmsen.loadingparcels.util.FileWriter;
 import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
 
 import java.util.List;
@@ -22,7 +22,6 @@ import java.util.List;
 public class FindParcelCommand extends Command<FindParcelCommand.Context> {
     private final ParcelsService parcelsService;
     private final ParcelsViewFactory parcelsViewFactory;
-    private final OutputDataWriterFactory outputDataWriterFactory;
     private final FindParcelContextMapper contextMapper;
 
     @Override
@@ -31,7 +30,7 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
     }
 
     @Override
-    protected void execute(Context context) {
+    protected String execute(Context context) {
         var logMessage = context.parcelName != null
                 ? "Просмотр посылки " + context.parcelName
                 : "Просмотр посылок";
@@ -40,8 +39,7 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
         var parcels = context.parcelName != null
                 ? List.of(parcelsService.findParcel(context.parcelName))
                 : parcelsService.findAllParcels();
-        var output = getOutputData(context, parcels);
-        writeOutputData(context.outFile, output);
+        return parcelsViewFactory.createView(context.viewFormat).getOutputData(parcels);
     }
 
     @Override
@@ -49,21 +47,10 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
         return contextMapper.toContext(toMap(command));
     }
 
-    private String getOutputData(Context context, List<Parcel> parcels) {
-        var viewFormat = ViewFormat.redefineFormat(context.outFile, context.viewFormat);
-        return parcelsViewFactory.createView(viewFormat).getOutputData(parcels);
-    }
-
-    private void writeOutputData(String fileName, String output) {
-        var outputType = fileName == null ? OutputType.CONSOLE : OutputType.FILE;
-        outputDataWriterFactory.create(outputType, fileName).write(output);
-    }
-
     @Getter
     @Setter
     public static class Context {
         private String parcelName;
-        private String outFile;
         private ViewFormat viewFormat;
     }
 }

@@ -1,24 +1,20 @@
 package ru.calmsen.loadingparcels.util;
 
-import lombok.RequiredArgsConstructor;
 import ru.calmsen.loadingparcels.exception.FileWriterException;
-
-import java.io.FileWriter;
 
 /**
  * Запись данных в файл
  */
-@RequiredArgsConstructor
-public class FileOutputDataWriter implements OutputDataWriter {
-    private final String fileName;
 
+public class FileWriter {
     /**
      * Записывает в файл данные
      *
+     * @param fileName наименование файла
      * @param data данные, необходимые для записи в файл
      */
-    public void write(String data) {
-        try (var fileWriter = new FileWriter(fileName)) {
+    public void write(String fileName, String data) {
+        try (var fileWriter = new java.io.FileWriter(fileName)) {
             fileWriter.write(data);
         } catch (Exception e) {
             throw new FileWriterException("Не удалось записать в файл: " + fileName, e);

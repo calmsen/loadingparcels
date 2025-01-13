@@ -12,7 +12,7 @@ import java.util.Map;
  */
 @Mapper
 public abstract class UnloadParcelsContextMapper {
-    @Mapping(target = "inFile", source = "unload", defaultValue = "trucks.json")
+    @Mapping(target = "inFile", source = "unload")
     @Mapping(target = "outFile", source = "out-file")
     @Mapping(target = "viewFormat", source = "out-format", defaultValue = "TXT")
     @Mapping(target = "withCount", source = "with-count")

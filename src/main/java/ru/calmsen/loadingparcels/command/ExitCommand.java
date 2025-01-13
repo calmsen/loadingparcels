@@ -10,7 +10,8 @@ public class ExitCommand extends Command<Void> {
     }
 
     @Override
-    protected void execute(Void unused) {
+    protected String execute(Void unused) {
         System.exit(0);
+        return null;
     }
 }

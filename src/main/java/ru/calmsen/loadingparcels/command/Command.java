@@ -35,14 +35,14 @@ public abstract class Command<TContext> {
      *
      * @param command командная строка, содержащая название команды и аргументы.
      */
-    public void handle(String command) {
+    public String handle(String command) {
         var context = toContext(command);
-        execute(context);
+        return execute(context);
     }
 
     protected abstract String getName();
 
-    protected abstract void execute(TContext context);
+    protected abstract String execute(TContext context);
 
     protected TContext toContext(String command) {
         return null;

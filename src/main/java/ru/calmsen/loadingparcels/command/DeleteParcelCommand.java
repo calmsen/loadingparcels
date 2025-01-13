@@ -18,10 +18,11 @@ public class DeleteParcelCommand extends Command<String> {
     }
 
     @Override
-    protected void execute(String parcelName) {
+    protected String execute(String parcelName) {
         log.info("Удаление посылки \"{}\"", parcelName);
         parcelsService.deleteParcel(parcelName);
         log.info("Посылка \"{}\" удалена", parcelName);
+        return null;
     }
 
     @Override

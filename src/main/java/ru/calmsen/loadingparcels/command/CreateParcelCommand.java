@@ -21,10 +21,11 @@ public class CreateParcelCommand extends Command<Parcel> {
     }
 
     @Override
-    protected void execute(Parcel parcel) {
+    protected String execute(Parcel parcel) {
         log.info("Добавление посылки \n{}", parcel);
         parcelsService.addParcel(parcel);
         log.info("Посылка \"{}\" добавлена", parcel.getName());
+        return null;
     }
 
     @Override

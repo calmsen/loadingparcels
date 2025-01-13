@@ -26,10 +26,11 @@ public class UpdateParcelCommand extends Command<Parcel> {
     }
 
     @Override
-    protected void execute(Parcel parcel) {
+    protected String execute(Parcel parcel) {
         log.info("Изменение посылки \"{}\"", parcel.getName());
         parcelsService.updateParcel(parcel);
         log.info("Посылка изменена \n{}", parcel);
+        return null;
     }
 
     @Override

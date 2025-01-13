@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.calmsen.loadingparcels.command.CommandProvider;
 import ru.calmsen.loadingparcels.exception.BusinessException;
-import ru.calmsen.loadingparcels.util.ConsoleOutputDataWriter;
-
-import java.util.Scanner;
+import ru.calmsen.loadingparcels.model.dto.ResultWrapper;
 
 /**
  * Класс контроллера посылок.
@@ -14,35 +12,29 @@ import java.util.Scanner;
 @Slf4j
 @RequiredArgsConstructor
 public class ParcelsController {
+    public static final String DEFAULT_COMMAND = "load input.csv";
     private final CommandProvider commandProvider;
-    private final ConsoleOutputDataWriter consoleWriter;
 
     /**
      * Слушает команды из командной строки.
      */
-    public void listen() {
-        var scanner = new Scanner(System.in);
-
-        var DEFAULT_COMMAND = "load input.csv";
-        consoleWriter.write("Введите команду / по умолчанию " + DEFAULT_COMMAND);
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine();
-            if (command.isEmpty()) {
-                command = DEFAULT_COMMAND;
-            }
-
-            var foundCommand = commandProvider.findCommand(command);
-            if (foundCommand.isPresent()) {
-                try {
-                    foundCommand.get().handle(command);
-                } catch (BusinessException e) {
-                    consoleWriter.write(e.getMessage());
-                } catch (Exception e) {
-                    log.error("При выполнении команды {} произошла ошибка", command, e);
-                }
-            }
-
-            consoleWriter.write("Введите команду / по умолчанию " + DEFAULT_COMMAND);
+    public ResultWrapper handleCommand(String command) {
+        if (command.isEmpty()) {
+            command = DEFAULT_COMMAND;
         }
+
+        var foundCommand = commandProvider.findCommand(command);
+        if (foundCommand.isPresent()) {
+            try {
+                var result = foundCommand.get().handle(command);
+                return new ResultWrapper(result, null);
+            } catch (BusinessException e) {
+                return new ResultWrapper(null, e.getMessage());
+            } catch (Exception e) {
+                log.error("При выполнении команды {} произошла ошибка", command, e);
+            }
+        }
+
+        return new ResultWrapper(null, null);
     }
 }

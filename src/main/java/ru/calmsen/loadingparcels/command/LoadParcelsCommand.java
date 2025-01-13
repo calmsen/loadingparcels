@@ -10,7 +10,7 @@ import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 import ru.calmsen.loadingparcels.model.domain.enums.OutputType;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.util.OutputDataWriterFactory;
+import ru.calmsen.loadingparcels.util.FileWriter;
 import ru.calmsen.loadingparcels.view.factory.DefaultTrucksViewFactory;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     private final ParcelsService parcelsService;
     private final DefaultTrucksViewFactory trucksViewFactory;
-    private final OutputDataWriterFactory outputDataWriterFactory;
+    private final FileWriter fileWriter;
     private final LoadParcelsContextMapper contextMapper;
 
     @Override
@@ -32,12 +32,13 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     }
 
     @Override
-    protected void execute(Context context) {
-        log.info("Начало погрузки посылок из файла {}", context.inFile);
+    protected String execute(Context context) {
+        log.info("Начало погрузки посылок из файла");
         var trucks = loadTrucks(context);
         var output = getOutputData(context, filterEmptyTrucks(trucks));
         writeOutputData(context.outFile, output);
-        log.info("Погрузка посылок из файла {} успешно завершена", context.inFile);
+        log.info("Погрузка посылок успешно завершена");
+        return output;
     }
 
     @Override
@@ -64,8 +65,11 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     }
 
     private void writeOutputData(String fileName, String output) {
-        var outputType = fileName == null ? OutputType.CONSOLE : OutputType.FILE;
-        outputDataWriterFactory.create(outputType, fileName).write(output);
+        if (fileName == null) {
+            return;
+        }
+
+        fileWriter.write(fileName, output);
     }
 
     @Getter

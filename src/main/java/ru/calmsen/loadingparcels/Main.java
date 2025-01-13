@@ -9,9 +9,10 @@ import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithmFactor
 import ru.calmsen.loadingparcels.service.ParcelsService;
 import ru.calmsen.loadingparcels.service.parser.JsonTrucksParser;
 import ru.calmsen.loadingparcels.service.parser.TxtParcelsParser;
-import ru.calmsen.loadingparcels.util.ConsoleOutputDataWriter;
+import ru.calmsen.loadingparcels.terminal.LoadingParcelsConsole;
+import ru.calmsen.loadingparcels.terminal.LoadingParcelsTgBot;
 import ru.calmsen.loadingparcels.util.FileReader;
-import ru.calmsen.loadingparcels.util.OutputDataWriterFactory;
+import ru.calmsen.loadingparcels.util.FileWriter;
 import ru.calmsen.loadingparcels.validator.ParcelValidator;
 import lombok.extern.slf4j.Slf4j;
 import ru.calmsen.loadingparcels.view.factory.DefaultParcelsViewFactory;
@@ -33,7 +34,7 @@ public class Main {
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
 
         var fileReader = new FileReader();
-        var outputDataWriterFactory = new OutputDataWriterFactory();
+        var fileWriter = new FileWriter();
 
         var trucksMapper = Mappers.getMapper(TrucksMapper.class);
         var parcelsMapper = Mappers.getMapper(ParcelsMapper.class);
@@ -53,13 +54,13 @@ public class Main {
                 new LoadParcelsCommand(
                         parcelsService,
                         new DefaultTrucksViewFactory(trucksMapper),
-                        outputDataWriterFactory,
+                        fileWriter,
                         Mappers.getMapper(LoadParcelsContextMapper.class)
                 ),
                 new UnloadParcelsCommand(
                         parcelsService,
                         new UnloadParcelsViewFactory(defaultParcelsViewFactory, parcelsMapper),
-                        outputDataWriterFactory,
+                        fileWriter,
                         Mappers.getMapper(UnloadParcelsContextMapper.class)),
                 new CreateParcelCommand(parcelsService, parcelsMapper),
                 new UpdateParcelCommand(parcelsService, parcelsMapper),
@@ -67,14 +68,21 @@ public class Main {
                 new FindParcelCommand(
                         parcelsService,
                         defaultParcelsViewFactory,
-                        outputDataWriterFactory,
                         Mappers.getMapper(FindParcelContextMapper.class))
         );
         var commandProvider = new CommandProvider(commands);
-        var consoleController = new ParcelsController(commandProvider, new ConsoleOutputDataWriter());
+        var parcelsController = new ParcelsController(commandProvider);
 
         parcelsService.initParcels("initial_parcels.txt");
 
-        consoleController.listen();
+        var tgBot = new LoadingParcelsTgBot(
+                "7589989172:AAFzKmwuDHribOZ0V-uhwxNusIpSRmil5LA", // Перенести в конфиг файл
+                "loadingparcels_tgbot", // Перенести в конфиг файл
+                parcelsController
+        );
+        tgBot.listen();
+
+        var console = new LoadingParcelsConsole(parcelsController);
+        console.listen();
     }
 }

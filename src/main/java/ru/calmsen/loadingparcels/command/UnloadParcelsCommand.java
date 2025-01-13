@@ -9,7 +9,7 @@ import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.enums.OutputType;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.util.OutputDataWriterFactory;
+import ru.calmsen.loadingparcels.util.FileWriter;
 import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
 public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> {
     private final ParcelsService parcelsService;
     private final ParcelsViewFactory parcelsViewFactory;
-    private final OutputDataWriterFactory outputDataWriterFactory;
+    private final FileWriter fileWriter;
     private final UnloadParcelsContextMapper contextMapper;
 
     @Override
@@ -31,12 +31,13 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
     }
 
     @Override
-    protected void execute(Context context) {
+    protected String execute(Context context) {
         log.info("Начало разгрузки посылок из файла {}", context.inFile);
         var parcels = parcelsService.unloadTrucks(context.inFile);
         var output = getOutputData(context, parcels);
         writeOutputData(context.outFile, output);
         log.info("Разгрузка посылок из файла {} успешно завершена", context.inFile);
+        return output;
     }
 
     @Override
@@ -53,8 +54,11 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
     }
 
     private void writeOutputData(String fileName, String output) {
-        var outputType = fileName == null ? OutputType.CONSOLE : OutputType.FILE;
-        outputDataWriterFactory.create(outputType, fileName).write(output);
+        if (fileName == null) {
+            return;
+        }
+
+        fileWriter.write(fileName, output);
     }
 
     @Getter
