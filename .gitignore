@@ -42,14 +42,8 @@ bin/
 .DS_Store
 .idea
 input
-input.*
 output
-output.*
 parcel
-parcel.*
 parcels
-parcels.*
 parcels_with_count
-parcels_with_count.*
 trucks
-trucks.*
