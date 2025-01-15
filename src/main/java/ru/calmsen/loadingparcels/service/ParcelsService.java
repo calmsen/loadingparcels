@@ -50,12 +50,25 @@ public class ParcelsService {
      * Загружает посылки в машины. Наименования посылок можно передать в списке или в файле.
      *
      * @param parcelNames список наименований посылок, разделенных \n
-     * @param fileName    наименование файла со списком посылок. Игнорируется если parcelNames не пустой
      * @param loadingMode тип погрузки
      * @param trucks      список машин
      */
-    public void loadParcels(List<String> parcelNames, String fileName, LoadingMode loadingMode, List<Truck> trucks) {
-        parcelNames = readParcelNamesFromFileIfEmpty(parcelNames, fileName);
+    public void loadParcels(List<String> parcelNames, LoadingMode loadingMode, List<Truck> trucks) {
+        var parcels = findParcels(parcelNames);
+
+        var loadingAlgorithm = loadingAlgorithmFactory.Create(loadingMode);
+        loadingAlgorithm.loadParcels(parcels, trucks);
+    }
+
+    /**
+     * Загружает посылки в машины. Наименования посылок можно передать в списке или в файле.
+     *
+     * @param fileName    наименование файла со списком посылок.
+     * @param loadingMode тип погрузки
+     * @param trucks      список машин
+     */
+    public void loadParcels(String fileName, LoadingMode loadingMode, List<Truck> trucks) {
+        var parcelNames = fileReader.readAllLines(fileName);
         var parcels = findParcels(parcelNames);
 
         var loadingAlgorithm = loadingAlgorithmFactory.Create(loadingMode);
@@ -157,12 +170,6 @@ public class ParcelsService {
         }
 
         throw new BusinessException("Посылки не найдены: \n" + String.join("\n", notFoundParcels));
-    }
-
-    private List<String> readParcelNamesFromFileIfEmpty(List<String> parcelNames, String fileName) {
-        return parcelNames == null || parcelNames.isEmpty()
-                ? fileReader.readAllLines(fileName)
-                : parcelNames;
     }
 
     private void validateParcels(List<Parcel> parcels) {

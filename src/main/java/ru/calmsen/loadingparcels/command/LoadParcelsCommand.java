@@ -54,7 +54,13 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
             return List.of();
         }
 
-        parcelsService.loadParcels(context.parcelNames, context.inFile, context.loadingMode, context.trucks);
+        if (context.parcelNames != null && !context.parcelNames.isEmpty()) {
+            parcelsService.loadParcels(context.parcelNames, context.loadingMode, context.trucks);
+        }
+        else {
+            parcelsService.loadParcels(context.inFile, context.loadingMode, context.trucks);
+        }
+
         return context.trucks;
     }
 

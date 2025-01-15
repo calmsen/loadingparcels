@@ -91,7 +91,7 @@ public class ParcelsServiceTest {
         when(loadingAlgorithmFactory.Create(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
-        parcelsService.loadParcels(parcelNames, null, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
+        parcelsService.loadParcels(parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
 
         // Assert
         // No exception should be thrown, and loading algorithm should be called
@@ -100,7 +100,6 @@ public class ParcelsServiceTest {
     @Test
     public void loadParcels_ParcelNamesNotProvided_ReadsFromfile_LoadsParcels() {
         // Arrange
-        List<String> parcelNames = List.of();
         String fileName = "testFile.txt";
         List<String> fileContent = List.of("Parcel1", "Parcel2");
         when(fileReader.readAllLines(fileName)).thenReturn(fileContent);
@@ -108,7 +107,7 @@ public class ParcelsServiceTest {
         when(loadingAlgorithmFactory.Create(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
-        parcelsService.loadParcels(parcelNames, fileName, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
+        parcelsService.loadParcels(fileName, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
 
         // Assert
         // No exception should be thrown, and loading algorithm should be called
@@ -122,7 +121,7 @@ public class ParcelsServiceTest {
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.empty());
 
         // Act
-        Throwable thrown = catchThrowable(() -> parcelsService.loadParcels(parcelNames, null, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6))));
+        Throwable thrown = catchThrowable(() -> parcelsService.loadParcels(parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6))));
 
         // Act and Assert
         assertThat(thrown).isInstanceOf(BusinessException.class)
