@@ -15,7 +15,7 @@ public class TxtParcelsView implements ParcelsView {
      * @return данные в виде txt
      */
     @Override
-    public String getOutputData(List<Parcel> parcels) {
+    public String buildOutputData(List<Parcel> parcels) {
         var output = new StringBuilder();
         for (Parcel parcel : parcels) {
             if (!output.isEmpty()) {

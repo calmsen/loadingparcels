@@ -7,14 +7,14 @@ import ru.calmsen.loadingparcels.model.domain.Truck;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TxtTrucksViewTest {
     @Test
     void shouldShowEmptyTruck() {
         var view = new TxtTrucksView();
         var trucks = List.of(new Truck(6, 6));
-        var result = view.getOutputData(trucks);
+        var result = view.buildOutputData(trucks);
 
         var expectedOutput = String.join("\n",
                 "+      +",
@@ -26,7 +26,7 @@ class TxtTrucksViewTest {
                 "++++++++"
         );
 
-        assertEquals(expectedOutput, result);
+        assertThat(result).isEqualTo(expectedOutput);
     }
 
     @Test
@@ -43,7 +43,7 @@ class TxtTrucksViewTest {
         ));
         truck.loadParcel(new PlacedParcel(parcel, 3, 0));
         var view = new TxtTrucksView();
-        var result = view.getOutputData(List.of(truck));
+        var result = view.buildOutputData(List.of(truck));
 
         var expectedOutput = String.join("\n",
                 "+      +",
@@ -55,7 +55,7 @@ class TxtTrucksViewTest {
                 "++++++++"
         );
 
-        assertEquals(expectedOutput, result);
+        assertThat(result).isEqualTo(expectedOutput);
     }
 
     @Test
@@ -74,7 +74,7 @@ class TxtTrucksViewTest {
                 new Truck(6, 6, new PlacedParcel(parcel2))
         );
         var view = new TxtTrucksView();
-        var result = view.getOutputData(trucks);
+        var result = view.buildOutputData(trucks);
 
         var expectedOutput = String.join("\n",
                 "+      +",
@@ -94,6 +94,6 @@ class TxtTrucksViewTest {
                 "++++++++"
         );
 
-        assertEquals(expectedOutput, result);
+        assertThat(result).isEqualTo(expectedOutput);
     }
 }

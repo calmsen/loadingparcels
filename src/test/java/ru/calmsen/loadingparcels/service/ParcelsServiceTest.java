@@ -22,8 +22,8 @@ import ru.calmsen.loadingparcels.validator.ParcelValidator;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -75,9 +75,12 @@ public class ParcelsServiceTest {
         when(parcelsParser.parseParcelsFromFile(fileName)).thenReturn(parcels);
         when(parcelValidator.validate(any(Parcel.class))).thenReturn(List.of("Error1", "Error2"));
 
+        // Act
+        Throwable thrown = catchThrowable(() -> parcelsService.initParcels(fileName));
+
         // Act and Assert
-        var exception = assertThrows(ParcelValidatorException.class, () -> parcelsService.initParcels(fileName));
-        assertEquals("Не валидная посылка: \n\nError1\nError2\nError1\nError2", exception.getMessage());
+        assertThat(thrown).isInstanceOf(ParcelValidatorException.class)
+                .hasMessage("Не валидная посылка: \nError1\nError2\nError1\nError2");
     }
 
     @Test
@@ -118,9 +121,12 @@ public class ParcelsServiceTest {
         List<Parcel> parcels = List.of(new Parcel("Parcel1", "x", 's'));
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.empty());
 
+        // Act
+        Throwable thrown = catchThrowable(() -> parcelsService.loadParcels(parcelNames, null, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6))));
+
         // Act and Assert
-        BusinessException exception = assertThrows(BusinessException.class, () -> parcelsService.loadParcels(parcelNames, null, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6))));
-        assertEquals("Посылки не найдены: \n\nParcel3", exception.getMessage());
+        assertThat(thrown).isInstanceOf(BusinessException.class)
+                .hasMessage("Посылки не найдены: \nParcel3");
     }
 
     @Test
@@ -135,8 +141,8 @@ public class ParcelsServiceTest {
         List<Parcel> result = parcelsService.unloadTrucks(fileName);
 
         // Assert
-        assertEquals(1, result.size());
-        assertEquals(parcel, result.getFirst());
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.getFirst()).isEqualTo(parcel);
     }
 
     @Test
@@ -149,7 +155,7 @@ public class ParcelsServiceTest {
         List<Parcel> result = parcelsService.findAllParcels();
 
         // Assert
-        assertEquals(parcels, result);
+        assertThat(result).isEqualTo(parcels);
     }
 
     @Test
@@ -162,7 +168,7 @@ public class ParcelsServiceTest {
         Parcel result = parcelsService.findParcel("Parcel1");
 
         // Assert
-        assertEquals(parcel, result);
+        assertThat(result).isEqualTo(parcel);
     }
 
     @Test
@@ -170,9 +176,12 @@ public class ParcelsServiceTest {
         // Arrange
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
 
+        // Act
+        Throwable thrown = catchThrowable(() -> parcelsService.findParcel("Parcel1"));
+
         // Act and Assert
-        BusinessException exception = assertThrows(BusinessException.class, () -> parcelsService.findParcel("Parcel1"));
-        assertEquals("Посылка не найдена: Parcel1", exception.getMessage());
+        assertThat(thrown).isInstanceOf(BusinessException.class)
+                .hasMessage("Посылка не найдена: Parcel1");
     }
 
     @Test
@@ -193,9 +202,12 @@ public class ParcelsServiceTest {
         Parcel parcel = new Parcel("Parcel1", "x", 's');
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(parcel));
 
+        // Act
+        Throwable thrown = catchThrowable(() -> parcelsService.addParcel(parcel));
+
         // Act and Assert
-        BusinessException exception = assertThrows(BusinessException.class, () -> parcelsService.addParcel(parcel));
-        assertEquals("Такая посылка уже есть", exception.getMessage());
+        assertThat(thrown).isInstanceOf(BusinessException.class)
+                .hasMessage("Такая посылка уже есть: " + parcel.getName());
     }
 
     @Test
@@ -216,9 +228,12 @@ public class ParcelsServiceTest {
         Parcel parcel = new Parcel("Parcel1", "x", 's');
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
 
+        // Act
+        Throwable thrown = catchThrowable(() -> parcelsService.updateParcel(parcel));
+
         // Act and Assert
-        BusinessException exception = assertThrows(BusinessException.class, () -> parcelsService.updateParcel(parcel));
-        assertEquals("Посылка не найдена: Parcel1", exception.getMessage());
+        assertThat(thrown).isInstanceOf(BusinessException.class)
+                .hasMessage("Посылка не найдена: Parcel1");
     }
 
     @Test
@@ -237,8 +252,11 @@ public class ParcelsServiceTest {
         // Arrange
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
 
+        // Act
+        Throwable thrown = catchThrowable(() -> parcelsService.deleteParcel("Parcel1"));
+
         // Act and Assert
-        BusinessException exception = assertThrows(BusinessException.class, () -> parcelsService.deleteParcel("Parcel1"));
-        assertEquals("Посылка не найдена: Parcel1", exception.getMessage());
+        assertThat(thrown).isInstanceOf(BusinessException.class)
+                .hasMessage("Посылка не найдена: Parcel1");
     }
 }

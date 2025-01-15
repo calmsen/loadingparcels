@@ -36,7 +36,7 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
         var parcels = context.parcelName != null
                 ? List.of(parcelsService.findParcel(context.parcelName))
                 : parcelsService.findAllParcels();
-        return parcelsViewFactory.createView(context.viewFormat).getOutputData(parcels);
+        return parcelsViewFactory.createView(context.viewFormat).buildOutputData(parcels);
     }
 
     @Override

@@ -16,7 +16,7 @@ public class CsvWithCountParcelsView implements ParcelsView {
      * @return данные в виде csv
      */
     @Override
-    public String getOutputData(List<Parcel> parcels) {
+    public String buildOutputData(List<Parcel> parcels) {
         var parcelsGroup = parcels.stream().collect(
                 Collectors.groupingBy(Parcel::getName));
         var output = new StringBuilder("Имя;Форма;Символ;Количество");

@@ -22,17 +22,10 @@ public class DefaultParcelsViewFactory implements ParcelsViewFactory {
      * @return представление для списка посылок
      */
     public ParcelsView createView(ViewFormat format) {
-        switch (format) {
-            case TXT -> {
-                return new TxtParcelsView();
-            }
-            case JSON -> {
-                return new JsonParcelsView(parcelsMapper);
-            }
-            case CSV -> {
-                return new CsvParcelsView();
-            }
-        }
-        throw new IllegalArgumentException("Нет реализации ParcelsView с форматом " + format);
+        return switch (format) {
+            case TXT -> new TxtParcelsView();
+            case JSON -> new JsonParcelsView(parcelsMapper);
+            case CSV -> new CsvParcelsView();
+        };
     }
 }

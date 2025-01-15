@@ -14,7 +14,7 @@ import ru.calmsen.loadingparcels.controller.ParcelsController;
 @RequiredArgsConstructor
 public class LoadingParcelsTgBot extends TelegramLongPollingBot {
     private final String botName;
-    private ParcelsController parcelsController;
+    private final ParcelsController parcelsController;
 
     public LoadingParcelsTgBot(String botToken, String botName, ParcelsController parcelsController) {
         super(botToken);
@@ -34,13 +34,7 @@ public class LoadingParcelsTgBot extends TelegramLongPollingBot {
             long chatId = update.getMessage().getChatId();
 
             var result = parcelsController.handleCommand(message);
-            if (result.data() != null) {
-                sendMessage(chatId, result.data());
-            }
-
-            if (result.error() != null) {
-                sendMessage(chatId, result.error());
-            }
+            sendMessage(chatId, result.hasError() ? result.error() : result.data());
         }
     }
 

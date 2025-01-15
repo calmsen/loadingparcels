@@ -21,14 +21,10 @@ public class DefaultTrucksViewFactory implements TrucksViewFactory {
      * @return представление для списка посылок
      */
     public TrucksView createView(ViewFormat format) {
-        switch (format) {
-            case TXT -> {
-                return new TxtTrucksView();
-            }
-            case JSON -> {
-                return new JsonTrucksView(trucksMapper);
-            }
-        }
-        throw new IllegalArgumentException("Нет реализации TrucksView с форматом " + format);
+        return switch (format) {
+            case TXT -> new TxtTrucksView();
+            case JSON -> new JsonTrucksView(trucksMapper);
+            default -> throw new IllegalArgumentException("Нет реализации TrucksView с форматом " + format);
+        };
     }
 }

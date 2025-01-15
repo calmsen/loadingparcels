@@ -14,7 +14,7 @@ public class TxtTrucksView implements TrucksView {
      * @param trucks список машин
      * @return данные в виде txt
      */
-    public String getOutputData(List<Truck> trucks) {
+    public String buildOutputData(List<Truck> trucks) {
         var output = new StringBuilder();
         for (var truck : trucks) {
             // заполним все пространство пробелами

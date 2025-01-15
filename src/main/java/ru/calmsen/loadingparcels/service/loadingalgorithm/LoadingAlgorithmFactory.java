@@ -13,20 +13,11 @@ public class LoadingAlgorithmFactory {
      * @return объект алгоритма погрузки
      */
     public LoadingAlgorithm Create(LoadingMode mode) {
-        switch (mode) {
-            case ONEPARCEL -> {
-                return new OneParcelLoadingAlgorithm();
-            }
-            case SIMPLE -> {
-                return new SimpleLoadingAlgorithm();
-            }
-            case UNIFORM -> {
-                return new UniformLoadingAlgorithm();
-            }
-            case EFFICIENT -> {
-                return new EfficientLoadingAlgorithm();
-            }
-        }
-        throw new IllegalArgumentException("Режим " + mode + " не поддерживается.");
+        return switch (mode) {
+            case ONEPARCEL -> new OneParcelLoadingAlgorithm();
+            case SIMPLE -> new SimpleLoadingAlgorithm();
+            case UNIFORM -> new UniformLoadingAlgorithm();
+            case EFFICIENT -> new EfficientLoadingAlgorithm();
+        };
     }
 }

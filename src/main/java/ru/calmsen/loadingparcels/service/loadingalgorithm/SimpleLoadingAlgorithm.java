@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Простая погрузка посылок.
  */
 @Slf4j
-public class SimpleLoadingAlgorithm implements LoadingAlgorithm {
+public class SimpleLoadingAlgorithm extends LoadingAlgorithm {
     private final LoadingMode mode = LoadingMode.SIMPLE;
 
     @Override
@@ -32,15 +32,11 @@ public class SimpleLoadingAlgorithm implements LoadingAlgorithm {
             return;
         }
 
-        TruckLoaderHelper.checkMinTrucksCountBeforeLoad(parcels, trucks);
+        checkMinTrucksCountBeforeLoad(parcels, trucks);
 
-        Map<Truck, boolean[][]> filledPlaces = new HashMap<>();
-        for (Truck truck : trucks) {
-            filledPlaces.put(truck, new boolean[truck.getHeight()][truck.getWidth()]);
-        }
+        var filledPlaces = createFilledPlaces(trucks);
 
-        // отсортируем коробки по размерности от большего к меньшему
-        parcels = parcels.stream().sorted(Comparator.comparingInt(Parcel::getDimensions).reversed()).collect(Collectors.toList());
+        parcels = sortParcelsByDimension(parcels);
         var parcelsQueue = new LinkedList<>(parcels);
         var currentParcel = parcelsQueue.poll();
         for (Truck currentTruck : trucks) {
@@ -48,8 +44,8 @@ public class SimpleLoadingAlgorithm implements LoadingAlgorithm {
                 break;
             }
 
-            while (TruckLoaderHelper.canLoadParcel(currentParcel, currentTruck, filledPlaces.get(currentTruck))) {
-                TruckLoaderHelper.loadParcel(currentParcel, currentTruck, filledPlaces.get(currentTruck));
+            while (canLoadParcel(currentParcel, currentTruck, filledPlaces.get(currentTruck))) {
+                loadParcel(currentParcel, currentTruck, filledPlaces.get(currentTruck));
                 currentParcel = parcelsQueue.poll();
                 if (currentParcel == null) {
                     break;
@@ -57,6 +53,6 @@ public class SimpleLoadingAlgorithm implements LoadingAlgorithm {
             }
         }
 
-        TruckLoaderHelper.checkMinTrucksCountAfterLoad(parcels, trucks);
+        checkMinTrucksCountAfterLoad(parcels, trucks);
     }
 }

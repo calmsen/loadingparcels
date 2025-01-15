@@ -20,7 +20,7 @@ public class JsonTrucksView implements TrucksView {
      * @param trucks список машин
      * @return данные в виде json
      */
-    public String getOutputData(List<Truck> trucks) {
+    public String buildOutputData(List<Truck> trucks) {
         var trucksDto = trucksMapper.toTrucksDto(trucks);
         return JsonUtil.toJson(trucksDto);
     }

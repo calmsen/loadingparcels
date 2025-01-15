@@ -10,36 +10,36 @@ import ru.calmsen.loadingparcels.model.domain.Truck;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JsonTrucksViewTest {
     @Test
-    void getOutputData_emptyTrucks_returnsEmptyArrayInJson() {
+    void buildOutputData_emptyTrucks_returnsEmptyArrayInJson() {
         // Arrange
         var view = new JsonTrucksView(new TrucksMapperImpl());
 
         // Act
-        var result = view.getOutputData(List.of());
+        var result = view.buildOutputData(List.of());
 
         // Assert
-        assertEquals("[]", result);
+        assertThat(result).isEqualTo("[]");
     }
 
     @Test
-    void getOutputData_truckWithEmptyParcels_returnsEmptyParcelsArrayInJson() {
+    void buildOutputData_truckWithEmptyParcels_returnsEmptyParcelsArrayInJson() {
         // Arrange
         var view = new JsonTrucksView(new TrucksMapperImpl());
         var truck = new Truck(8, 8);
 
         // Act
-        var result = removeWhitespacesUsingGson(view.getOutputData(List.of(truck)));
+        var result = removeWhitespacesUsingGson(view.buildOutputData(List.of(truck)));
 
         // Assert
-        assertEquals("[{\"width\":8,\"height\":8,\"parcels\":[]}]", result);
+        assertThat(result).isEqualTo("[{\"width\":8,\"height\":8,\"parcels\":[]}]");
     }
 
     @Test
-    void getOutputData_truckWithParcel_returnsParcelInfoInJson() {
+    void buildOutputData_truckWithParcel_returnsParcelInfoInJson() {
         // Arrange
         var view = new JsonTrucksView(new TrucksMapperImpl());
         var parcel = new Parcel(List.of(
@@ -50,10 +50,10 @@ class JsonTrucksViewTest {
         var truck = new Truck(8, 8, new PlacedParcel(parcel, 3, 3));
 
         // Act
-        var result = removeWhitespacesUsingGson(view.getOutputData(List.of(truck)));
+        var result = removeWhitespacesUsingGson(view.buildOutputData(List.of(truck)));
 
         // Assert
-        assertEquals("[{\"width\":8,\"height\":8,\"parcels\":[{\"parcel\":{\"width\":3,\"height\":3,\"form\":\"xxx\\nxxx\\nxxx\",\"dimensions\":9,\"symbol\":\"9\",\"name\":\"Посылка тип 9\"},\"positionX\":3,\"positionY\":3}]}]", result);
+        assertThat(result).isEqualTo("[{\"width\":8,\"height\":8,\"parcels\":[{\"parcel\":{\"width\":3,\"height\":3,\"form\":\"xxx\\nxxx\\nxxx\",\"dimensions\":9,\"symbol\":\"9\",\"name\":\"Посылка тип 9\"},\"positionX\":3,\"positionY\":3}]}]");
     }
 
     private String removeWhitespacesUsingGson(String json) {

@@ -6,8 +6,7 @@ import ru.calmsen.loadingparcels.model.domain.Parcel;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ParcelValidatorTest {
 
@@ -21,8 +20,9 @@ class ParcelValidatorTest {
         List<String> errors = validator.validate(parcel);
 
         // Assert
-        assertEquals(1, errors.size());
-        assertTrue(errors.contains("Посылка пустая: null"));
+        assertThat(errors)
+                .hasSize(1)
+                .contains("Посылка пустая: null");
     }
 
     @Test
@@ -35,8 +35,9 @@ class ParcelValidatorTest {
         List<String> errors = validator.validate(parcel);
 
         // Assert
-        assertEquals(1, errors.size());
-        assertTrue(errors.contains("Посылка пустая: " + parcel));
+        assertThat(errors)
+            .hasSize(1)
+            .contains("Посылка пустая: " + parcel);
     }
 
     @Test
@@ -51,10 +52,11 @@ class ParcelValidatorTest {
         List<String> errors = validator.validate(parcel);
 
         // Assert
-        assertEquals(3, errors.size());
-        assertTrue(errors.contains("В посылке найден символ не являющиеся цифрой: " + parcel));
-        assertTrue(errors.contains("Все цифры в посылке должны быть одинаковые: " + parcel));
-        assertTrue(errors.contains("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel));
+        assertThat(errors)
+            .hasSize(3)
+            .contains("В посылке найден символ не являющиеся цифрой: " + parcel)
+            .contains("Все цифры в посылке должны быть одинаковые: " + parcel)
+            .contains("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel);
     }
 
     @Test
@@ -69,9 +71,10 @@ class ParcelValidatorTest {
         List<String> errors = validator.validate(parcel);
 
         // Assert
-        assertEquals(2, errors.size());
-        assertTrue(errors.contains("Все цифры в посылке должны быть одинаковые: " + parcel));
-        assertTrue(errors.contains("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel));
+        assertThat(errors)
+            .hasSize(2)
+            .contains("Все цифры в посылке должны быть одинаковые: " + parcel)
+            .contains("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel);
     }
 
     @Test
@@ -86,8 +89,9 @@ class ParcelValidatorTest {
         List<String> errors = validator.validate(parcel);
 
         // Assert
-        assertEquals(1, errors.size());
-        assertTrue(errors.contains("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel));
+        assertThat(errors)
+            .hasSize(1)
+            .contains("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel);
     }
 
     @Test
@@ -102,7 +106,7 @@ class ParcelValidatorTest {
         List<String> errors = validator.validate(parcel);
 
         // Assert
-        assertEquals(0, errors.size());
+        assertThat(errors).isEmpty();
     }
 
     @Test
@@ -118,9 +122,10 @@ class ParcelValidatorTest {
         List<String> errors = validator.validate(parcel);
 
         // Assert
-        assertEquals(3, errors.size());
-        assertTrue(errors.contains("В посылке найден символ не являющиеся цифрой: " + parcel));
-        assertTrue(errors.contains("Все цифры в посылке должны быть одинаковые: " + parcel));
-        assertTrue(errors.contains("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel));
+        assertThat(errors)
+            .hasSize(3)
+            .contains("В посылке найден символ не являющиеся цифрой: " + parcel)
+            .contains("Все цифры в посылке должны быть одинаковые: " + parcel)
+            .contains("Количество цифр в посылке должно быть равно первой цифре в посылке: " + parcel);
     }
 }

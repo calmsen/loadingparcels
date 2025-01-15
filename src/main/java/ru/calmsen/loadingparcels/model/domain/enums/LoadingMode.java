@@ -28,10 +28,6 @@ public enum LoadingMode {
      * @return перечисление
      */
     public static LoadingMode fromString(String value) {
-        try {
-            return valueOf(value.toUpperCase());
-        } catch (Exception e) {
-            return LoadingMode.ONEPARCEL;
-        }
+        return valueOf(value.toUpperCase());
     }
 }

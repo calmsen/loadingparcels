@@ -8,23 +8,23 @@ import ru.calmsen.loadingparcels.model.domain.Parcel;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JsonWithCountParcelsViewTest {
     @Test
-    void getOutputData_emptyParcels_returnsEmptyArrayInJson() {
+    void buildOutputData_emptyParcels_returnsEmptyArrayInJson() {
         // Arrange
         var view = new JsonWithCountParcelsView(new ParcelsMapperImpl());
 
         // Act
-        var result = view.getOutputData(List.of());
+        var result = view.buildOutputData(List.of());
 
         // Assert
-        assertEquals("[]", result);
+        assertThat(result).isEqualTo("[]");
     }
 
     @Test
-    void getOutputData_oneParcel_returnsParcelInfoInJson() {
+    void buildOutputData_oneParcel_returnsParcelInfoInJson() {
         // Arrange
         var view = new JsonWithCountParcelsView(new ParcelsMapperImpl());
         var parcel = new Parcel(List.of(
@@ -34,10 +34,10 @@ class JsonWithCountParcelsViewTest {
         ));
 
         // Act
-        var result = removeWhitespacesUsingGson(view.getOutputData(List.of(parcel)));
+        var result = removeWhitespacesUsingGson(view.buildOutputData(List.of(parcel)));
 
         // Assert
-        assertEquals("[{\"parcel\":{\"width\":3,\"height\":3,\"form\":\"xxx\\nxxx\\nxxx\",\"dimensions\":9,\"symbol\":\"9\",\"name\":\"Посылка тип 9\"},\"quantity\":1}]", result);
+        assertThat(result).isEqualTo("[{\"parcel\":{\"width\":3,\"height\":3,\"form\":\"xxx\\nxxx\\nxxx\",\"dimensions\":9,\"symbol\":\"9\",\"name\":\"Посылка тип 9\"},\"quantity\":1}]");
     }
 
     private String removeWhitespacesUsingGson(String json) {

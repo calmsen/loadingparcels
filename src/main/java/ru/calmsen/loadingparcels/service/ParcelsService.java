@@ -18,6 +18,7 @@ import ru.calmsen.loadingparcels.validator.ParcelValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Сервис для работы с посылками
@@ -102,7 +103,7 @@ public class ParcelsService {
      */
     public void addParcel(Parcel parcel) {
         if (parcelsRepository.findParcel(parcel.getName()).isPresent()) {
-            throw new BusinessException("Такая посылка уже есть");
+            throw new BusinessException("Такая посылка уже есть: " + parcel.getName());
         }
 
         parcelsRepository.addParcel(parcel);
@@ -155,7 +156,7 @@ public class ParcelsService {
             return parcels;
         }
 
-        throw new BusinessException("Посылки не найдены: " + notFoundParcels.stream().reduce("\n", (a, b) -> a + "\n" + b));
+        throw new BusinessException("Посылки не найдены: \n" + String.join("\n", notFoundParcels));
     }
 
     private List<String> readParcelNamesFromFileIfEmpty(List<String> parcelNames, String fileName) {
@@ -167,7 +168,7 @@ public class ParcelsService {
     private void validateParcels(List<Parcel> parcels) {
         var errors = parcels.stream().flatMap(x -> parcelValidator.validate(x).stream()).toList();
         if (!errors.isEmpty()) {
-            throw new ParcelValidatorException("Не валидная посылка: " + errors.stream().reduce("\n", (a, b) -> a + "\n" + b));
+            throw new ParcelValidatorException("Не валидная посылка: \n" + String.join("\n", errors));
         }
     }
 

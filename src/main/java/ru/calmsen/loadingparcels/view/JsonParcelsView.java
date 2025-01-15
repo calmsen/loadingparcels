@@ -21,7 +21,7 @@ public class JsonParcelsView implements ParcelsView {
      * @return данные в виде json
      */
     @Override
-    public String getOutputData(List<Parcel> parcels) {
+    public String buildOutputData(List<Parcel> parcels) {
         var parcelsDto = parcelsMapper.toParcelsDto(parcels);
         return JsonUtil.toJson(parcelsDto);
     }

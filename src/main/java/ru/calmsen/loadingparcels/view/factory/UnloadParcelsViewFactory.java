@@ -34,17 +34,10 @@ public class UnloadParcelsViewFactory implements ParcelsViewFactory {
             return createView(format);
         }
 
-        switch (format) {
-            case TXT -> {
-                return new TxtWithCountParcelsView();
-            }
-            case JSON -> {
-                return new JsonWithCountParcelsView(parcelsMapper);
-            }
-            case CSV -> {
-                return new CsvWithCountParcelsView();
-            }
-        }
-        throw new IllegalArgumentException("Нет реализации ParcelsView с форматом " + format);
+        return switch (format) {
+            case TXT -> new TxtWithCountParcelsView();
+            case JSON -> new JsonWithCountParcelsView(parcelsMapper);
+            case CSV -> new CsvWithCountParcelsView();
+        };
     }
 }

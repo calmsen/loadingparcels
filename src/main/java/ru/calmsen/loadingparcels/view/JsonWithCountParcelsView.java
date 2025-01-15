@@ -22,7 +22,7 @@ public class JsonWithCountParcelsView implements ParcelsView {
      * @param parcels список посылок
      * @return данные в виде json
      */
-    public String getOutputData(List<Parcel> parcels) {
+    public String buildOutputData(List<Parcel> parcels) {
         var parcelsGroup = parcels.stream().collect(
                 Collectors.groupingBy(Parcel::getName));
 

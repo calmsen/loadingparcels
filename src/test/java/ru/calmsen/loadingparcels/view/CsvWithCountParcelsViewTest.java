@@ -5,11 +5,11 @@ import ru.calmsen.loadingparcels.model.domain.Parcel;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CsvWithCountParcelsViewTest {
     @Test
-    void getOutputData_SingleParcel_CorrectlyFormatsOutput() {
+    void buildOutputData_SingleParcel_CorrectlyFormatsOutput() {
         // Arrange
         List<List<Character>> content = List.of(
                 List.of('a', 'b'),
@@ -19,14 +19,14 @@ class CsvWithCountParcelsViewTest {
         List<Parcel> parcels = List.of(singleParcel);
 
         // Act
-        String result = new CsvWithCountParcelsView().getOutputData(parcels);
+        String result = new CsvWithCountParcelsView().buildOutputData(parcels);
 
         // Assert
-        assertEquals("Имя;Форма;Символ;Количество\nПосылка тип a;xx\\nxx;a;1", result); // Проверяем вывод для одного бокса
+        assertThat(result).isEqualTo("Имя;Форма;Символ;Количество\nПосылка тип a;xx\\nxx;a;1"); // Проверяем вывод для одного бокса
     }
 
     @Test
-    void getOutputData_MultipleParcels_FormatsEachParcelSeparately() {
+    void buildOutputData_MultipleParcels_FormatsEachParcelSeparately() {
         // Arrange
         List<List<Character>> content1 = List.of(
                 List.of('a', 'b'),
@@ -41,9 +41,9 @@ class CsvWithCountParcelsViewTest {
         List<Parcel> parcels = List.of(parcel1, parcel2);
 
         // Act
-        String result = new CsvWithCountParcelsView().getOutputData(parcels);
+        String result = new CsvWithCountParcelsView().buildOutputData(parcels);
 
         // Assert
-        assertEquals("Имя;Форма;Символ;Количество\nПосылка тип e;xx\\nxx;e;1\nПосылка тип a;xx\\nxx;a;1", result); // Проверяем вывод для нескольких боксов
+        assertThat(result).isEqualTo("Имя;Форма;Символ;Количество\nПосылка тип e;xx\\nxx;e;1\nПосылка тип a;xx\\nxx;a;1"); // Проверяем вывод для нескольких боксов
     }
 }

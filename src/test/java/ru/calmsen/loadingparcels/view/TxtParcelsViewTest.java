@@ -3,13 +3,13 @@ package ru.calmsen.loadingparcels.view;
 import org.junit.jupiter.api.Test;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
 class TxtParcelsViewTest {
     @Test
-    void getOutputData_SingleParcel_CorrectlyFormatsOutput() {
+    void buildOutputData_SingleParcel_CorrectlyFormatsOutput() {
         // Arrange
         List<List<Character>> content = List.of(
                 List.of('a', 'b'),
@@ -19,14 +19,14 @@ class TxtParcelsViewTest {
         List<Parcel> parcels = List.of(singleParcel);
 
         // Act
-        String result = new TxtParcelsView().getOutputData(parcels);
+        String result = new TxtParcelsView().buildOutputData(parcels);
 
         // Assert
-        assertEquals("name: Посылка тип a\ncontent: \nab\ncd", result); // Проверяем вывод для одного бокса
+        assertThat(result).isEqualTo("name: Посылка тип a\ncontent: \nab\ncd"); // Проверяем вывод для одного бокса
     }
 
     @Test
-    void getOutputData_MultipleParcels_FormatsEachParcelSeparately() {
+    void buildOutputData_MultipleParcels_FormatsEachParcelSeparately() {
         // Arrange
         List<List<Character>> content1 = List.of(
                 List.of('a', 'b'),
@@ -41,9 +41,9 @@ class TxtParcelsViewTest {
         List<Parcel> parcels = List.of(parcel1, parcel2);
 
         // Act
-        String result = new TxtParcelsView().getOutputData(parcels);
+        String result = new TxtParcelsView().buildOutputData(parcels);
 
         // Assert
-        assertEquals("name: Посылка тип a\ncontent: \nab\ncd\n\nname: Посылка тип e\ncontent: \nef\ngh", result); // Проверяем вывод для нескольких боксов
+        assertThat(result).isEqualTo("name: Посылка тип a\ncontent: \nab\ncd\n\nname: Посылка тип e\ncontent: \nef\ngh"); // Проверяем вывод для нескольких боксов
     }
 }

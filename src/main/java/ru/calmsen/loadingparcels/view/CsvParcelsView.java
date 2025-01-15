@@ -15,7 +15,7 @@ public class CsvParcelsView implements ParcelsView {
      * @return данные в виде csv
      */
     @Override
-    public String getOutputData(List<Parcel> parcels) {
+    public String buildOutputData(List<Parcel> parcels) {
         var output = new StringBuilder("Имя;Форма;Символ");
         for (Parcel parcel : parcels) {
             output.append("\n").append(parcel.getName());

@@ -14,7 +14,7 @@ import java.util.Map;
  * Погрузка по одной посылке.
  */
 @Slf4j
-public class OneParcelLoadingAlgorithm implements LoadingAlgorithm {
+public class OneParcelLoadingAlgorithm extends LoadingAlgorithm {
     private final LoadingMode mode = LoadingMode.ONEPARCEL;
 
     @Override
@@ -34,25 +34,20 @@ public class OneParcelLoadingAlgorithm implements LoadingAlgorithm {
             return;
         }
 
-        TruckLoaderHelper.checkMinTrucksCountBeforeLoad(parcels, trucks);
+        checkMinTrucksCountBeforeLoad(parcels, trucks);
 
-        Map<Truck, boolean[][]> filledPlaces = new HashMap<>();
-        for (Truck truck : trucks) {
-            filledPlaces.put(truck, new boolean[truck.getHeight()][truck.getWidth()]);
-        }
-
+        var filledPlaces = createFilledPlaces(trucks);
         for (Parcel parcel : parcels) {
             var parcelLoaded = false;
 
-            // добавляем только если есть пустые машины
-            var emptyTrucks = trucks.stream().filter(Truck::isEmpty).toList();
+            var emptyTrucks = findEmptyTrucks(trucks);
             if (emptyTrucks.isEmpty()) {
                 break;
             }
 
             for (Truck currentTruck : emptyTrucks) {
-                if (TruckLoaderHelper.canLoadParcel(parcel, currentTruck, filledPlaces.get(currentTruck))) {
-                    TruckLoaderHelper.loadParcel(parcel, currentTruck, filledPlaces.get(currentTruck));
+                if (canLoadParcel(parcel, currentTruck, filledPlaces.get(currentTruck))) {
+                    loadParcel(parcel, currentTruck, filledPlaces.get(currentTruck));
                     parcelLoaded = true;
                     break;
                 }
@@ -63,6 +58,10 @@ public class OneParcelLoadingAlgorithm implements LoadingAlgorithm {
             }
         }
 
-        TruckLoaderHelper.checkMinTrucksCountAfterLoad(parcels, trucks);
+        checkMinTrucksCountAfterLoad(parcels, trucks);
+    }
+
+    private List<Truck> findEmptyTrucks(List<Truck> trucks) {
+        return trucks.stream().filter(Truck::isEmpty).toList();
     }
 }

@@ -15,11 +15,7 @@ public enum ViewFormat {
      * @return перечисление
      */
     public static ViewFormat fromString(String value) {
-        try {
-            return valueOf(value.toUpperCase());
-        } catch (Exception e) {
-            return TXT;
-        }
+        return valueOf(value.toUpperCase());
     }
 
     /**

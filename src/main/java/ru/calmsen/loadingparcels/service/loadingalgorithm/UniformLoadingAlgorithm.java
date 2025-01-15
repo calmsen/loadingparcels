@@ -10,13 +10,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Равномерная погрузка посылок.
  */
 @Slf4j
-public class UniformLoadingAlgorithm implements LoadingAlgorithm {
+public class UniformLoadingAlgorithm extends LoadingAlgorithm {
     private final LoadingMode mode = LoadingMode.UNIFORM;
 
     @Override
@@ -36,22 +35,20 @@ public class UniformLoadingAlgorithm implements LoadingAlgorithm {
             return;
         }
 
-        TruckLoaderHelper.checkMinTrucksCountBeforeLoad(parcels, trucks);
+        checkMinTrucksCountBeforeLoad(parcels, trucks);
 
         Map<Truck, boolean[][]> filledPlaces = new HashMap<>();
         for (Truck truck : trucks) {
             filledPlaces.put(truck, new boolean[truck.getHeight()][truck.getWidth()]);
         }
 
-        // отсортируем коробки по размерности от большего к меньшему
-        parcels = parcels.stream().sorted(Comparator.comparingInt(Parcel::getDimensions).reversed()).collect(Collectors.toList());
+        parcels = sortParcelsByDimension(parcels);
         for (Parcel parcel : parcels) {
             var parcelLoaded = false;
 
-            // отсортируем машины по заполненности от меньшего к большему
-            for (Truck currentTruck : trucks.stream().sorted(Comparator.comparingInt(Truck::getFilledPlaces)).toList()) {
-                if (TruckLoaderHelper.canLoadParcel(parcel, currentTruck, filledPlaces.get(currentTruck))) {
-                    TruckLoaderHelper.loadParcel(parcel, currentTruck, filledPlaces.get(currentTruck));
+            for (Truck currentTruck : sortTrucksByFilledPlaces(trucks)) {
+                if (canLoadParcel(parcel, currentTruck, filledPlaces.get(currentTruck))) {
+                    loadParcel(parcel, currentTruck, filledPlaces.get(currentTruck));
                     parcelLoaded = true;
                     break;
                 }
@@ -62,6 +59,16 @@ public class UniformLoadingAlgorithm implements LoadingAlgorithm {
             }
         }
 
-        TruckLoaderHelper.checkMinTrucksCountAfterLoad(parcels, trucks);
+        checkMinTrucksCountAfterLoad(parcels, trucks);
+    }
+
+    /**
+     * Отсортируем машины по заполненности от большего к меньшему
+     *
+     * @param trucks список машин
+     * @return список машин
+     */
+    private List<Truck> sortTrucksByFilledPlaces(List<Truck> trucks) {
+        return trucks.stream().sorted(Comparator.comparingInt(Truck::getFilledPlaces)).toList();
     }
 }

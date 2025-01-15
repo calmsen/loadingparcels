@@ -20,14 +20,7 @@ public class LoadingParcelsConsole {
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
             var result = parcelsController.handleCommand(command);
-
-            if (result.data() != null){
-                write(result.data());
-            }
-
-            if (result.error() != null){
-                write(result.error());
-            }
+            write(result.hasError() ? result.error() : result.data());
 
             write("Введите команду / по умолчанию " + ParcelsController.DEFAULT_COMMAND);
         }

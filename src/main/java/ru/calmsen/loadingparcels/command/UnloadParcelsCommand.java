@@ -49,7 +49,7 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
         var factoryContext = ParcelsViewFactory.Context.builder()
                 .withCount(context.withCount)
                 .build();
-        return parcelsViewFactory.createView(viewFormat, factoryContext).getOutputData(parcels);
+        return parcelsViewFactory.createView(viewFormat, factoryContext).buildOutputData(parcels);
     }
 
     private void writeOutputData(String fileName, String output) {

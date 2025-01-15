@@ -60,7 +60,7 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
 
     private String getOutputData(Context context, List<Truck> trucks) {
         var viewFormat = ViewFormat.redefineFormat(context.outFile, context.viewFormat);
-        return trucksViewFactory.createView(viewFormat).getOutputData(trucks);
+        return trucksViewFactory.createView(viewFormat).buildOutputData(trucks);
     }
 
     private void writeOutputData(String fileName, String output) {

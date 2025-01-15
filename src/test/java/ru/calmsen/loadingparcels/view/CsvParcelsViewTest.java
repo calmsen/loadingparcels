@@ -5,11 +5,11 @@ import ru.calmsen.loadingparcels.model.domain.Parcel;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CsvParcelsViewTest {
     @Test
-    void getOutputData_SingleParcel_CorrectlyFormatsOutput() {
+    void buildOutputData_SingleParcel_CorrectlyFormatsOutput() {
         // Arrange
         List<List<Character>> content = List.of(
                 List.of('a', 'b'),
@@ -19,14 +19,14 @@ class CsvParcelsViewTest {
         List<Parcel> parcels = List.of(singleParcel);
 
         // Act
-        String result = new CsvParcelsView().getOutputData(parcels);
+        String result = new CsvParcelsView().buildOutputData(parcels);
 
         // Assert
-        assertEquals("Имя;Форма;Символ\nПосылка тип a;xx\\nxx;a", result); // Проверяем вывод для одного бокса
+        assertThat("Имя;Форма;Символ\nПосылка тип a;xx\\nxx;a").isEqualTo(result); // Проверяем вывод для одного бокса
     }
 
     @Test
-    void getOutputData_MultipleParcels_FormatsEachParcelSeparately() {
+    void buildOutputData_MultipleParcels_FormatsEachParcelSeparately() {
         // Arrange
         List<List<Character>> content1 = List.of(
                 List.of('a', 'b'),
@@ -41,9 +41,9 @@ class CsvParcelsViewTest {
         List<Parcel> parcels = List.of(parcel1, parcel2);
 
         // Act
-        String result = new CsvParcelsView().getOutputData(parcels);
+        String result = new CsvParcelsView().buildOutputData(parcels);
 
         // Assert
-        assertEquals("Имя;Форма;Символ\nПосылка тип a;xx\\nxx;a\nПосылка тип e;xx\\nxx;e", result); // Проверяем вывод для нескольких боксов
+        assertThat("Имя;Форма;Символ\nПосылка тип a;xx\\nxx;a\nПосылка тип e;xx\\nxx;e").isEqualTo(result); // Проверяем вывод для нескольких боксов
     }
 }

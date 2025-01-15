@@ -26,18 +26,20 @@ public class ParcelsController {
             command = DEFAULT_COMMAND;
         }
 
-        var foundCommand = commandProvider.findCommand(command);
-        if (foundCommand.isPresent()) {
-            try {
-                var result = foundCommand.get().handle(command);
-                return new ResultWrapper(result, null);
-            } catch (BusinessException e) {
-                return new ResultWrapper(null, e.getMessage());
-            } catch (Exception e) {
-                log.error("При выполнении команды {} произошла ошибка", command, e);
-            }
-        }
-
-        return new ResultWrapper(null, null);
+        var finalCommand = command;
+        return commandProvider.findCommand(finalCommand)
+                .map(x -> {
+                    try {
+                        var result = x.handle(finalCommand);
+                        return new ResultWrapper(result, null);
+                    } catch (BusinessException e) {
+                        return new ResultWrapper(null, e.getMessage());
+                    } catch (Exception e) {
+                        var errorMessage = String.format("При выполнении команды %s произошла ошибка", finalCommand);
+                        log.error(errorMessage, e);
+                        return new ResultWrapper(null, errorMessage);
+                    }
+                })
+                .orElse(new ResultWrapper(null, String.format("Такой команды нет: %s", finalCommand)));
     }
 }

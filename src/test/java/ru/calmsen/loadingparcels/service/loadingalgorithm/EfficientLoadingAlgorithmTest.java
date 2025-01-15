@@ -80,7 +80,7 @@ class EfficientLoadingAlgorithmTest {
 
         List<Truck> trucks = LoadingAlgorithmTestHelper.createTrucks(trucksCount, truckWidth, truckHeight);
 
-        // Act & Assert
+        // Act
         Throwable thrown = catchThrowable(() -> algorithm.loadParcels(parcels, trucks));
 
         // Assert
