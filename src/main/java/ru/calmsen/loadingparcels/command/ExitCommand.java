@@ -1,13 +1,17 @@
 package ru.calmsen.loadingparcels.command;
 
-public class ExitCommand implements Command {
+/**
+ * Команда выхода из приложения.
+ */
+public class ExitCommand extends Command<Void> {
     @Override
-    public boolean isMatch(String command) {
-        return command.equals("exit");
+    protected String getName() {
+        return "exit";
     }
 
     @Override
-    public void execute(CommandContext context) {
+    protected String execute(Void unused) {
         System.exit(0);
+        return null;
     }
 }

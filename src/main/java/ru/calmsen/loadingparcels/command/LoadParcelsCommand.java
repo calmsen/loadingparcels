@@ -1,68 +1,90 @@
 package ru.calmsen.loadingparcels.command;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.mapper.LoadParcelsContextMapper;
+import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
-import ru.calmsen.loadingparcels.model.domain.enums.OutputType;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.util.OutputDataWriterFactory;
-import ru.calmsen.loadingparcels.view.TrucksViewFactory;
+import ru.calmsen.loadingparcels.util.FileWriter;
+import ru.calmsen.loadingparcels.view.factory.DefaultTrucksViewFactory;
 
+import java.util.List;
+
+/**
+ * Команда погрузки машин.
+ */
 @Slf4j
 @RequiredArgsConstructor
-public class LoadParcelsCommand implements Command {
+public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     private final ParcelsService parcelsService;
-    private final TrucksViewFactory trucksViewFactory;
-    private final OutputDataWriterFactory outputDataWriterFactory;
+    private final DefaultTrucksViewFactory trucksViewFactory;
+    private final FileWriter fileWriter;
+    private final LoadParcelsContextMapper contextMapper;
 
     @Override
-    public boolean isMatch(String command) {
-        return command.startsWith("load");
+    protected String getName() {
+        return "load";
     }
 
     @Override
-    public void execute(CommandContext context) {
-        var outputFileName = getOutputFileName(context);
-        // переопределим параметр для формата по умолчанию
-        var defaultFormat = outputFileName.isBlank() ? ViewFormat.TXT : ViewFormat.JSON;
+    protected String execute(Context context) {
+        log.info("Начало погрузки посылок из файла");
+        var trucks = loadTrucks(context);
+        var output = getOutputData(context, filterEmptyTrucks(trucks));
+        writeOutputData(context.outFile, output);
+        log.info("Погрузка посылок успешно завершена");
+        return output;
+    }
 
-        var inputFileName = getInputFileName(context);
-        var loadingMode = getLoadingMode(context);
-        var viewFormat = getViewFormat(context, defaultFormat);
-        var trucksCount = getTrucksCount(context);
+    @Override
+    protected Context toContext(String command) {
+        return contextMapper.toContext(toMap(command));
+    }
 
+    private List<Truck> filterEmptyTrucks(List<Truck> trucks) {
+        return trucks.stream().filter(x -> !x.isEmpty()).toList();
+    }
 
-        log.info("Начало погрузки посылок из файла {}", inputFileName);
-        var trucks = parcelsService.loadParcels(inputFileName, loadingMode, trucksCount);
-        var output = trucksViewFactory.createView(viewFormat).getOutputData(trucks);
-        writeOutputData(outputFileName, output);
-        log.info("Погрузка посылок из файла {} успешно завершена", inputFileName);
+    private List<Truck> loadTrucks(Context context) {
+        if (context.trucks == null || context.trucks.isEmpty()) {
+            return List.of();
+        }
+
+        if (context.parcelNames != null && !context.parcelNames.isEmpty()) {
+            parcelsService.loadParcels(context.parcelNames, context.loadingMode, context.trucks);
+        }
+        else {
+            parcelsService.loadParcels(context.inFile, context.loadingMode, context.trucks);
+        }
+
+        return context.trucks;
+    }
+
+    private String getOutputData(Context context, List<Truck> trucks) {
+        var viewFormat = ViewFormat.redefineFormat(context.outFile, context.viewFormat);
+        return trucksViewFactory.createView(viewFormat).buildOutputData(trucks);
     }
 
     private void writeOutputData(String fileName, String output) {
-        var outputType = fileName.isBlank() ? OutputType.CONSOLE : OutputType.FILE;
-        outputDataWriterFactory.create(outputType, fileName).write(output);
+        if (fileName == null) {
+            return;
+        }
+
+        fileWriter.write(fileName, output);
     }
 
-    private String getInputFileName(CommandContext context) {
-        return context.getArgValue("load", "input.txt");
-    }
-
-    private String getOutputFileName(CommandContext context) {
-        return context.getArgValueIfFound("--out", "trucks.json");
-    }
-
-    private LoadingMode getLoadingMode(CommandContext context) {
-        return LoadingMode.fromString(context.getArgValue("--mode", "onebox"));
-    }
-
-    private ViewFormat getViewFormat(CommandContext context, ViewFormat defaultFormat) {
-        return ViewFormat.fromString(context.getArgValue("--format", defaultFormat.toString()));
-    }
-
-    private int getTrucksCount(CommandContext context) {
-        var count = context.getArgValue("--count", "10");
-        return Integer.parseInt(count);
+    @Getter
+    @Setter
+    public static class Context {
+        private String inFile;
+        private String outFile;
+        private LoadingMode loadingMode;
+        private ViewFormat viewFormat;
+        private List<Truck> trucks;
+        private List<String> parcelNames;
     }
 }

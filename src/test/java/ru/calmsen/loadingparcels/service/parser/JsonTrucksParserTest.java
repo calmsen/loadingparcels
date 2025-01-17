@@ -11,11 +11,11 @@ import static org.mockito.Mockito.when;
 class JsonTrucksParserTest {
 
     @Test
-    void parseTrucksFromFile_parseOneTruckWithBox_returnOneTruckWithBox() {
+    void parseTrucksFromFile_parseOneTruckWithParcel_returnOneTruckWithParcel() {
         // Arrange
         var fileReader = Mockito.mock(FileReader.class);
         when(fileReader.readString("test.json"))
-                .thenReturn("[{\"width\":8,\"height\":8,\"boxes\":[{\"box\":{\"width\":3,\"height\":3,\"dimensions\":9},\"positionX\":3,\"positionY\":3}]}]");
+                .thenReturn("[{\"width\":8,\"height\":8,\"parcels\":[{\"parcel\":{\"width\":3,\"height\":3,\"dimensions\":9,\"form\":\"xxx\nxxx\nxxx\"},\"positionX\":3,\"positionY\":3}]}]");
         var parser = new JsonTrucksParser(fileReader, new TrucksMapperImpl());
 
         // Act
@@ -28,17 +28,17 @@ class JsonTrucksParserTest {
         assertThat(truck.getWidth()).isEqualTo(8);
         assertThat(truck.getHeight()).isEqualTo(8);
 
-        var boxes = truck.getBoxes();
-        assertThat(boxes).isNotNull().hasSize(1);
-        var box = boxes.getFirst();
-        assertThat(box).isNotNull();
-        assertThat(box.getPositionX()).isEqualTo(3);
-        assertThat(box.getPositionY()).isEqualTo(3);
+        var parcels = truck.getParcels();
+        assertThat(parcels).isNotNull().hasSize(1);
+        var parcel = parcels.getFirst();
+        assertThat(parcel).isNotNull();
+        assertThat(parcel.getPositionX()).isEqualTo(3);
+        assertThat(parcel.getPositionY()).isEqualTo(3);
 
-        var boxDetails = box.getBox();
-        assertThat(boxDetails).isNotNull();
-        assertThat(boxDetails.getWidth()).isEqualTo(3);
-        assertThat(boxDetails.getHeight()).isEqualTo(3);
-        assertThat(boxDetails.getDimensions()).isEqualTo(9);
+        var parcelDetails = parcel.getParcel();
+        assertThat(parcelDetails).isNotNull();
+        assertThat(parcelDetails.getWidth()).isEqualTo(3);
+        assertThat(parcelDetails.getHeight()).isEqualTo(3);
+        assertThat(parcelDetails.getDimensions()).isEqualTo(9);
     }
 }

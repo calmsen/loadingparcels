@@ -1,0 +1,434 @@
+[
+  {
+    "width": 6,
+    "height": 6,
+    "parcels": [
+      {
+        "parcel": {
+          "width": 3,
+          "height": 3,
+          "form": "xxx\nxxx\nxxx",
+          "dimensions": 9,
+          "symbol": "9",
+          "name": "Посылка тип 9"
+        },
+        "positionX": 0,
+        "positionY": 0
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 3,
+          "form": "xxx\nxxx\nxxx",
+          "dimensions": 9,
+          "symbol": "9",
+          "name": "Посылка тип 9"
+        },
+        "positionX": 3,
+        "positionY": 0
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 3,
+          "form": "xxx\nxxx\nxxx",
+          "dimensions": 9,
+          "symbol": "9",
+          "name": "Посылка тип 9"
+        },
+        "positionX": 0,
+        "positionY": 3
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 2,
+          "form": "xxx\nxxx",
+          "dimensions": 6,
+          "symbol": "6",
+          "name": "Посылка тип 6"
+        },
+        "positionX": 3,
+        "positionY": 3
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 1,
+          "form": "xxx",
+          "dimensions": 3,
+          "symbol": "3",
+          "name": "Посылка тип 3"
+        },
+        "positionX": 3,
+        "positionY": 5
+      }
+    ]
+  },
+  {
+    "width": 6,
+    "height": 6,
+    "parcels": [
+      {
+        "parcel": {
+          "width": 4,
+          "height": 2,
+          "form": "xxxx\nxxxx",
+          "dimensions": 8,
+          "symbol": "8",
+          "name": "Посылка тип 8"
+        },
+        "positionX": 0,
+        "positionY": 0
+      },
+      {
+        "parcel": {
+          "width": 4,
+          "height": 2,
+          "form": "xxxx\nxxxx",
+          "dimensions": 8,
+          "symbol": "8",
+          "name": "Посылка тип 8"
+        },
+        "positionX": 0,
+        "positionY": 2
+      },
+      {
+        "parcel": {
+          "width": 4,
+          "height": 2,
+          "form": "xxx\nxxxx",
+          "dimensions": 7,
+          "symbol": "7",
+          "name": "Посылка тип 7"
+        },
+        "positionX": 0,
+        "positionY": 4
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 1,
+          "form": "xxx",
+          "dimensions": 3,
+          "symbol": "3",
+          "name": "Посылка тип 3"
+        },
+        "positionX": 3,
+        "positionY": 5
+      },
+      {
+        "parcel": {
+          "width": 2,
+          "height": 1,
+          "form": "xx",
+          "dimensions": 2,
+          "symbol": "2",
+          "name": "Посылка тип 2"
+        },
+        "positionX": 4,
+        "positionY": 0
+      },
+      {
+        "parcel": {
+          "width": 1,
+          "height": 1,
+          "form": "x",
+          "dimensions": 1,
+          "symbol": "1",
+          "name": "Посылка тип 1"
+        },
+        "positionX": 4,
+        "positionY": 1
+      },
+      {
+        "parcel": {
+          "width": 1,
+          "height": 1,
+          "form": "x",
+          "dimensions": 1,
+          "symbol": "1",
+          "name": "Посылка тип 1"
+        },
+        "positionX": 5,
+        "positionY": 1
+      },
+      {
+        "parcel": {
+          "width": 1,
+          "height": 1,
+          "form": "x",
+          "dimensions": 1,
+          "symbol": "1",
+          "name": "Посылка тип 1"
+        },
+        "positionX": 4,
+        "positionY": 2
+      }
+    ]
+  },
+  {
+    "width": 6,
+    "height": 6,
+    "parcels": [
+      {
+        "parcel": {
+          "width": 4,
+          "height": 2,
+          "form": "xxx\nxxxx",
+          "dimensions": 7,
+          "symbol": "7",
+          "name": "Посылка тип 7"
+        },
+        "positionX": 0,
+        "positionY": 0
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 2,
+          "form": "xxx\nxxx",
+          "dimensions": 6,
+          "symbol": "6",
+          "name": "Посылка тип 6"
+        },
+        "positionX": 3,
+        "positionY": 1
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 2,
+          "form": "xxx\nxxx",
+          "dimensions": 6,
+          "symbol": "6",
+          "name": "Посылка тип 6"
+        },
+        "positionX": 0,
+        "positionY": 2
+      },
+      {
+        "parcel": {
+          "width": 5,
+          "height": 1,
+          "form": "xxxxx",
+          "dimensions": 5,
+          "symbol": "5",
+          "name": "Посылка тип 5"
+        },
+        "positionX": 0,
+        "positionY": 4
+      },
+      {
+        "parcel": {
+          "width": 5,
+          "height": 1,
+          "form": "xxxxx",
+          "dimensions": 5,
+          "symbol": "5",
+          "name": "Посылка тип 5"
+        },
+        "positionX": 0,
+        "positionY": 5
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 1,
+          "form": "xxx",
+          "dimensions": 3,
+          "symbol": "3",
+          "name": "Посылка тип 3"
+        },
+        "positionX": 3,
+        "positionY": 3
+      },
+      {
+        "parcel": {
+          "width": 2,
+          "height": 1,
+          "form": "xx",
+          "dimensions": 2,
+          "symbol": "2",
+          "name": "Посылка тип 2"
+        },
+        "positionX": 4,
+        "positionY": 0
+      },
+      {
+        "parcel": {
+          "width": 1,
+          "height": 1,
+          "form": "x",
+          "dimensions": 1,
+          "symbol": "1",
+          "name": "Посылка тип 1"
+        },
+        "positionX": 5,
+        "positionY": 4
+      },
+      {
+        "parcel": {
+          "width": 1,
+          "height": 1,
+          "form": "x",
+          "dimensions": 1,
+          "symbol": "1",
+          "name": "Посылка тип 1"
+        },
+        "positionX": 5,
+        "positionY": 5
+      }
+    ]
+  },
+  {
+    "width": 6,
+    "height": 6,
+    "parcels": [
+      {
+        "parcel": {
+          "width": 4,
+          "height": 1,
+          "form": "xxxx",
+          "dimensions": 4,
+          "symbol": "4",
+          "name": "Посылка тип 4"
+        },
+        "positionX": 0,
+        "positionY": 0
+      },
+      {
+        "parcel": {
+          "width": 4,
+          "height": 1,
+          "form": "xxxx",
+          "dimensions": 4,
+          "symbol": "4",
+          "name": "Посылка тип 4"
+        },
+        "positionX": 0,
+        "positionY": 1
+      },
+      {
+        "parcel": {
+          "width": 4,
+          "height": 1,
+          "form": "xxxx",
+          "dimensions": 4,
+          "symbol": "4",
+          "name": "Посылка тип 4"
+        },
+        "positionX": 0,
+        "positionY": 2
+      },
+      {
+        "parcel": {
+          "width": 4,
+          "height": 1,
+          "form": "xxxx",
+          "dimensions": 4,
+          "symbol": "4",
+          "name": "Посылка тип 4"
+        },
+        "positionX": 0,
+        "positionY": 3
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 1,
+          "form": "xxx",
+          "dimensions": 3,
+          "symbol": "3",
+          "name": "Посылка тип 3"
+        },
+        "positionX": 0,
+        "positionY": 4
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 1,
+          "form": "xxx",
+          "dimensions": 3,
+          "symbol": "3",
+          "name": "Посылка тип 3"
+        },
+        "positionX": 3,
+        "positionY": 4
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 1,
+          "form": "xxx",
+          "dimensions": 3,
+          "symbol": "3",
+          "name": "Посылка тип 3"
+        },
+        "positionX": 0,
+        "positionY": 5
+      },
+      {
+        "parcel": {
+          "width": 3,
+          "height": 1,
+          "form": "xxx",
+          "dimensions": 3,
+          "symbol": "3",
+          "name": "Посылка тип 3"
+        },
+        "positionX": 3,
+        "positionY": 5
+      },
+      {
+        "parcel": {
+          "width": 2,
+          "height": 1,
+          "form": "xx",
+          "dimensions": 2,
+          "symbol": "2",
+          "name": "Посылка тип 2"
+        },
+        "positionX": 4,
+        "positionY": 0
+      },
+      {
+        "parcel": {
+          "width": 2,
+          "height": 1,
+          "form": "xx",
+          "dimensions": 2,
+          "symbol": "2",
+          "name": "Посылка тип 2"
+        },
+        "positionX": 4,
+        "positionY": 1
+      },
+      {
+        "parcel": {
+          "width": 2,
+          "height": 1,
+          "form": "xx",
+          "dimensions": 2,
+          "symbol": "2",
+          "name": "Посылка тип 2"
+        },
+        "positionX": 4,
+        "positionY": 2
+      },
+      {
+        "parcel": {
+          "width": 2,
+          "height": 1,
+          "form": "xx",
+          "dimensions": 2,
+          "symbol": "2",
+          "name": "Посылка тип 2"
+        },
+        "positionX": 4,
+        "positionY": 3
+      }
+    ]
+  }
+]

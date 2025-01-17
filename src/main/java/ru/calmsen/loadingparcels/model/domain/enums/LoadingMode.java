@@ -1,10 +1,13 @@
 package ru.calmsen.loadingparcels.model.domain.enums;
 
+/**
+ * Тип погрузки
+ */
 public enum LoadingMode {
     /**
      * Погрузка по одной посылке.
      */
-    ONEBOX,
+    ONEPARCEL,
     /**
      * Простая погрузка посылок.
      */
@@ -18,11 +21,13 @@ public enum LoadingMode {
      */
     EFFICIENT;
 
+    /**
+     * Преобразует строковое значение в перечисление. Не зависит от регистра. В случае ошибки возвращается ONEPARCEL.
+     *
+     * @param value строковое представление
+     * @return перечисление
+     */
     public static LoadingMode fromString(String value) {
-        try {
-            return valueOf(value.toUpperCase());
-        } catch (Exception e) {
-            return LoadingMode.EFFICIENT;
-        }
+        return valueOf(value.toUpperCase());
     }
 }

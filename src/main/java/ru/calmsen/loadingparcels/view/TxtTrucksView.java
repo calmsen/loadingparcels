@@ -4,8 +4,17 @@ import ru.calmsen.loadingparcels.model.domain.Truck;
 
 import java.util.List;
 
+/**
+ * Текстовое представление для списка машин
+ */
 public class TxtTrucksView implements TrucksView {
-    public String getOutputData(List<Truck> trucks) {
+    /**
+     * Возвращает данные для представления списка машин в txt.
+     *
+     * @param trucks список машин
+     * @return данные в виде txt
+     */
+    public String buildOutputData(List<Truck> trucks) {
         var output = new StringBuilder();
         for (var truck : trucks) {
             // заполним все пространство пробелами
@@ -17,18 +26,24 @@ public class TxtTrucksView implements TrucksView {
             }
 
             // заполним пространство посылками
-            for (var box : truck.getBoxes()) {
-                var y = truck.getHeight() - 1 - box.getPositionY();//переворачиваем
-                var x = box.getPositionX();
-                for (int i = box.getBox().getHeight() - 1, currenY = y; i >= 0; i--, currenY--) {
-                    for (int j = 0, currentX = x; j < box.getBox().getWidth(i); j++, currentX++) {
-                        content[currenY][currentX] = box.getBox().getContent().get(i).get(j);
+            for (var parcel : truck.getParcels()) {
+                var y = truck.getHeight() - 1 - parcel.getPositionY();//переворачиваем
+                var x = parcel.getPositionX();
+                for (int i = parcel.getParcel().getHeight() - 1, currenY = y; i >= 0; i--, currenY--) {
+                    for (int j = 0, currentX = x; j < parcel.getParcel().getWidth(i); j++, currentX++) {
+                        if (parcel.getParcel().getContent().get(i).get(j) == ' '){
+                            continue;
+                        }
+                        content[currenY][currentX] = parcel.getParcel().getContent().get(i).get(j);
                     }
                 }
             }
 
             // передадим содержимое на вывод
-            output.append("\n\n");
+            if (!output.isEmpty()) {
+                output.append("\n\n");
+            }
+
             for (var row : content) {
                 output.append("+").append(new String(row)).append("+").append("\n");
             }

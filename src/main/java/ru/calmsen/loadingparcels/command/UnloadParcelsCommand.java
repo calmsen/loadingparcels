@@ -1,45 +1,71 @@
 package ru.calmsen.loadingparcels.command;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import ru.calmsen.loadingparcels.model.domain.enums.OutputType;
+import ru.calmsen.loadingparcels.mapper.UnloadParcelsContextMapper;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.util.OutputDataWriterFactory;
-import ru.calmsen.loadingparcels.view.TxtParcelsView;
+import ru.calmsen.loadingparcels.util.FileWriter;
+import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
 
+import java.util.List;
+
+/**
+ * Команда разгрузки машин.
+ */
 @Slf4j
 @RequiredArgsConstructor
-public class UnloadParcelsCommand implements Command {
+public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> {
     private final ParcelsService parcelsService;
-    private final TxtParcelsView txtParcelsView;
-    private final OutputDataWriterFactory outputDataWriterFactory;
+    private final ParcelsViewFactory parcelsViewFactory;
+    private final FileWriter fileWriter;
+    private final UnloadParcelsContextMapper contextMapper;
 
     @Override
-    public boolean isMatch(String command) {
-        return command.startsWith("unload");
+    protected String getName() {
+        return "unload";
     }
 
     @Override
-    public void execute(CommandContext context) {
-        var inputFileName = getInputFileName(context);
-        var outputFileName = getOutputFileName(context);
-        log.info("Начало разгрузки посылок из файла {}", inputFileName);
-        var boxes = parcelsService.unloadTrucks(inputFileName);
-        var output = txtParcelsView.getOutputData(boxes);
-        writeOutputData(outputFileName, output);
-        log.info("Разгрузка посылок из файла {} успешно завершена", inputFileName);
+    protected String execute(Context context) {
+        log.info("Начало разгрузки посылок из файла {}", context.inFile);
+        var parcels = parcelsService.unloadTrucks(context.inFile);
+        var output = getOutputData(context, parcels);
+        writeOutputData(context.outFile, output);
+        log.info("Разгрузка посылок из файла {} успешно завершена", context.inFile);
+        return output;
+    }
+
+    @Override
+    protected Context toContext(String command) {
+        return contextMapper.toContext(toMap(command));
+    }
+
+    private String getOutputData(Context context, List<Parcel> parcels) {
+        var viewFormat = ViewFormat.redefineFormat(context.outFile, context.viewFormat);
+        var factoryContext = ParcelsViewFactory.Context.builder()
+                .withCount(context.withCount)
+                .build();
+        return parcelsViewFactory.createView(viewFormat, factoryContext).buildOutputData(parcels);
     }
 
     private void writeOutputData(String fileName, String output) {
-        var outputType = fileName.isBlank() ? OutputType.CONSOLE : OutputType.FILE;
-        outputDataWriterFactory.create(outputType, fileName).write(output);
+        if (fileName == null) {
+            return;
+        }
+
+        fileWriter.write(fileName, output);
     }
 
-    private String getInputFileName(CommandContext context) {
-        return context.getArgValue("unload", "trucks.json");
-    }
-
-    private String getOutputFileName(CommandContext context) {
-        return context.getArgValue("--out", "parcels.txt");
+    @Getter
+    @Setter
+    public static class Context {
+        private String inFile;
+        private String outFile;
+        private ViewFormat viewFormat;
+        private boolean withCount;
     }
 }

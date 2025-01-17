@@ -1,23 +1,22 @@
 package ru.calmsen.loadingparcels.view;
 
 import org.junit.jupiter.api.Test;
-import ru.calmsen.loadingparcels.model.domain.Box;
-import ru.calmsen.loadingparcels.model.domain.PlacedBox;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TxtTrucksViewTest {
     @Test
     void shouldShowEmptyTruck() {
         var view = new TxtTrucksView();
         var trucks = List.of(new Truck(6, 6));
-        var result = view.getOutputData(trucks);
+        var result = view.buildOutputData(trucks);
 
         var expectedOutput = String.join("\n",
-                "\n",
                 "+      +",
                 "+      +",
                 "+      +",
@@ -27,27 +26,26 @@ class TxtTrucksViewTest {
                 "++++++++"
         );
 
-        assertEquals(expectedOutput, result);
+        assertThat(result).isEqualTo(expectedOutput);
     }
 
     @Test
     void shouldShowLoadedTruck() {
         var truck = new Truck(6, 6);
-        var box = new Box(List.of(
+        var parcel = new Parcel(List.of(
                 List.of('9', '9', '9'),
                 List.of('9', '9', '9'),
                 List.of('9', '9', '9')
         ));
-        truck.loadBox(new PlacedBox(box, 0, 0));
-        box = new Box(List.of(
+        truck.loadParcel(new PlacedParcel(parcel, 0, 0));
+        parcel = new Parcel(List.of(
                 List.of('3', '3', '3')
         ));
-        truck.loadBox(new PlacedBox(box, 3, 0));
+        truck.loadParcel(new PlacedParcel(parcel, 3, 0));
         var view = new TxtTrucksView();
-        var result = view.getOutputData(List.of(truck));
+        var result = view.buildOutputData(List.of(truck));
 
         var expectedOutput = String.join("\n",
-                "\n",
                 "+      +",
                 "+      +",
                 "+      +",
@@ -57,29 +55,28 @@ class TxtTrucksViewTest {
                 "++++++++"
         );
 
-        assertEquals(expectedOutput, result);
+        assertThat(result).isEqualTo(expectedOutput);
     }
 
     @Test
     void shouldShowMultipleTrucks() {
-        Box box1 = new Box(List.of(
+        Parcel parcel1 = new Parcel(List.of(
                 List.of('2', '2')
         ));
 
-        var box2 = new Box(List.of(
+        var parcel2 = new Parcel(List.of(
                 List.of('6', '6', '6'),
                 List.of('6', '6', '6')
         ));
 
         var trucks = List.of(
-                new Truck(6, 6, new PlacedBox(box1)),
-                new Truck(6, 6, new PlacedBox(box2))
+                new Truck(6, 6, new PlacedParcel(parcel1)),
+                new Truck(6, 6, new PlacedParcel(parcel2))
         );
         var view = new TxtTrucksView();
-        var result = view.getOutputData(trucks);
+        var result = view.buildOutputData(trucks);
 
         var expectedOutput = String.join("\n",
-                "\n",
                 "+      +",
                 "+      +",
                 "+      +",
@@ -97,6 +94,6 @@ class TxtTrucksViewTest {
                 "++++++++"
         );
 
-        assertEquals(expectedOutput, result);
+        assertThat(result).isEqualTo(expectedOutput);
     }
 }

@@ -5,12 +5,21 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Провайдер команды.
+ */
 @RequiredArgsConstructor
 public class CommandProvider {
-    private final List<Command> commands;
+    private final List<Command<?>> commands;
 
-    public Optional<Command> findCommand(String targetCommand) {
-        for (Command command : commands) {
+    /**
+     * Находит первую команду, перебирая все зарегистрированные команды на совпадение с командной строкой.
+     *
+     * @param targetCommand командная строка
+     * @return контейнер с командой или пустой контейнер
+     */
+    public Optional<Command<?>> findCommand(String targetCommand) {
+        for (Command<?> command : commands) {
             if (command.isMatch(targetCommand)) {
                 return Optional.of(command);
             }

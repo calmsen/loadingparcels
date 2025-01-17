@@ -1,13 +1,26 @@
 package ru.calmsen.loadingparcels.validator;
 
-import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Проверяет корректность посылок, доступных при инициализации приложения.
+ */
 public class ParcelValidator {
-    public List<String> validate(Box parcel) {
+    private static boolean isParcelEmpty(Parcel parcel) {
+        return parcel == null || parcel.getContent().isEmpty() || parcel.getContent().stream().anyMatch(List::isEmpty);
+    }
+
+    /**
+     * Проверяет посылку
+     *
+     * @param parcel объект посылки
+     * @return список ошибок
+     */
+    public List<String> validate(Parcel parcel) {
         var errors = new ArrayList<String>();
 
         if (isParcelEmpty(parcel)) {
@@ -30,17 +43,13 @@ public class ParcelValidator {
         return errors;
     }
 
-    private static boolean isParcelEmpty(Box parcel) {
-        return parcel == null || parcel.getContent().isEmpty() || parcel.getContent().stream().anyMatch(List::isEmpty);
-    }
-
-    private boolean isAllDigitSymbols(Box parcel) {
+    private boolean isAllDigitSymbols(Parcel parcel) {
         return parcel.getContent().stream()
                 .flatMap(Collection::stream)
                 .allMatch(x -> x >= '1' && x <= '9');
     }
 
-    private boolean isAllDigitsTheSame(Box parcel) {
+    private boolean isAllDigitsTheSame(Parcel parcel) {
         var firstSymbol = parcel.getContent().getFirst().getFirst();
         return parcel.getContent().stream()
                 .flatMap(Collection::stream)
@@ -48,7 +57,7 @@ public class ParcelValidator {
     }
 
 
-    private boolean isDimensionsEqualsFirstDigit(Box parcel) {
+    private boolean isDimensionsEqualsFirstDigit(Parcel parcel) {
         var firstSymbol = parcel.getContent().getFirst().getFirst();
         var isValidDimensions = parcel.getDimensions() == (firstSymbol - '0');
         if (!isValidDimensions) {

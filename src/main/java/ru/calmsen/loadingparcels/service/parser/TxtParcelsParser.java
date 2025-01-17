@@ -2,29 +2,39 @@ package ru.calmsen.loadingparcels.service.parser;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.calmsen.loadingparcels.model.domain.Box;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.util.FileReader;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Парсит из текстового файла список посылок.
+ */
 @Slf4j
 @RequiredArgsConstructor
-public class TxtParcelsParser {
+public class TxtParcelsParser implements ParcelsParser {
     private final FileReader fileReader;
 
-    public List<Box> parseParcelsFromFile(String fileName) {
+    /**
+     * Парсит из текстового файла список посылок.
+     *
+     * @param fileName наименование файла.
+     * @return список посылок
+     */
+    @Override
+    public List<Parcel> parseParcelsFromFile(String fileName) {
         var lines = fileReader.readAllLines(fileName)
                 .stream()
                 .iterator();
-        List<Box> parcels = new ArrayList<>();
+        List<Parcel> parcels = new ArrayList<>();
         var rows = new ArrayList<List<Character>>();
         while (lines.hasNext()) {
             var currentLine = lines.next();
             if (currentLine.isBlank()) {
                 if (!rows.isEmpty()) {
-                    parcels.add(new Box(rows));
+                    parcels.add(new Parcel(rows));
                 }
 
                 rows = new ArrayList<>();
@@ -35,7 +45,7 @@ public class TxtParcelsParser {
         }
 
         if (!rows.isEmpty()) {
-            parcels.add(new Box(rows));
+            parcels.add(new Parcel(rows));
         }
 
 

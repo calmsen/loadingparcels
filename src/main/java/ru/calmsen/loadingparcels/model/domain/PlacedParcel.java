@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Доменная модель размещенной посылки в машине.
+ */
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PlacedBox {
-    private final Box box;
+public class PlacedParcel {
+    private final Parcel parcel;
     @Setter
     private int positionX;
     @Setter

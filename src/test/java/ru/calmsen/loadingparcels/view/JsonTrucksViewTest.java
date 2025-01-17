@@ -3,57 +3,57 @@ package ru.calmsen.loadingparcels.view;
 import com.google.gson.*;
 import org.junit.jupiter.api.Test;
 import ru.calmsen.loadingparcels.mapper.TrucksMapperImpl;
-import ru.calmsen.loadingparcels.model.domain.Box;
-import ru.calmsen.loadingparcels.model.domain.PlacedBox;
+import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JsonTrucksViewTest {
     @Test
-    void getOutputData_emptyTrucks_returnsEmptyArrayInJson() {
+    void buildOutputData_emptyTrucks_returnsEmptyArrayInJson() {
         // Arrange
         var view = new JsonTrucksView(new TrucksMapperImpl());
 
         // Act
-        var result = view.getOutputData(List.of());
+        var result = view.buildOutputData(List.of());
 
         // Assert
-        assertEquals("[]", result);
+        assertThat(result).isEqualTo("[]");
     }
 
     @Test
-    void getOutputData_truckWithEmptyBoxes_returnsEmptyBoxesArrayInJson() {
+    void buildOutputData_truckWithEmptyParcels_returnsEmptyParcelsArrayInJson() {
         // Arrange
         var view = new JsonTrucksView(new TrucksMapperImpl());
         var truck = new Truck(8, 8);
 
         // Act
-        var result = removeWhitespacesUsingGson(view.getOutputData(List.of(truck)));
+        var result = removeWhitespacesUsingGson(view.buildOutputData(List.of(truck)));
 
         // Assert
-        assertEquals("[{\"width\":8,\"height\":8,\"boxes\":[]}]", result);
+        assertThat(result).isEqualTo("[{\"width\":8,\"height\":8,\"parcels\":[]}]");
     }
 
     @Test
-    void getOutputData_truckWithBox_returnsBoxInfoInJson() {
+    void buildOutputData_truckWithParcel_returnsParcelInfoInJson() {
         // Arrange
         var view = new JsonTrucksView(new TrucksMapperImpl());
-        var box = new Box(List.of(
+        var parcel = new Parcel(List.of(
                 List.of('9', '9', '9'),
                 List.of('9', '9', '9'),
                 List.of('9', '9', '9')
         ));
-        var truck = new Truck(8, 8, new PlacedBox(box, 3, 3));
+        var truck = new Truck(8, 8, new PlacedParcel(parcel, 3, 3));
 
         // Act
-        var result = removeWhitespacesUsingGson(view.getOutputData(List.of(truck)));
+        var result = removeWhitespacesUsingGson(view.buildOutputData(List.of(truck)));
 
         // Assert
-        assertEquals("[{\"width\":8,\"height\":8,\"boxes\":[{\"box\":{\"width\":3,\"height\":3,\"dimensions\":9},\"positionX\":3,\"positionY\":3}]}]", result);
+        assertThat(result).isEqualTo("[{\"width\":8,\"height\":8,\"parcels\":[{\"parcel\":{\"width\":3,\"height\":3,\"form\":\"xxx\\nxxx\\nxxx\",\"dimensions\":9,\"symbol\":\"9\",\"name\":\"Посылка тип 9\"},\"positionX\":3,\"positionY\":3}]}]");
     }
 
     private String removeWhitespacesUsingGson(String json) {

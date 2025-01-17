@@ -6,7 +6,16 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 
+/**
+ * Чтение текстового файла
+ */
 public class FileReader {
+    /**
+     * Читает текстовые данные из файла построчно
+     *
+     * @param fileName наименование файла
+     * @return список строк с данными
+     */
     public List<String> readAllLines(String fileName) {
         try {
             return Files.readAllLines(getFile(fileName).toPath());
@@ -15,6 +24,12 @@ public class FileReader {
         }
     }
 
+    /**
+     * Читает текстовые данные из файла
+     *
+     * @param fileName наименование файла
+     * @return текстовые данные из файла
+     */
     public String readString(String fileName) {
         try {
             return Files.readString(getFile(fileName).toPath());
