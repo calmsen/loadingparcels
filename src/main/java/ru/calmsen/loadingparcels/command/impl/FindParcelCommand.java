@@ -1,15 +1,17 @@
-package ru.calmsen.loadingparcels.command;
+package ru.calmsen.loadingparcels.command.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.FindParcelContextMapper;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
 import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Команда поиска посылок.
@@ -27,7 +29,7 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
     }
 
     @Override
-    protected String execute(Context context) {
+    public String execute(Context context) {
         var logMessage = context.parcelName != null
                 ? "Просмотр посылки " + context.parcelName
                 : "Просмотр посылок";
@@ -40,8 +42,8 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
     }
 
     @Override
-    protected Context toContext(String command) {
-        return contextMapper.toContext(toMap(command));
+    protected Context toContext(Map<String, String> map) {
+        return contextMapper.toContext(map);
     }
 
     @Getter

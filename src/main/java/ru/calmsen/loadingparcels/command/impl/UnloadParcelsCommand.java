@@ -1,9 +1,10 @@
-package ru.calmsen.loadingparcels.command;
+package ru.calmsen.loadingparcels.command.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.UnloadParcelsContextMapper;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
@@ -12,6 +13,7 @@ import ru.calmsen.loadingparcels.util.FileWriter;
 import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Команда разгрузки машин.
@@ -30,9 +32,9 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
     }
 
     @Override
-    protected String execute(Context context) {
+    public String execute(Context context) {
         log.info("Начало разгрузки посылок из файла {}", context.inFile);
-        var parcels = parcelsService.unloadTrucks(context.inFile);
+        var parcels = parcelsService.unloadTrucks(context.user, context.inFile);
         var output = getOutputData(context, parcels);
         writeOutputData(context.outFile, output);
         log.info("Разгрузка посылок из файла {} успешно завершена", context.inFile);
@@ -40,8 +42,8 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
     }
 
     @Override
-    protected Context toContext(String command) {
-        return contextMapper.toContext(toMap(command));
+    protected Context toContext(Map<String, String> map) {
+        return contextMapper.toContext(map);
     }
 
     private String getOutputData(Context context, List<Parcel> parcels) {
@@ -67,5 +69,6 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
         private String outFile;
         private ViewFormat viewFormat;
         private boolean withCount;
+        private String user;
     }
 }

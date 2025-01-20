@@ -1,12 +1,13 @@
-package ru.calmsen.loadingparcels.view.factory;
+package ru.calmsen.loadingparcels.view.factory.impl;
 
 import lombok.RequiredArgsConstructor;
 import ru.calmsen.loadingparcels.mapper.ParcelsMapper;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
-import ru.calmsen.loadingparcels.view.CsvParcelsView;
-import ru.calmsen.loadingparcels.view.JsonParcelsView;
+import ru.calmsen.loadingparcels.view.impl.CsvParcelsView;
+import ru.calmsen.loadingparcels.view.impl.JsonParcelsView;
 import ru.calmsen.loadingparcels.view.ParcelsView;
-import ru.calmsen.loadingparcels.view.TxtParcelsView;
+import ru.calmsen.loadingparcels.view.impl.TxtParcelsView;
+import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
 
 /**
  * Фабрика по умолчанию для создания представления для списка посылок

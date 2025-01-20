@@ -1,9 +1,10 @@
-package ru.calmsen.loadingparcels.view;
+package ru.calmsen.loadingparcels.view.impl;
 
 import lombok.RequiredArgsConstructor;
 import ru.calmsen.loadingparcels.mapper.ParcelsMapper;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.util.JsonUtil;
+import ru.calmsen.loadingparcels.view.ParcelsView;
 
 import java.util.List;
 

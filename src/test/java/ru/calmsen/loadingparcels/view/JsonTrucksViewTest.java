@@ -6,6 +6,7 @@ import ru.calmsen.loadingparcels.mapper.TrucksMapperImpl;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
+import ru.calmsen.loadingparcels.view.impl.JsonTrucksView;
 
 import java.lang.reflect.Type;
 import java.util.List;

@@ -1,10 +1,13 @@
-package ru.calmsen.loadingparcels.command;
+package ru.calmsen.loadingparcels.command.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.ParcelsMapper;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.service.ParcelsService;
+
+import java.util.Map;
 
 /**
  * Команда редактирования посылки.
@@ -16,17 +19,12 @@ public class UpdateParcelCommand extends Command<Parcel> {
     private final ParcelsMapper contextMapper;
 
     @Override
-    public boolean isMatch(String command) {
-        return command.startsWith("update");
-    }
-
-    @Override
     protected String getName() {
         return "update";
     }
 
     @Override
-    protected String execute(Parcel parcel) {
+    public String execute(Parcel parcel) {
         log.info("Изменение посылки \"{}\"", parcel.getName());
         parcelsService.updateParcel(parcel);
         log.info("Посылка изменена \n{}", parcel);
@@ -34,7 +32,7 @@ public class UpdateParcelCommand extends Command<Parcel> {
     }
 
     @Override
-    protected Parcel toContext(String command) {
-        return contextMapper.toParcel(toMap(command));
+    protected Parcel toContext(Map<String, String> map) {
+        return contextMapper.toParcel(map);
     }
 }

@@ -3,6 +3,7 @@ package ru.calmsen.loadingparcels.service.parser;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.calmsen.loadingparcels.mapper.TrucksMapperImpl;
+import ru.calmsen.loadingparcels.service.parser.impl.JsonTrucksParser;
 import ru.calmsen.loadingparcels.util.FileReader;
 
 import static org.assertj.core.api.Assertions.assertThat;

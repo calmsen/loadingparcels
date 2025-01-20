@@ -4,6 +4,7 @@ import com.google.gson.*;
 import org.junit.jupiter.api.Test;
 import ru.calmsen.loadingparcels.mapper.ParcelsMapperImpl;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.view.impl.JsonWithCountParcelsView;
 
 import java.lang.reflect.Type;
 import java.util.List;

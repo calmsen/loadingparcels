@@ -18,7 +18,6 @@ import ru.calmsen.loadingparcels.validator.ParcelValidator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Сервис для работы с посылками
@@ -32,6 +31,7 @@ public class ParcelsService {
     private final LoadingAlgorithmFactory loadingAlgorithmFactory;
     private final ParcelsRepository parcelsRepository;
     private final FileReader fileReader;
+    private final BillingsService billingsService;
 
     /**
      * Инициализирует доступный список посылок, расположенных в файле.
@@ -49,44 +49,51 @@ public class ParcelsService {
     /**
      * Загружает посылки в машины. Наименования посылок можно передать в списке или в файле.
      *
+     * @param user идентификатор пользователя
      * @param parcelNames список наименований посылок, разделенных \n
      * @param loadingMode тип погрузки
      * @param trucks      список машин
      */
-    public void loadParcels(List<String> parcelNames, LoadingMode loadingMode, List<Truck> trucks) {
+    public void loadParcels(String user, List<String> parcelNames, LoadingMode loadingMode, List<Truck> trucks) {
         var parcels = findParcels(parcelNames);
 
         var loadingAlgorithm = loadingAlgorithmFactory.Create(loadingMode);
         loadingAlgorithm.loadParcels(parcels, trucks);
+        billingsService.addLoadParcelsBilling(user, trucks);
     }
 
     /**
      * Загружает посылки в машины. Наименования посылок можно передать в списке или в файле.
      *
+     * @param user идентификатор пользователя
      * @param fileName    наименование файла со списком посылок.
      * @param loadingMode тип погрузки
      * @param trucks      список машин
      */
-    public void loadParcels(String fileName, LoadingMode loadingMode, List<Truck> trucks) {
+    public void loadParcels(String user, String fileName, LoadingMode loadingMode, List<Truck> trucks) {
         var parcelNames = fileReader.readAllLines(fileName);
         var parcels = findParcels(parcelNames);
 
         var loadingAlgorithm = loadingAlgorithmFactory.Create(loadingMode);
         loadingAlgorithm.loadParcels(parcels, trucks);
+        billingsService.addLoadParcelsBilling(user, trucks);
     }
 
     /**
      * Разгружает посылки
      *
+     * @param user идентификатор пользователя
      * @param fileName наименование файла со списком загруженных машин
      * @return список посылок
      */
-    public List<Parcel> unloadTrucks(String fileName) {
+    public List<Parcel> unloadTrucks(String user, String fileName) {
         var trucks = trucksParser.parseTrucksFromFile(fileName);
-        return trucks.stream()
+        var parcels = trucks.stream()
                 .flatMap(truck -> truck.getParcels().stream())
                 .map(PlacedParcel::getParcel)
                 .toList();
+        billingsService.addUnloadParcelsBilling(user, trucks);
+        return parcels;
     }
 
     /**

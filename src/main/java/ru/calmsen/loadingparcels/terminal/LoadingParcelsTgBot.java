@@ -8,18 +8,18 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import ru.calmsen.loadingparcels.controller.ParcelsController;
+import ru.calmsen.loadingparcels.command.CommandSender;
 
 @Slf4j
 @RequiredArgsConstructor
 public class LoadingParcelsTgBot extends TelegramLongPollingBot {
     private final String botName;
-    private final ParcelsController parcelsController;
+    private final CommandSender commandSender;
 
-    public LoadingParcelsTgBot(String botToken, String botName, ParcelsController parcelsController) {
+    public LoadingParcelsTgBot(String botToken, String botName, CommandSender commandSender) {
         super(botToken);
         this.botName = botName;
-        this.parcelsController = parcelsController;
+        this.commandSender = commandSender;
     }
 
     /**
@@ -33,8 +33,7 @@ public class LoadingParcelsTgBot extends TelegramLongPollingBot {
             String message = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
 
-            var result = parcelsController.handleCommand(message);
-            sendMessage(chatId, result.hasError() ? result.error() : result.data());
+            sendMessage(chatId, commandSender.send(message));
         }
     }
 

@@ -1,6 +1,7 @@
-package ru.calmsen.loadingparcels.view;
+package ru.calmsen.loadingparcels.view.impl;
 
 import ru.calmsen.loadingparcels.model.domain.Truck;
+import ru.calmsen.loadingparcels.view.TrucksView;
 
 import java.util.List;
 
