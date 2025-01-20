@@ -1,11 +1,12 @@
-package ru.calmsen.loadingparcels.view.factory;
+package ru.calmsen.loadingparcels.view.factory.impl;
 
 import lombok.RequiredArgsConstructor;
 import ru.calmsen.loadingparcels.mapper.TrucksMapper;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
-import ru.calmsen.loadingparcels.view.JsonTrucksView;
+import ru.calmsen.loadingparcels.view.impl.JsonTrucksView;
 import ru.calmsen.loadingparcels.view.TrucksView;
-import ru.calmsen.loadingparcels.view.TxtTrucksView;
+import ru.calmsen.loadingparcels.view.impl.TxtTrucksView;
+import ru.calmsen.loadingparcels.view.factory.TrucksViewFactory;
 
 /**
  * Фабрика по умолчанию для создания представления для списка машин

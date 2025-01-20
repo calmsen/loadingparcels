@@ -1,10 +1,13 @@
-package ru.calmsen.loadingparcels.command;
+package ru.calmsen.loadingparcels.command.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.ParcelsMapper;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.service.ParcelsService;
+
+import java.util.Map;
 
 /**
  * Команда добавления посылки.
@@ -21,7 +24,7 @@ public class CreateParcelCommand extends Command<Parcel> {
     }
 
     @Override
-    protected String execute(Parcel parcel) {
+    public String execute(Parcel parcel) {
         log.info("Добавление посылки \n{}", parcel);
         parcelsService.addParcel(parcel);
         log.info("Посылка \"{}\" добавлена", parcel.getName());
@@ -29,7 +32,7 @@ public class CreateParcelCommand extends Command<Parcel> {
     }
 
     @Override
-    protected Parcel toContext(String command) {
-        return contextMapper.toParcel(toMap(command));
+    protected Parcel toContext(Map<String, String> map) {
+        return contextMapper.toParcel(map);
     }
 }

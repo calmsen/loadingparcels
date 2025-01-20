@@ -2,27 +2,26 @@ package ru.calmsen.loadingparcels.terminal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.calmsen.loadingparcels.controller.ParcelsController;
+import ru.calmsen.loadingparcels.command.CommandSender;
 
 import java.util.Scanner;
 
 @Slf4j
 @RequiredArgsConstructor
 public class LoadingParcelsConsole {
-    private final ParcelsController parcelsController;
+    private final CommandSender commandSender;
 
     /**
      * Слушает команды из командной строки.
      */
     public void listen() {
         var scanner = new Scanner(System.in);
-        write("Введите команду / по умолчанию " + ParcelsController.DEFAULT_COMMAND);
+        write("Введите команду / по умолчанию " + CommandSender.DEFAULT_COMMAND);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
-            var result = parcelsController.handleCommand(command);
-            write(result.hasError() ? result.error() : result.data());
+            write(commandSender.send(command));
 
-            write("Введите команду / по умолчанию " + ParcelsController.DEFAULT_COMMAND);
+            write("Введите команду / по умолчанию " + CommandSender.DEFAULT_COMMAND);
         }
     }
 

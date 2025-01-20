@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.service.parser.impl.TxtParcelsParser;
 import ru.calmsen.loadingparcels.util.FileReader;
 
 import java.util.List;

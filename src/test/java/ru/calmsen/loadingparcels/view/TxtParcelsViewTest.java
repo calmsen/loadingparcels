@@ -2,6 +2,7 @@ package ru.calmsen.loadingparcels.view;
 
 import org.junit.jupiter.api.Test;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.view.impl.TxtParcelsView;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

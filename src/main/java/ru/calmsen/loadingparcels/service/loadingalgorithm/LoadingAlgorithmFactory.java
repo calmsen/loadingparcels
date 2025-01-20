@@ -12,7 +12,7 @@ public class LoadingAlgorithmFactory {
      * @param mode тип погрузки
      * @return объект алгоритма погрузки
      */
-    public LoadingAlgorithm Create(LoadingMode mode) {
+    public LoadingAlgorithm create(LoadingMode mode) {
         return switch (mode) {
             case ONEPARCEL -> new OneParcelLoadingAlgorithm();
             case SIMPLE -> new SimpleLoadingAlgorithm();

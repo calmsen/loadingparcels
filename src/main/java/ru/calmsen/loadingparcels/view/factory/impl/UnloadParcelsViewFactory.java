@@ -1,9 +1,13 @@
-package ru.calmsen.loadingparcels.view.factory;
+package ru.calmsen.loadingparcels.view.factory.impl;
 
 import lombok.RequiredArgsConstructor;
 import ru.calmsen.loadingparcels.mapper.ParcelsMapper;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.view.*;
+import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
+import ru.calmsen.loadingparcels.view.impl.CsvWithCountParcelsView;
+import ru.calmsen.loadingparcels.view.impl.JsonWithCountParcelsView;
+import ru.calmsen.loadingparcels.view.impl.TxtWithCountParcelsView;
 
 /**
  * Фабрика для создания представления для списка посылок при разгрузке

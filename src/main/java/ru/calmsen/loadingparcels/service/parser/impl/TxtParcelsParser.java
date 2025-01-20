@@ -1,8 +1,9 @@
-package ru.calmsen.loadingparcels.service.parser;
+package ru.calmsen.loadingparcels.service.parser.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.service.parser.ParcelsParser;
 import ru.calmsen.loadingparcels.util.FileReader;
 
 import java.util.ArrayList;

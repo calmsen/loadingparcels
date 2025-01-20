@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
+import ru.calmsen.loadingparcels.view.impl.TxtTrucksView;
 
 import java.util.List;
 

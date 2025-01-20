@@ -1,9 +1,10 @@
-package ru.calmsen.loadingparcels.service.parser;
+package ru.calmsen.loadingparcels.service.parser.impl;
 
 import lombok.RequiredArgsConstructor;
 import ru.calmsen.loadingparcels.mapper.TrucksMapper;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.dto.TruckDto;
+import ru.calmsen.loadingparcels.service.parser.TrucksParser;
 import ru.calmsen.loadingparcels.util.FileReader;
 import ru.calmsen.loadingparcels.util.JsonUtil;
 

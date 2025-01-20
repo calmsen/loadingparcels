@@ -2,7 +2,7 @@ package ru.calmsen.loadingparcels.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.calmsen.loadingparcels.command.UnloadParcelsCommand;
+import ru.calmsen.loadingparcels.command.impl.UnloadParcelsCommand;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 
 import java.util.Map;

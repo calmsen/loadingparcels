@@ -88,10 +88,10 @@ public class ParcelsServiceTest {
         // Arrange
         List<String> parcelNames = List.of("Parcel1", "Parcel2");
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
-        when(loadingAlgorithmFactory.Create(any())).thenReturn(new OneParcelLoadingAlgorithm());
+        when(loadingAlgorithmFactory.create(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
-        parcelsService.loadParcels(parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
+        parcelsService.loadParcels("user1", parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
 
         // Assert
         // No exception should be thrown, and loading algorithm should be called
@@ -104,10 +104,10 @@ public class ParcelsServiceTest {
         List<String> fileContent = List.of("Parcel1", "Parcel2");
         when(fileReader.readAllLines(fileName)).thenReturn(fileContent);
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
-        when(loadingAlgorithmFactory.Create(any())).thenReturn(new OneParcelLoadingAlgorithm());
+        when(loadingAlgorithmFactory.create(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
-        parcelsService.loadParcels(fileName, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
+        parcelsService.loadParcels("user1", fileName, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
 
         // Assert
         // No exception should be thrown, and loading algorithm should be called
@@ -121,7 +121,7 @@ public class ParcelsServiceTest {
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.empty());
 
         // Act
-        Throwable thrown = catchThrowable(() -> parcelsService.loadParcels(parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6))));
+        Throwable thrown = catchThrowable(() -> parcelsService.loadParcels("user1", parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6))));
 
         // Act and Assert
         assertThat(thrown).isInstanceOf(BusinessException.class)
@@ -137,7 +137,7 @@ public class ParcelsServiceTest {
         when(trucksParser.parseTrucksFromFile(fileName)).thenReturn(trucks);
 
         // Act
-        List<Parcel> result = parcelsService.unloadTrucks(fileName);
+        List<Parcel> result = parcelsService.unloadTrucks("user1", fileName);
 
         // Assert
         assertThat(result.size()).isEqualTo(1);
