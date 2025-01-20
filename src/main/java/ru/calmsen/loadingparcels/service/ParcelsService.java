@@ -57,7 +57,7 @@ public class ParcelsService {
     public void loadParcels(String user, List<String> parcelNames, LoadingMode loadingMode, List<Truck> trucks) {
         var parcels = findParcels(parcelNames);
 
-        var loadingAlgorithm = loadingAlgorithmFactory.Create(loadingMode);
+        var loadingAlgorithm = loadingAlgorithmFactory.create(loadingMode);
         loadingAlgorithm.loadParcels(parcels, trucks);
         billingsService.addLoadParcelsBilling(user, trucks);
     }
@@ -74,7 +74,7 @@ public class ParcelsService {
         var parcelNames = fileReader.readAllLines(fileName);
         var parcels = findParcels(parcelNames);
 
-        var loadingAlgorithm = loadingAlgorithmFactory.Create(loadingMode);
+        var loadingAlgorithm = loadingAlgorithmFactory.create(loadingMode);
         loadingAlgorithm.loadParcels(parcels, trucks);
         billingsService.addLoadParcelsBilling(user, trucks);
     }

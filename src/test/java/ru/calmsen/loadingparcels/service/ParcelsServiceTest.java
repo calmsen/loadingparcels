@@ -88,7 +88,7 @@ public class ParcelsServiceTest {
         // Arrange
         List<String> parcelNames = List.of("Parcel1", "Parcel2");
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
-        when(loadingAlgorithmFactory.Create(any())).thenReturn(new OneParcelLoadingAlgorithm());
+        when(loadingAlgorithmFactory.create(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
         parcelsService.loadParcels("user1", parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
@@ -104,7 +104,7 @@ public class ParcelsServiceTest {
         List<String> fileContent = List.of("Parcel1", "Parcel2");
         when(fileReader.readAllLines(fileName)).thenReturn(fileContent);
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
-        when(loadingAlgorithmFactory.Create(any())).thenReturn(new OneParcelLoadingAlgorithm());
+        when(loadingAlgorithmFactory.create(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
         parcelsService.loadParcels("user1", fileName, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
