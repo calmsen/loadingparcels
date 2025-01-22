@@ -12,7 +12,7 @@ import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 import ru.calmsen.loadingparcels.repository.ParcelsRepository;
-import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithmFactory;
+import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithm;
 import ru.calmsen.loadingparcels.service.loadingalgorithm.OneParcelLoadingAlgorithm;
 import ru.calmsen.loadingparcels.service.parser.ParcelsParser;
 import ru.calmsen.loadingparcels.service.parser.TrucksParser;
@@ -20,6 +20,7 @@ import ru.calmsen.loadingparcels.util.FileReader;
 import ru.calmsen.loadingparcels.validator.ParcelValidator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,10 +45,13 @@ public class ParcelsServiceTest {
     private ParcelValidator parcelValidator;
 
     @Mock
-    private LoadingAlgorithmFactory loadingAlgorithmFactory;
+    private Map<LoadingMode, LoadingAlgorithm> loadingAlgorithms;
 
     @Mock
     private FileReader fileReader;
+
+    @Mock
+    private BillingsService billingsService;
 
     @InjectMocks
     private ParcelsService parcelsService;
@@ -88,7 +92,7 @@ public class ParcelsServiceTest {
         // Arrange
         List<String> parcelNames = List.of("Parcel1", "Parcel2");
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
-        when(loadingAlgorithmFactory.create(any())).thenReturn(new OneParcelLoadingAlgorithm());
+        when(loadingAlgorithms.get(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
         parcelsService.loadParcels("user1", parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
@@ -104,7 +108,7 @@ public class ParcelsServiceTest {
         List<String> fileContent = List.of("Parcel1", "Parcel2");
         when(fileReader.readAllLines(fileName)).thenReturn(fileContent);
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
-        when(loadingAlgorithmFactory.create(any())).thenReturn(new OneParcelLoadingAlgorithm());
+        when(loadingAlgorithms.get(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
         parcelsService.loadParcels("user1", fileName, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));

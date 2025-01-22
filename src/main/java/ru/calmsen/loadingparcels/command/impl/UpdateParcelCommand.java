@@ -32,7 +32,7 @@ public class UpdateParcelCommand extends Command<Parcel> {
     }
 
     @Override
-    protected Parcel toContext(Map<String, String> map) {
-        return contextMapper.toParcel(map);
+    protected Parcel toContext(Map<String, String> args) {
+        return contextMapper.toParcel(args);
     }
 }

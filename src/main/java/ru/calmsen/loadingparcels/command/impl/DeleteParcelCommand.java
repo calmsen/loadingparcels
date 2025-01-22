@@ -29,7 +29,7 @@ public class DeleteParcelCommand extends Command<String> {
     }
 
     @Override
-    protected String toContext(Map<String, String> map) {
-        return map.get(getName());
+    protected String toContext(Map<String, String> args) {
+        return args.get(getName());
     }
 }

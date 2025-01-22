@@ -10,7 +10,7 @@ import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 import ru.calmsen.loadingparcels.repository.ParcelsRepository;
-import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithmFactory;
+import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithm;
 import ru.calmsen.loadingparcels.service.parser.ParcelsParser;
 import ru.calmsen.loadingparcels.service.parser.TrucksParser;
 import ru.calmsen.loadingparcels.util.FileReader;
@@ -18,6 +18,7 @@ import ru.calmsen.loadingparcels.validator.ParcelValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Сервис для работы с посылками
@@ -28,7 +29,7 @@ public class ParcelsService {
     private final ParcelsParser parcelsParser;
     private final TrucksParser trucksParser;
     private final ParcelValidator parcelValidator;
-    private final LoadingAlgorithmFactory loadingAlgorithmFactory;
+    private final Map<LoadingMode, LoadingAlgorithm> loadingAlgorithms;
     private final ParcelsRepository parcelsRepository;
     private final FileReader fileReader;
     private final BillingsService billingsService;
@@ -57,7 +58,7 @@ public class ParcelsService {
     public void loadParcels(String user, List<String> parcelNames, LoadingMode loadingMode, List<Truck> trucks) {
         var parcels = findParcels(parcelNames);
 
-        var loadingAlgorithm = loadingAlgorithmFactory.create(loadingMode);
+        var loadingAlgorithm = loadingAlgorithms.get(loadingMode);
         loadingAlgorithm.loadParcels(parcels, trucks);
         billingsService.addLoadParcelsBilling(user, trucks);
     }
@@ -74,7 +75,7 @@ public class ParcelsService {
         var parcelNames = fileReader.readAllLines(fileName);
         var parcels = findParcels(parcelNames);
 
-        var loadingAlgorithm = loadingAlgorithmFactory.create(loadingMode);
+        var loadingAlgorithm = loadingAlgorithms.get(loadingMode);
         loadingAlgorithm.loadParcels(parcels, trucks);
         billingsService.addLoadParcelsBilling(user, trucks);
     }

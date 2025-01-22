@@ -12,24 +12,27 @@ import ru.calmsen.loadingparcels.command.impl.*;
 import ru.calmsen.loadingparcels.controller.BillingsController;
 import ru.calmsen.loadingparcels.controller.ParcelsController;
 import ru.calmsen.loadingparcels.mapper.*;
+import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
+import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.repository.BillingsRepository;
 import ru.calmsen.loadingparcels.repository.ParcelsRepository;
 import ru.calmsen.loadingparcels.service.BillingsService;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithmFactory;
+import ru.calmsen.loadingparcels.service.loadingalgorithm.*;
 import ru.calmsen.loadingparcels.service.parser.ParcelsParser;
 import ru.calmsen.loadingparcels.service.parser.TrucksParser;
 import ru.calmsen.loadingparcels.service.parser.impl.JsonTrucksParser;
 import ru.calmsen.loadingparcels.service.parser.impl.TxtParcelsParser;
-import ru.calmsen.loadingparcels.terminal.LoadingParcelsTgBot;
+import ru.calmsen.loadingparcels.terminal.LoadingParcelsTelegramBot;
 import ru.calmsen.loadingparcels.util.FileReader;
 import ru.calmsen.loadingparcels.util.FileWriter;
 import ru.calmsen.loadingparcels.validator.ParcelValidator;
-import ru.calmsen.loadingparcels.view.factory.impl.DefaultParcelsViewFactory;
-import ru.calmsen.loadingparcels.view.factory.impl.DefaultTrucksViewFactory;
-import ru.calmsen.loadingparcels.view.factory.impl.UnloadParcelsViewFactory;
+import ru.calmsen.loadingparcels.view.ParcelsView;
+import ru.calmsen.loadingparcels.view.TrucksView;
+import ru.calmsen.loadingparcels.view.impl.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class AppConfig {
@@ -87,23 +90,38 @@ public class AppConfig {
     }
 
     @Bean
-    public DefaultParcelsViewFactory defaultParcelsViewFactory() {
-        return new DefaultParcelsViewFactory(parcelsMapper());
+    public Map<ViewFormat, ParcelsView> parcelsViews() {
+        return Map.of(
+            ViewFormat.TXT, new TxtParcelsView(),
+            ViewFormat.JSON, new JsonParcelsView(parcelsMapper()),
+            ViewFormat.CSV, new CsvParcelsView()
+        );
+    }
+    @Bean
+    public Map<ViewFormat, ParcelsView> parcelsViewsWithCount() {
+        return Map.of(
+            ViewFormat.TXT, new TxtWithCountParcelsView(),
+            ViewFormat.JSON, new JsonWithCountParcelsView(parcelsMapper()),
+            ViewFormat.CSV, new CsvWithCountParcelsView()
+        );
     }
 
     @Bean
-    public DefaultTrucksViewFactory defaultTrucksViewFactory() {
-        return new DefaultTrucksViewFactory(trucksMapper());
+    public Map<ViewFormat, TrucksView> trucksViews() {
+        return Map.of(
+                ViewFormat.TXT, new TxtTrucksView(),
+                ViewFormat.JSON, new JsonTrucksView(trucksMapper())
+        );
     }
 
     @Bean
-    public UnloadParcelsViewFactory unloadParcelsViewFactory() {
-        return new UnloadParcelsViewFactory(defaultParcelsViewFactory(), parcelsMapper());
-    }
-
-    @Bean
-    public LoadingAlgorithmFactory loadingAlgorithmFactory() {
-        return new LoadingAlgorithmFactory();
+    public Map<LoadingMode, LoadingAlgorithm> loadingAlgorithms() {
+        return Map.of(
+            LoadingMode.ONEPARCEL, new OneParcelLoadingAlgorithm(),
+            LoadingMode.SIMPLE, new SimpleLoadingAlgorithm(),
+            LoadingMode.UNIFORM, new UniformLoadingAlgorithm(),
+            LoadingMode.EFFICIENT, new EfficientLoadingAlgorithm()
+        );
     }
 
     @Bean
@@ -120,7 +138,7 @@ public class AppConfig {
     public LoadParcelsCommand loadParcelsCommand(BillingsService billingsService) {
         return new LoadParcelsCommand(
                 parcelsService(billingsService),
-                defaultTrucksViewFactory(),
+                trucksViews(),
                 fileWriter(),
                 loadParcelsContextMapper()
         );
@@ -130,7 +148,8 @@ public class AppConfig {
     public UnloadParcelsCommand unloadParcelsCommand(BillingsService billingsService) {
         return new UnloadParcelsCommand(
                 parcelsService(billingsService),
-                unloadParcelsViewFactory(),
+                parcelsViews(),
+                parcelsViewsWithCount(),
                 fileWriter(),
                 unloadParcelsContextMapper()
         );
@@ -155,7 +174,7 @@ public class AppConfig {
     public FindParcelCommand findParcelCommand(BillingsService billingsService){
         return new FindParcelCommand(
                 parcelsService(billingsService),
-                defaultParcelsViewFactory(),
+                parcelsViews(),
                 findParcelContextMapper()
         );
     }
@@ -183,7 +202,7 @@ public class AppConfig {
                 parcelsParser(),
                 trucksParser(),
                 parcelValidator(),
-                loadingAlgorithmFactory(),
+                loadingAlgorithms(),
                 parcelsRepository(),
                 fileReader(),
                 billingsService
@@ -233,10 +252,10 @@ public class AppConfig {
     }
 
     @Bean
-    public LoadingParcelsTgBot loadingParcelsTgBot(TgBotConfig tgBotConfig, BillingsService billingsService) {
-        return new LoadingParcelsTgBot(
-                tgBotConfig.getToken(),
-                tgBotConfig.getName(),
+    public LoadingParcelsTelegramBot loadingParcelsTgBot(TelegramBotConfig telegramBotConfig, BillingsService billingsService) {
+        return new LoadingParcelsTelegramBot(
+                telegramBotConfig.getToken(),
+                telegramBotConfig.getName(),
                 commandSender(billingsService)
         );
     }
@@ -247,7 +266,7 @@ public class AppConfig {
     }
 
     @Bean
-    public ApplicationListener<ContextRefreshedEvent> LoadingParcelsTgBotRunner(LoadingParcelsTgBot loadingParcelsTgBot) {
-        return event -> loadingParcelsTgBot.listen();
+    public ApplicationListener<ContextRefreshedEvent> LoadingParcelsTelegramBotRunner(LoadingParcelsTelegramBot loadingParcelsTelegramBot) {
+        return event -> loadingParcelsTelegramBot.listen();
     }
 }

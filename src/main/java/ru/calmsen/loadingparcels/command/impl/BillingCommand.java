@@ -34,8 +34,8 @@ public class BillingCommand extends Command<BillingCommand.Context> {
     }
 
     @Override
-    protected BillingCommand.Context toContext(Map<String, String> map) {
-        return contextMapper.toContext(map);
+    protected BillingCommand.Context toContext(Map<String, String> args) {
+        return contextMapper.toContext(args);
     }
 
     private String getOutputData(List<Billing> billings) {

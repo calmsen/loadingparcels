@@ -8,7 +8,7 @@ import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.FindParcelContextMapper;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
+import ru.calmsen.loadingparcels.view.ParcelsView;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FindParcelCommand extends Command<FindParcelCommand.Context> {
     private final ParcelsService parcelsService;
-    private final ParcelsViewFactory parcelsViewFactory;
+    private final Map<ViewFormat, ParcelsView> parcelsViews;
     private final FindParcelContextMapper contextMapper;
 
     @Override
@@ -38,12 +38,12 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
         var parcels = context.parcelName != null
                 ? List.of(parcelsService.findParcel(context.parcelName))
                 : parcelsService.findAllParcels();
-        return parcelsViewFactory.createView(context.viewFormat).buildOutputData(parcels);
+        return parcelsViews.get(context.viewFormat).buildOutputData(parcels);
     }
 
     @Override
-    protected Context toContext(Map<String, String> map) {
-        return contextMapper.toContext(map);
+    protected Context toContext(Map<String, String> args) {
+        return contextMapper.toContext(args);
     }
 
     @Getter

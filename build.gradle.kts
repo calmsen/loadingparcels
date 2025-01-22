@@ -24,26 +24,30 @@ repositories {
 }
 
 val springShellVersion = "3.4.0"
+val mapstructVersion = "1.6.2"
+val lombokVersion = "1.18.34"
+val lombokMapstructBindingVersion = "0.2.0"
+val gsonVersion = "2.11.0"
+val telegrambotsVersion = "6.9.7.1"
 
 dependencies {
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+    implementation("org.mapstruct:mapstruct:$mapstructVersion")
 
-    implementation("org.mapstruct:mapstruct:1.6.2")
-    implementation("org.projectlombok:lombok:1.18.34")
-    implementation("commons-cli:commons-cli:1.3.1")
-    implementation("com.google.code.gson:gson:2.11.0")
-    implementation("org.telegram:telegrambots:6.9.7.1")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    implementation("org.projectlombok:lombok:$lombokVersion")
+
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
+
+    implementation("com.google.code.gson:gson:$gsonVersion")
+    implementation("org.telegram:telegrambots:$telegrambotsVersion")
 
 
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.assertj:assertj-core:3.26.3")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
-    testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
-
+    testImplementation(platform("org.junit:junit-bom"))
+    testImplementation("org.assertj:assertj-core")
+    testImplementation("org.mockito:mockito-junit-jupiter")
 
     implementation("org.springframework.shell:spring-shell-starter")
 

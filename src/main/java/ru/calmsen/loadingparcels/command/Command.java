@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 /**
  * Абстрактный класс команды.
  *
- * @param <TContext> тип контекста, который передается в метод execute.
+ * @param <T> тип контекста, который передается в метод execute.
  */
-public abstract class Command<TContext> {
+public abstract class Command<T> {
 
     /**
      * Сопоставляет первое слово в командной строке к имени команды.
@@ -34,7 +34,7 @@ public abstract class Command<TContext> {
         return execute(context);
     }
 
-    public abstract String execute(TContext context);
+    public abstract String execute(T context);
 
     /**
      * Преобразовать в контекст
@@ -42,7 +42,7 @@ public abstract class Command<TContext> {
      * @param args словарь с аргументами
      * @return контекст команды
      */
-    protected TContext toContext(Map<String, String> args) {
+    protected T toContext(Map<String, String> args) {
         return null;
     }
 
@@ -50,7 +50,7 @@ public abstract class Command<TContext> {
 
     private Map<String, String> removeEmptyEntries(Map<String, String> map) {
         return map.entrySet().stream()
-                .filter(x -> !x.getValue().isBlank())
+                .filter(x -> x.getValue() != null && !x.getValue().isBlank())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

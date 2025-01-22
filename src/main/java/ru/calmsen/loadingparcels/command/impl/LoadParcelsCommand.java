@@ -11,7 +11,7 @@ import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
 import ru.calmsen.loadingparcels.util.FileWriter;
-import ru.calmsen.loadingparcels.view.factory.impl.DefaultTrucksViewFactory;
+import ru.calmsen.loadingparcels.view.TrucksView;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     private final ParcelsService parcelsService;
-    private final DefaultTrucksViewFactory trucksViewFactory;
+    private final Map<ViewFormat, TrucksView> trucksViews;
     private final FileWriter fileWriter;
     private final LoadParcelsContextMapper contextMapper;
 
@@ -43,8 +43,8 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     }
 
     @Override
-    protected Context toContext(Map<String, String> map) {
-        return contextMapper.toContext(map);
+    protected Context toContext(Map<String, String> args) {
+        return contextMapper.toContext(args);
     }
 
     private List<Truck> filterEmptyTrucks(List<Truck> trucks) {
@@ -68,7 +68,7 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
 
     private String getOutputData(Context context, List<Truck> trucks) {
         var viewFormat = ViewFormat.redefineFormat(context.outFile, context.viewFormat);
-        return trucksViewFactory.createView(viewFormat).buildOutputData(trucks);
+        return trucksViews.get(viewFormat).buildOutputData(trucks);
     }
 
     private void writeOutputData(String fileName, String output) {

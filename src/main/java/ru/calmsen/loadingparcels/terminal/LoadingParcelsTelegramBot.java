@@ -12,11 +12,11 @@ import ru.calmsen.loadingparcels.command.CommandSender;
 
 @Slf4j
 @RequiredArgsConstructor
-public class LoadingParcelsTgBot extends TelegramLongPollingBot {
+public class LoadingParcelsTelegramBot extends TelegramLongPollingBot {
     private final String botName;
     private final CommandSender commandSender;
 
-    public LoadingParcelsTgBot(String botToken, String botName, CommandSender commandSender) {
+    public LoadingParcelsTelegramBot(String botToken, String botName, CommandSender commandSender) {
         super(botToken);
         this.botName = botName;
         this.commandSender = commandSender;

@@ -10,7 +10,7 @@ import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
 import ru.calmsen.loadingparcels.util.FileWriter;
-import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
+import ru.calmsen.loadingparcels.view.ParcelsView;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> {
     private final ParcelsService parcelsService;
-    private final ParcelsViewFactory parcelsViewFactory;
+    private final Map<ViewFormat, ParcelsView> parcelsViews;
+    private final Map<ViewFormat, ParcelsView> parcelsViewsWithCount;
     private final FileWriter fileWriter;
     private final UnloadParcelsContextMapper contextMapper;
 
@@ -42,16 +43,15 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
     }
 
     @Override
-    protected Context toContext(Map<String, String> map) {
-        return contextMapper.toContext(map);
+    protected Context toContext(Map<String, String> args) {
+        return contextMapper.toContext(args);
     }
 
     private String getOutputData(Context context, List<Parcel> parcels) {
         var viewFormat = ViewFormat.redefineFormat(context.outFile, context.viewFormat);
-        var factoryContext = ParcelsViewFactory.Context.builder()
-                .withCount(context.withCount)
-                .build();
-        return parcelsViewFactory.createView(viewFormat, factoryContext).buildOutputData(parcels);
+        return context.withCount
+                ? parcelsViewsWithCount.get(viewFormat).buildOutputData(parcels)
+                : parcelsViews.get(viewFormat).buildOutputData(parcels);
     }
 
     private void writeOutputData(String fileName, String output) {
