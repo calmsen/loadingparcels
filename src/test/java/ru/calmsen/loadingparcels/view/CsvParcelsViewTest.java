@@ -2,6 +2,7 @@ package ru.calmsen.loadingparcels.view;
 
 import org.junit.jupiter.api.Test;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
+import ru.calmsen.loadingparcels.view.impl.CsvParcelsView;
 
 import java.util.List;
 

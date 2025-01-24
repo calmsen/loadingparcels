@@ -1,90 +1,56 @@
 package ru.calmsen.loadingparcels.command;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Абстрактный класс команды.
  *
- * @param <TContext> тип контекста, который передается в защищенный метод execute.
+ * @param <T> тип контекста, который передается в метод execute.
  */
-public abstract class Command<TContext> {
+public abstract class Command<T> {
+
     /**
      * Сопоставляет первое слово в командной строке к имени команды.
      *
-     * @param command командная строка, содержащая название команды и аргументы.
+     * @param commandName название команды.
      * @return true если удалось найти. Иначе false
      */
-    public boolean isMatch(String command) {
-        if (command == null) {
+    public boolean isMatch(String commandName) {
+        if (commandName == null) {
             return false;
         }
 
-        command = command.trim();
-        var spacePos = command.indexOf(' ');
-        if (spacePos == -1) {
-            return command.equals(getName());
-        }
-
-        return command.substring(0, spacePos).equals(getName());
+        return commandName.equals(getName());
     }
 
     /**
      * Выполняет команду.
      *
-     * @param command командная строка, содержащая название команды и аргументы.
+     * @param args аргументы.
      */
-    public String handle(String command) {
-        var context = toContext(command);
+    public String execute(Map<String, String> args) {
+        var context = toContext(removeEmptyEntries(args));
         return execute(context);
+    }
+
+    public abstract String execute(T context);
+
+    /**
+     * Преобразовать в контекст
+     *
+     * @param args словарь с аргументами
+     * @return контекст команды
+     */
+    protected T toContext(Map<String, String> args) {
+        return null;
     }
 
     protected abstract String getName();
 
-    protected abstract String execute(TContext context);
-
-    protected TContext toContext(String command) {
-        return null;
-    }
-
-    /**
-     * Преобразует команду в словарь. Разделяет строку на пары key-value по разделителю --.
-     * А затем разделяет key-value. Ключом является первое слово, остальное является значением.
-     * Значение можно обрамлять двойными кавычками, но необязательно.
-     *
-     * @param command командная строка, содержащая название команды и аргументы.
-     * @return словарь аргументов команды
-     */
-    protected Map<String, String> toMap(String command) {
-        command = command.replaceAll("\\\\n", "\n");
-        var commandParts = Arrays.stream(command.trim().split("--"))
-                .filter(s -> !s.isEmpty())
-                .toList();
-        Map<String, String> map = new HashMap<>();
-        for (var commandPart : commandParts) {
-            if (commandPart.indexOf(' ') == -1) {
-                continue;
-            }
-
-            var key = commandPart.substring(0, commandPart.indexOf(' '));
-            var value = commandPart.substring(commandPart.indexOf(' ') + 1).trim();
-            value = stripQuotes(value);
-            if (key.isEmpty() || value.isEmpty()) {
-                continue;
-            }
-
-            map.put(key, value);
-        }
-
-        return map;
-    }
-
-    private String stripQuotes(String value) {
-        if (value.startsWith("\"") && value.endsWith("\"")) {
-            return value.substring(1, value.length() - 1);
-        }
-
-        return value;
+    private Map<String, String> removeEmptyEntries(Map<String, String> map) {
+        return map.entrySet().stream()
+                .filter(x -> x.getValue() != null && !x.getValue().isBlank())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

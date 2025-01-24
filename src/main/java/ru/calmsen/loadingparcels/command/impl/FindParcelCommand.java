@@ -1,15 +1,17 @@
-package ru.calmsen.loadingparcels.command;
+package ru.calmsen.loadingparcels.command.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.FindParcelContextMapper;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
-import ru.calmsen.loadingparcels.view.factory.ParcelsViewFactory;
+import ru.calmsen.loadingparcels.view.ParcelsView;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Команда поиска посылок.
@@ -18,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FindParcelCommand extends Command<FindParcelCommand.Context> {
     private final ParcelsService parcelsService;
-    private final ParcelsViewFactory parcelsViewFactory;
+    private final Map<ViewFormat, ParcelsView> parcelsViews;
     private final FindParcelContextMapper contextMapper;
 
     @Override
@@ -27,7 +29,7 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
     }
 
     @Override
-    protected String execute(Context context) {
+    public String execute(Context context) {
         var logMessage = context.parcelName != null
                 ? "Просмотр посылки " + context.parcelName
                 : "Просмотр посылок";
@@ -36,12 +38,12 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
         var parcels = context.parcelName != null
                 ? List.of(parcelsService.findParcel(context.parcelName))
                 : parcelsService.findAllParcels();
-        return parcelsViewFactory.createView(context.viewFormat).buildOutputData(parcels);
+        return parcelsViews.get(context.viewFormat).buildOutputData(parcels);
     }
 
     @Override
-    protected Context toContext(String command) {
-        return contextMapper.toContext(toMap(command));
+    protected Context toContext(Map<String, String> args) {
+        return contextMapper.toContext(args);
     }
 
     @Getter

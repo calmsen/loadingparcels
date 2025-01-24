@@ -1,18 +1,20 @@
-package ru.calmsen.loadingparcels.command;
+package ru.calmsen.loadingparcels.command.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.LoadParcelsContextMapper;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.ParcelsService;
 import ru.calmsen.loadingparcels.util.FileWriter;
-import ru.calmsen.loadingparcels.view.factory.DefaultTrucksViewFactory;
+import ru.calmsen.loadingparcels.view.TrucksView;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Команда погрузки машин.
@@ -21,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     private final ParcelsService parcelsService;
-    private final DefaultTrucksViewFactory trucksViewFactory;
+    private final Map<ViewFormat, TrucksView> trucksViews;
     private final FileWriter fileWriter;
     private final LoadParcelsContextMapper contextMapper;
 
@@ -31,7 +33,7 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     }
 
     @Override
-    protected String execute(Context context) {
+    public String execute(Context context) {
         log.info("Начало погрузки посылок из файла");
         var trucks = loadTrucks(context);
         var output = getOutputData(context, filterEmptyTrucks(trucks));
@@ -41,8 +43,8 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     }
 
     @Override
-    protected Context toContext(String command) {
-        return contextMapper.toContext(toMap(command));
+    protected Context toContext(Map<String, String> args) {
+        return contextMapper.toContext(args);
     }
 
     private List<Truck> filterEmptyTrucks(List<Truck> trucks) {
@@ -55,10 +57,10 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
         }
 
         if (context.parcelNames != null && !context.parcelNames.isEmpty()) {
-            parcelsService.loadParcels(context.parcelNames, context.loadingMode, context.trucks);
+            parcelsService.loadParcels(context.user, context.parcelNames, context.loadingMode, context.trucks);
         }
         else {
-            parcelsService.loadParcels(context.inFile, context.loadingMode, context.trucks);
+            parcelsService.loadParcels(context.user, context.inFile, context.loadingMode, context.trucks);
         }
 
         return context.trucks;
@@ -66,7 +68,7 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
 
     private String getOutputData(Context context, List<Truck> trucks) {
         var viewFormat = ViewFormat.redefineFormat(context.outFile, context.viewFormat);
-        return trucksViewFactory.createView(viewFormat).buildOutputData(trucks);
+        return trucksViews.get(viewFormat).buildOutputData(trucks);
     }
 
     private void writeOutputData(String fileName, String output) {
@@ -86,5 +88,6 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
         private ViewFormat viewFormat;
         private List<Truck> trucks;
         private List<String> parcelNames;
+        private String user;
     }
 }
