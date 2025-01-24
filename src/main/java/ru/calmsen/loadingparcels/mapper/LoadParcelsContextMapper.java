@@ -4,6 +4,7 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import ru.calmsen.loadingparcels.command.constant.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.LoadParcelsCommand;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
@@ -24,11 +25,13 @@ public abstract class LoadParcelsContextMapper {
     public static final int TRUCK_DEFAULT_HEIGHT = 6;
     public static final int TRUCKS_COUNT = 50;
 
-    @Mapping(target = "inFile", source = "load")
-    @Mapping(target = "outFile", source = "out-file")
-    @Mapping(target = "loadingMode", source = "loading-mode", defaultValue = "ONEPARCEL")
-    @Mapping(target = "viewFormat", source = "out-format", defaultValue = "TXT")
-    @Mapping(target = "parcelNames", source = "parcel-names")
+    @Mapping(target = "inFile", source = CommandParameter.LoadParcels.IN_FILE)
+    @Mapping(target = "parcelNames", source = CommandParameter.LoadParcels.PARCEL_NAMES)
+    @Mapping(target = "outFile", source = CommandParameter.LoadParcels.OUT_FILE)
+    @Mapping(target = "viewFormat", source = CommandParameter.LoadParcels.OUT_FORMAT,
+            defaultValue = CommandParameter.LoadParcels.OUT_FORMAT_DEFAULT_VALUE)
+    @Mapping(target = "loadingMode", source = CommandParameter.LoadParcels.LOADING_MODE,
+            defaultValue = CommandParameter.LoadParcels.LOADING_MODE_DEFAULT_VALUE)
     public abstract LoadParcelsCommand.Context toContext(Map<String, String> map);
 
     @AfterMapping

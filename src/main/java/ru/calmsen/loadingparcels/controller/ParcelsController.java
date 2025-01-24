@@ -5,6 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.calmsen.loadingparcels.command.CommandSender;
+import ru.calmsen.loadingparcels.command.constant.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.*;
 
 import java.util.Map;
@@ -29,11 +30,11 @@ public class ParcelsController {
     @ShellMethod("Найти посылку")
     public String find(
             @ShellOption(defaultValue = "", help = "Название посылки") String name,
-            @ShellOption(value = "out-format", defaultValue = "TXT", help = "Формат вывода") String outFormat
+            @ShellOption(value = CommandParameter.FindParcel.OUT_FORMAT, defaultValue = "TXT", help = "Формат вывода") String outFormat
     ) {
         return findParcelCommand.execute(Map.of(
-        "find", name,
-        "out-format", outFormat
+            CommandParameter.FindParcel.NAME, name,
+            CommandParameter.FindParcel.OUT_FORMAT, outFormat
         ));
     }
 
@@ -52,9 +53,9 @@ public class ParcelsController {
             @ShellOption(help = "Символ для отображения посылки") String symbol
     ) {
         return createParcelCommand.execute(Map.of(
-        "name", name,
-        "form", form,
-        "symbol", symbol
+            CommandParameter.CreateParcel.NAME, name,
+            CommandParameter.CreateParcel.FORM, form,
+            CommandParameter.CreateParcel.SYMBOL, symbol
         ));
     }
 
@@ -73,9 +74,9 @@ public class ParcelsController {
             @ShellOption(help = "Символ для отображения посылки") String symbol
     ) {
         return updateParcelCommand.execute(Map.of(
-                "name", name,
-                "form", form,
-                "symbol", symbol
+            CommandParameter.UpdateParcel.NAME, name,
+            CommandParameter.UpdateParcel.FORM, form,
+            CommandParameter.UpdateParcel.SYMBOL, symbol
         ));
     }
 
@@ -88,7 +89,7 @@ public class ParcelsController {
     @ShellMethod("Удаление посылки")
     public String delete(@ShellOption(help = "Название посылки") String name) {
         return deleteParcelCommand.execute(Map.of(
-        "delete", name
+            CommandParameter.DeleteParcel.NAME, name
         ));
     }
 
@@ -108,26 +109,28 @@ public class ParcelsController {
      */
     @ShellMethod("Погрузка машин")
     public String load(
-            @ShellOption("in-file") String inFile,
-            @ShellOption(value = "out-file", defaultValue = "") String outFile,
-            @ShellOption(value = "out-format", defaultValue = "TXT") String outFormat,
-            @ShellOption(value = "loading-mode", defaultValue = "ONEPARCEL") String loadingMode,
-            @ShellOption(value = "trucks", defaultValue = "") String trucks,
-            @ShellOption(value = "trucks-count", defaultValue = "") String trucksCount,
-            @ShellOption(value = "trucks-width", defaultValue = "") String trucksWidth,
-            @ShellOption(value = "trucks-height", defaultValue = "") String trucksHeight,
-            @ShellOption(value = "user", defaultValue = "") String user
+            @ShellOption String inFile,
+            @ShellOption(value = CommandParameter.LoadParcels.PARCEL_NAMES, defaultValue = "") String parcelNames,
+            @ShellOption(value = CommandParameter.LoadParcels.OUT_FILE, defaultValue = "") String outFile,
+            @ShellOption(value = CommandParameter.LoadParcels.OUT_FORMAT, defaultValue = CommandParameter.LoadParcels.OUT_FORMAT_DEFAULT_VALUE) String outFormat,
+            @ShellOption(value = CommandParameter.LoadParcels.LOADING_MODE, defaultValue = CommandParameter.LoadParcels.LOADING_MODE_DEFAULT_VALUE) String loadingMode,
+            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS, defaultValue = "") String trucks,
+            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_COUNT, defaultValue = "") String trucksCount,
+            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_WIDTH, defaultValue = "") String trucksWidth,
+            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_HEIGHT, defaultValue = "") String trucksHeight,
+            @ShellOption(value = CommandParameter.USER, defaultValue = "") String user
     ) {
         return loadParcelsCommand.execute(Map.of(
-        "load", inFile,
-        "out-file", outFile,
-        "out-format", outFormat,
-        "loading-mode", loadingMode,
-        "trucks", trucks,
-        "trucks-count", trucksCount,
-        "trucks-width", trucksWidth,
-        "trucks-height", trucksHeight,
-        "user", user
+            CommandParameter.LoadParcels.IN_FILE, inFile,
+            CommandParameter.LoadParcels.PARCEL_NAMES, parcelNames,
+            CommandParameter.LoadParcels.OUT_FILE, outFile,
+            CommandParameter.LoadParcels.OUT_FORMAT, outFormat,
+            CommandParameter.LoadParcels.LOADING_MODE, loadingMode,
+            CommandParameter.LoadParcels.TRUCKS, trucks,
+            CommandParameter.LoadParcels.TRUCKS_COUNT, trucksCount,
+            CommandParameter.LoadParcels.TRUCKS_WIDTH, trucksWidth,
+            CommandParameter.LoadParcels.TRUCKS_HEIGHT, trucksHeight,
+            CommandParameter.USER, user
         ));
     }
 
@@ -142,16 +145,16 @@ public class ParcelsController {
      */
     @ShellMethod("Разгрузка машин")
     public String unload(
-            @ShellOption("in-file") String inFile,
-            @ShellOption(value = "out-format", defaultValue = "TXT") String outFormat,
-            @ShellOption(value = "with-count", defaultValue = "false") String withCount,
-            @ShellOption(value = "user", defaultValue = "") String user
+            @ShellOption String inFile,
+            @ShellOption(value = CommandParameter.UnloadParcels.OUT_FORMAT, defaultValue = CommandParameter.UnloadParcels.OUT_FORMAT_DEFAULT_VALUE) String outFormat,
+            @ShellOption(value = CommandParameter.UnloadParcels.WITH_COUNT, defaultValue = CommandParameter.UnloadParcels.WITH_COUNT_DEFAULT_VALUE) String withCount,
+            @ShellOption(value = CommandParameter.USER, defaultValue = "") String user
     ) {
         return unloadParcelsCommand.execute(Map.of(
-        "unload", inFile,
-        "out-format", outFormat,
-        "with-count", withCount,
-        "user", user
+            CommandParameter.UnloadParcels.IN_FILE, inFile,
+            CommandParameter.UnloadParcels.OUT_FORMAT, outFormat,
+            CommandParameter.UnloadParcels.WITH_COUNT, withCount,
+            CommandParameter.USER, user
         ));
     }
 }

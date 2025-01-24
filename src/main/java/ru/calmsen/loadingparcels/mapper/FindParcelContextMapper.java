@@ -2,6 +2,7 @@ package ru.calmsen.loadingparcels.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import ru.calmsen.loadingparcels.command.constant.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.FindParcelCommand;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 
@@ -12,8 +13,8 @@ import java.util.Map;
  */
 @Mapper
 public abstract class FindParcelContextMapper {
-    @Mapping(target = "parcelName", source = "find")
-    @Mapping(target = "viewFormat", source = "out-format", defaultValue = "TXT")
+    @Mapping(target = "parcelName", source = CommandParameter.FindParcel.NAME)
+    @Mapping(target = "viewFormat", source = CommandParameter.FindParcel.OUT_FORMAT, defaultValue = "TXT")
     public abstract FindParcelCommand.Context toContext(Map<String, String> map);
 
     public ViewFormat toViewFormat(String value){

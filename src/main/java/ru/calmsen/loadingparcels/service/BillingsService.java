@@ -6,16 +6,18 @@ import ru.calmsen.loadingparcels.exception.BusinessException;
 import ru.calmsen.loadingparcels.model.domain.Billing;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.repository.BillingsRepository;
+import ru.calmsen.loadingparcels.util.DateUtil;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class BillingsService {
     private final BillingConfig billingConfig;
     private final BillingsRepository billingsRepository;
+    private final Clock clock;
 
     /**
      * Добавить счет за погрузку машин
@@ -25,17 +27,17 @@ public class BillingsService {
      */
     public void addLoadParcelsBilling(String user, List<Truck> trucks) {
         if (user == null || user.isEmpty()) {
-            throw new BusinessException("Необходимо указать указать пользователя");
+            throw new BusinessException("Необходимо указать пользователя");
         }
 
         var segments = trucks.stream().mapToInt(Truck::getFilledPlaces).sum();
         var cost = billingConfig.getLoadingCostPerSegment().multiply(BigDecimal.valueOf(segments));
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.now(clock);
         billingsRepository.addBilling(new Billing(
                 user,
                 String.format(
                         "%s;Погрузка;%d машин;%d посылок;%.2f рублей",
-                        date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                        DateUtil.toString(date),
                         trucks.stream().filter(x -> !x.isEmpty()).count(),
                         trucks.stream().mapToInt(x -> x.getParcels().size()).sum(),
                         cost
@@ -60,12 +62,12 @@ public class BillingsService {
 
         var segments = trucks.stream().mapToInt(Truck::getFilledPlaces).sum();
         var cost = billingConfig.getUnloadingCostPerSegment().multiply(BigDecimal.valueOf(segments));
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.now(clock);
         billingsRepository.addBilling(new Billing(
                 user,
                 String.format(
                         "%s;Разгрузка;%d машин;%d посылок;%.2f рублей",
-                        date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                        DateUtil.toString(date),
                         trucks.size(),
                         trucks.stream().mapToInt(x -> x.getParcels().size()).sum(),
                         cost
