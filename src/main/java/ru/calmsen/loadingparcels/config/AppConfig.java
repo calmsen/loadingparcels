@@ -31,6 +31,7 @@ import ru.calmsen.loadingparcels.view.ParcelsView;
 import ru.calmsen.loadingparcels.view.TrucksView;
 import ru.calmsen.loadingparcels.view.impl.*;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,11 @@ import java.util.Map;
 public class AppConfig {
     @Value("${parcels.initial-parcels-file-name}")
     private String initialParcelsFileName;
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
+    }
 
     @Bean
     public FileReader fileReader() {
@@ -212,7 +218,7 @@ public class AppConfig {
 
     @Bean
     public BillingsService billingsService(BillingConfig billingConfig) {
-        return new BillingsService(billingConfig, billingsRepository());
+        return new BillingsService(billingConfig, billingsRepository(), clock());
     }
 
     @Bean
