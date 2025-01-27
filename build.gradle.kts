@@ -29,6 +29,7 @@ val lombokVersion = "1.18.34"
 val lombokMapstructBindingVersion = "0.2.0"
 val gsonVersion = "2.11.0"
 val telegrambotsVersion = "6.9.7.1"
+val springdocOpenApiVersion = "2.8.3"
 
 dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
@@ -44,12 +45,20 @@ dependencies {
     implementation("com.google.code.gson:gson:$gsonVersion")
     implementation("org.telegram:telegrambots:$telegrambotsVersion")
 
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
+    runtimeOnly("org.postgresql:postgresql")
+
 
     testImplementation(platform("org.junit:junit-bom"))
     testImplementation("org.assertj:assertj-core")
     testImplementation("org.mockito:mockito-junit-jupiter")
 
     implementation("org.springframework.shell:spring-shell-starter")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocOpenApiVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.shell:spring-shell-starter-test")

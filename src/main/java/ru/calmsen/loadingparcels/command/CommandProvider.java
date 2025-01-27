@@ -1,6 +1,7 @@
 package ru.calmsen.loadingparcels.command;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.Optional;
 /**
  * Провайдер команды.
  */
+@Component
 @RequiredArgsConstructor
 public class CommandProvider {
     private final List<Command<?>> commands;

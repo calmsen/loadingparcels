@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.command.Command;
+import ru.calmsen.loadingparcels.command.CommandParameter;
 import ru.calmsen.loadingparcels.mapper.LoadParcelsContextMapper;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
@@ -13,6 +16,7 @@ import ru.calmsen.loadingparcels.service.ParcelsService;
 import ru.calmsen.loadingparcels.util.FileWriter;
 import ru.calmsen.loadingparcels.view.TrucksView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +24,7 @@ import java.util.Map;
  * Команда погрузки машин.
  */
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     private final ParcelsService parcelsService;
@@ -35,6 +40,7 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     @Override
     public String execute(Context context) {
         log.info("Начало погрузки посылок из файла");
+        fillTrucksIfEmpty(context);
         var trucks = loadTrucks(context);
         var output = getOutputData(context, filterEmptyTrucks(trucks));
         writeOutputData(context.outFile, output);
@@ -79,6 +85,32 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
         fileWriter.write(fileName, output);
     }
 
+    private void fillTrucksIfEmpty(LoadParcelsCommand.Context context) {
+        if (context.trucks != null && !context.trucks.isEmpty()) {
+            return;
+        }
+
+        var trucksCount = ObjectUtils.firstNonNull(
+                context.trucksCount,
+                Integer.parseInt(CommandParameter.LoadParcels.TRUCKS_COUNT_DEFAULT_VALUE)
+        );
+
+        var trucksWidth = ObjectUtils.firstNonNull(
+                context.trucksWidth,
+                Integer.parseInt(CommandParameter.LoadParcels.TRUCKS_WIDTH_DEFAULT_VALUE)
+        );
+
+        var trucksHeight = ObjectUtils.firstNonNull(
+                context.trucksHeight,
+                Integer.parseInt(CommandParameter.LoadParcels.TRUCKS_HEIGHT_DEFAULT_VALUE)
+        );
+
+        context.trucks = new ArrayList<>();
+        for (int i = 0; i < trucksCount; i++) {
+            context.trucks.add(new Truck(trucksWidth, trucksHeight));
+        }
+    }
+
     @Getter
     @Setter
     public static class Context {
@@ -87,6 +119,9 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
         private LoadingMode loadingMode;
         private ViewFormat viewFormat;
         private List<Truck> trucks;
+        private Integer trucksCount;
+        private Integer trucksWidth;
+        private Integer trucksHeight;
         private List<String> parcelNames;
         private String user;
     }

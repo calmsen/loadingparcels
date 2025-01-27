@@ -2,8 +2,8 @@ package ru.calmsen.loadingparcels.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.calmsen.loadingparcels.command.Command;
-import ru.calmsen.loadingparcels.command.constant.CommandParameter;
+import org.mapstruct.MappingConstants;
+import ru.calmsen.loadingparcels.command.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.BillingCommand;
 import ru.calmsen.loadingparcels.util.DateUtil;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Маппер для контекста команды billing.
  */
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class BillingContextMapper {
 
     @Mapping(target = "fromDate", source = CommandParameter.Billing.FROM)

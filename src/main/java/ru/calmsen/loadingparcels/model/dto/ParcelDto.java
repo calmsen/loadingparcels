@@ -1,5 +1,6 @@
 package ru.calmsen.loadingparcels.model.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Builder
 public class ParcelDto {
     private int width;
     private int height;

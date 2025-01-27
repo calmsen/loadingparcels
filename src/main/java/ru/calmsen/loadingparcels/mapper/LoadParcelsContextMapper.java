@@ -1,10 +1,9 @@
 package ru.calmsen.loadingparcels.mapper;
 
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import ru.calmsen.loadingparcels.command.constant.CommandParameter;
+import org.mapstruct.MappingConstants;
+import ru.calmsen.loadingparcels.command.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.LoadParcelsCommand;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
@@ -19,12 +18,8 @@ import java.util.regex.Pattern;
 /**
  * Маппер для контекста команды load.
  */
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class LoadParcelsContextMapper {
-    public static final int TRUCK_DEFAULT_WIDTH = 6;
-    public static final int TRUCK_DEFAULT_HEIGHT = 6;
-    public static final int TRUCKS_COUNT = 50;
-
     @Mapping(target = "inFile", source = CommandParameter.LoadParcels.IN_FILE)
     @Mapping(target = "parcelNames", source = CommandParameter.LoadParcels.PARCEL_NAMES)
     @Mapping(target = "outFile", source = CommandParameter.LoadParcels.OUT_FILE)
@@ -33,12 +28,6 @@ public abstract class LoadParcelsContextMapper {
     @Mapping(target = "loadingMode", source = CommandParameter.LoadParcels.LOADING_MODE,
             defaultValue = CommandParameter.LoadParcels.LOADING_MODE_DEFAULT_VALUE)
     public abstract LoadParcelsCommand.Context toContext(Map<String, String> map);
-
-    @AfterMapping
-    public LoadParcelsCommand.Context toContextAfterMapping(Map<String, String> map, @MappingTarget LoadParcelsCommand.Context context) {
-        fillTrucksIfEmpty(map, context);
-        return context;
-    }
 
     public List<Truck> toTrucks(String value) {
         List<Truck> trucks = new ArrayList<>();
@@ -61,29 +50,5 @@ public abstract class LoadParcelsContextMapper {
 
     public ViewFormat toViewFormat(String value) {
         return ViewFormat.fromString(value);
-    }
-
-    private void fillTrucksIfEmpty(Map<String, String> map, LoadParcelsCommand.Context context) {
-        if (context.getTrucks() != null && !context.getTrucks().isEmpty()) {
-            return;
-        }
-
-        var trucksCount = map.containsKey("trucks-count")
-                ? Integer.parseInt(map.get("trucks-count"))
-                : TRUCKS_COUNT;
-
-        var trucksWidth = map.containsKey("trucks-width")
-                ? Integer.parseInt(map.get("trucks-width"))
-                : TRUCK_DEFAULT_WIDTH;
-
-        var trucksHeight = map.containsKey("trucks-height")
-                ? Integer.parseInt(map.get("trucks-height"))
-                : TRUCK_DEFAULT_HEIGHT;
-        List<Truck> trucks = new ArrayList<>();
-        for (int i = 0; i < trucksCount; i++) {
-            trucks.add(new Truck(trucksWidth, trucksHeight));
-        }
-
-        context.setTrucks(trucks);
     }
 }

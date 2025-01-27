@@ -1,12 +1,23 @@
 package ru.calmsen.loadingparcels.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+
+import java.lang.reflect.Type;
+import java.time.LocalDate;
 
 /**
  * Класс для работы с json
  */
 public class JsonUtil {
+    private static final Gson gson;
+
+    static {
+        gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+    }
+
     /**
      * Десериализует json в объект
      *
@@ -15,7 +26,7 @@ public class JsonUtil {
      * @return целевой объект
      */
     public static <T> T fromJson(String json, Class<T> classOfT) {
-        return new Gson().fromJson(json, classOfT);
+        return gson.fromJson(json, classOfT);
     }
 
     /**
@@ -24,9 +35,18 @@ public class JsonUtil {
      * @return json строка
      */
     public static String toJson(Object src) {
-        var gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
         return gson.toJson(src);
+    }
+
+    public static class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
+        @Override
+        public JsonElement serialize(LocalDate date, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(date.toString());
+        }
+
+        @Override
+        public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return LocalDate.parse(json.getAsString());
+        }
     }
 }

@@ -3,12 +3,15 @@ package ru.calmsen.loadingparcels.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 import ru.calmsen.loadingparcels.exception.ParcelValidatorException;
+import ru.calmsen.loadingparcels.mapper.ParcelsMapper;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
+import ru.calmsen.loadingparcels.model.dto.ParcelDto;
 import ru.calmsen.loadingparcels.repository.ParcelsRepository;
 import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithm;
 import ru.calmsen.loadingparcels.service.parser.ParcelsParser;
@@ -24,8 +27,10 @@ import java.util.Map;
  * Сервис для работы с посылками
  */
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class ParcelsService {
+    private final ParcelsMapper parcelsMapper;
     private final ParcelsParser parcelsParser;
     private final TrucksParser trucksParser;
     private final ParcelValidator parcelValidator;
@@ -42,8 +47,11 @@ public class ParcelsService {
     public void initParcels(String fileName) {
         var parcels = parcelsParser.parseParcelsFromFile(fileName);
         validateParcels(parcels);
+
         for (var parcel : parcels) {
-            parcelsRepository.addParcel(parcel);
+            parcelsRepository.findParcel(parcel.getName())
+                    .ifPresentOrElse(parcelsRepository::updateParcel,
+                            () -> parcelsRepository.addParcel(parcel));
         }
     }
 
@@ -100,10 +108,12 @@ public class ParcelsService {
     /**
      * Возвращает весь доступный список посылок.
      *
+     * @param pageNumber номер страницы
+     * @param pageSize кол-во посылок на странице
      * @return список посылок
      */
-    public List<Parcel> findAllParcels() {
-        return parcelsRepository.findAllParcels();
+    public List<Parcel> findAllParcels(int pageNumber, int pageSize) {
+        return parcelsRepository.findAllParcels(pageNumber, pageSize);
     }
 
     /**
@@ -122,12 +132,12 @@ public class ParcelsService {
      *
      * @param parcel объект посылки
      */
-    public void addParcel(Parcel parcel) {
+    public void addParcel(ParcelDto parcel) {
         if (parcelsRepository.findParcel(parcel.getName()).isPresent()) {
             throw new BusinessException("Такая посылка уже есть: " + parcel.getName());
         }
 
-        parcelsRepository.addParcel(parcel);
+        parcelsRepository.addParcel(parcelsMapper.toParcel(parcel));
     }
 
     /**
@@ -135,10 +145,10 @@ public class ParcelsService {
      *
      * @param parcel объект посылки
      */
-    public void updateParcel(Parcel parcel) {
+    public void updateParcel(ParcelDto parcel) {
         parcelsRepository.findParcel(parcel.getName())
                 .ifPresentOrElse(x -> {
-                    parcelsRepository.updateParcel(parcel);
+                    parcelsRepository.updateParcel(parcelsMapper.toParcel(parcel));
                 }, () -> {
                     throw new BusinessException("Посылка не найдена: " + parcel.getName());
                 });

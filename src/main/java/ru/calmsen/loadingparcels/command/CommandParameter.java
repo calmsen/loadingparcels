@@ -1,4 +1,4 @@
-package ru.calmsen.loadingparcels.command.constant;
+package ru.calmsen.loadingparcels.command;
 
 public class CommandParameter {
     public static final String USER = "user";
@@ -6,6 +6,12 @@ public class CommandParameter {
     public static class FindParcel{
         public static final String NAME = "find";
         public static final String OUT_FORMAT = "out-format";
+        public static final String PAGE_NUMBER = "page-number";
+        public static final String PAGE_SIZE = "page-size";
+
+        public static final String PAGE_NUMBER_DEFAULT_VALUE = "1";
+        public static final String PAGE_SIZE_DEFAULT_VALUE = "10";
+        public static final String OUT_FORMAT_DEFAULT_VALUE = "TXT";
     }
 
     public static class CreateParcel{
@@ -37,6 +43,10 @@ public class CommandParameter {
 
         public static final String LOADING_MODE_DEFAULT_VALUE = "ONEPARCEL";
         public static final String OUT_FORMAT_DEFAULT_VALUE = "TXT";
+
+        public static final String TRUCKS_WIDTH_DEFAULT_VALUE = "6";
+        public static final String TRUCKS_HEIGHT_DEFAULT_VALUE = "6";
+        public static final String TRUCKS_COUNT_DEFAULT_VALUE = "50";
     }
 
     public static class UnloadParcels{

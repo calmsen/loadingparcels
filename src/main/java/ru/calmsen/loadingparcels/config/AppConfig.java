@@ -10,7 +10,6 @@ import ru.calmsen.loadingparcels.command.CommandProvider;
 import ru.calmsen.loadingparcels.command.CommandSender;
 import ru.calmsen.loadingparcels.command.impl.*;
 import ru.calmsen.loadingparcels.controller.BillingsController;
-import ru.calmsen.loadingparcels.controller.ParcelsController;
 import ru.calmsen.loadingparcels.mapper.*;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
@@ -27,6 +26,7 @@ import ru.calmsen.loadingparcels.terminal.LoadingParcelsTelegramBot;
 import ru.calmsen.loadingparcels.util.FileReader;
 import ru.calmsen.loadingparcels.util.FileWriter;
 import ru.calmsen.loadingparcels.validator.ParcelValidator;
+import ru.calmsen.loadingparcels.view.BillingsView;
 import ru.calmsen.loadingparcels.view.ParcelsView;
 import ru.calmsen.loadingparcels.view.TrucksView;
 import ru.calmsen.loadingparcels.view.impl.*;
@@ -46,77 +46,47 @@ public class AppConfig {
     }
 
     @Bean
-    public FileReader fileReader() {
-        return new FileReader();
+    public ParcelsParser parcelsParser(FileReader fileReader) {
+        return new TxtParcelsParser(fileReader);
     }
 
     @Bean
-    public FileWriter fileWriter() {
-        return new FileWriter();
+    public TrucksParser trucksParser(FileReader fileReader, TrucksMapper trucksMapper) {
+        return new JsonTrucksParser(fileReader, trucksMapper);
     }
 
     @Bean
-    public ParcelsParser parcelsParser() {
-        return new TxtParcelsParser(fileReader());
+    public Map<ViewFormat, BillingsView> billingsView() {
+        return Map.of(
+                ViewFormat.TXT, new TxtBillingsView(),
+                ViewFormat.JSON, new JsonBillingsView(),
+                ViewFormat.CSV, new TxtBillingsView()
+        );
     }
 
     @Bean
-    public TrucksParser trucksParser() {
-        return new JsonTrucksParser(fileReader(), trucksMapper());
-    }
-
-    @Bean
-    public TrucksMapper trucksMapper() {
-        return Mappers.getMapper(TrucksMapper.class);
-    }
-
-    @Bean
-    public ParcelsMapper parcelsMapper() {
-        return Mappers.getMapper(ParcelsMapper.class);
-    }
-
-    @Bean
-    public LoadParcelsContextMapper loadParcelsContextMapper() {
-        return Mappers.getMapper(LoadParcelsContextMapper.class);
-    }
-
-    @Bean
-    public UnloadParcelsContextMapper unloadParcelsContextMapper() {
-        return Mappers.getMapper(UnloadParcelsContextMapper.class);
-    }
-
-    @Bean
-    public FindParcelContextMapper findParcelContextMapper() {
-        return Mappers.getMapper(FindParcelContextMapper.class);
-    }
-
-    @Bean
-    public BillingContextMapper billingContextMapper() {
-        return Mappers.getMapper(BillingContextMapper.class);
-    }
-
-    @Bean
-    public Map<ViewFormat, ParcelsView> parcelsViews() {
+    public Map<ViewFormat, ParcelsView> parcelsViews(ParcelsMapper parcelsMapper) {
         return Map.of(
             ViewFormat.TXT, new TxtParcelsView(),
-            ViewFormat.JSON, new JsonParcelsView(parcelsMapper()),
+            ViewFormat.JSON, new JsonParcelsView(parcelsMapper),
             ViewFormat.CSV, new CsvParcelsView()
         );
     }
+
     @Bean
-    public Map<ViewFormat, ParcelsView> parcelsViewsWithCount() {
+    public Map<ViewFormat, ParcelsView> parcelsViewsWithCount(ParcelsMapper parcelsMapper) {
         return Map.of(
             ViewFormat.TXT, new TxtWithCountParcelsView(),
-            ViewFormat.JSON, new JsonWithCountParcelsView(parcelsMapper()),
+            ViewFormat.JSON, new JsonWithCountParcelsView(parcelsMapper),
             ViewFormat.CSV, new CsvWithCountParcelsView()
         );
     }
 
     @Bean
-    public Map<ViewFormat, TrucksView> trucksViews() {
+    public Map<ViewFormat, TrucksView> trucksViews(TrucksMapper trucksMapper) {
         return Map.of(
                 ViewFormat.TXT, new TxtTrucksView(),
-                ViewFormat.JSON, new JsonTrucksView(trucksMapper())
+                ViewFormat.JSON, new JsonTrucksView(trucksMapper)
         );
     }
 
@@ -127,142 +97,6 @@ public class AppConfig {
             LoadingMode.SIMPLE, new SimpleLoadingAlgorithm(),
             LoadingMode.UNIFORM, new UniformLoadingAlgorithm(),
             LoadingMode.EFFICIENT, new EfficientLoadingAlgorithm()
-        );
-    }
-
-    @Bean
-    public ParcelValidator parcelValidator() {
-        return new ParcelValidator();
-    }
-
-    @Bean
-    public ExitCommand exitCommand() {
-        return new ExitCommand();
-    }
-
-    @Bean
-    public LoadParcelsCommand loadParcelsCommand(BillingsService billingsService) {
-        return new LoadParcelsCommand(
-                parcelsService(billingsService),
-                trucksViews(),
-                fileWriter(),
-                loadParcelsContextMapper()
-        );
-    }
-
-    @Bean
-    public UnloadParcelsCommand unloadParcelsCommand(BillingsService billingsService) {
-        return new UnloadParcelsCommand(
-                parcelsService(billingsService),
-                parcelsViews(),
-                parcelsViewsWithCount(),
-                fileWriter(),
-                unloadParcelsContextMapper()
-        );
-    }
-
-    @Bean
-    public CreateParcelCommand createParcelCommand(BillingsService billingsService) {
-        return new CreateParcelCommand(parcelsService(billingsService), parcelsMapper());
-    }
-
-    @Bean
-    public UpdateParcelCommand updateParcelCommand(BillingsService billingsService) {
-        return new UpdateParcelCommand(parcelsService(billingsService), parcelsMapper());
-    }
-
-    @Bean
-    public DeleteParcelCommand deleteParcelCommand(BillingsService billingsService) {
-        return new DeleteParcelCommand(parcelsService(billingsService));
-    }
-
-    @Bean
-    public FindParcelCommand findParcelCommand(BillingsService billingsService){
-        return new FindParcelCommand(
-                parcelsService(billingsService),
-                parcelsViews(),
-                findParcelContextMapper()
-        );
-    }
-
-    @Bean
-    public BillingCommand billingCommand(BillingsService billingsService){
-        return new BillingCommand(
-                billingContextMapper(),
-                billingsService);
-    }
-
-    @Bean
-    public ParcelsRepository parcelsRepository() {
-        return new ParcelsRepository();
-    }
-
-    @Bean
-    public BillingsRepository billingsRepository() {
-        return new BillingsRepository();
-    }
-
-    @Bean
-    public ParcelsService parcelsService(BillingsService billingsService) {
-        return new ParcelsService(
-                parcelsParser(),
-                trucksParser(),
-                parcelValidator(),
-                loadingAlgorithms(),
-                parcelsRepository(),
-                fileReader(),
-                billingsService
-        );
-
-    }
-
-    @Bean
-    public BillingsService billingsService(BillingConfig billingConfig) {
-        return new BillingsService(billingConfig, billingsRepository(), clock());
-    }
-
-    @Bean
-    public ParcelsController parcelsController(BillingsService billingsService) {
-        return new ParcelsController(
-                findParcelCommand(billingsService),
-                createParcelCommand(billingsService),
-                updateParcelCommand(billingsService),
-                deleteParcelCommand(billingsService),
-                loadParcelsCommand(billingsService),
-                unloadParcelsCommand(billingsService)
-        );
-    }
-
-    @Bean
-    public BillingsController billingsController(BillingsService billingsService) {
-        return new BillingsController(billingCommand(billingsService));
-    }
-
-    @Bean
-    public CommandProvider commandProvider(BillingsService billingsService) {
-        return new CommandProvider(List.of(
-                exitCommand(),
-                loadParcelsCommand(billingsService),
-                unloadParcelsCommand(billingsService),
-                createParcelCommand(billingsService),
-                updateParcelCommand(billingsService),
-                deleteParcelCommand(billingsService),
-                findParcelCommand(billingsService),
-                billingCommand(billingsService)
-        ));
-    }
-
-    @Bean
-    public CommandSender commandSender(BillingsService billingsService) {
-        return new CommandSender(commandProvider(billingsService));
-    }
-
-    @Bean
-    public LoadingParcelsTelegramBot loadingParcelsTgBot(TelegramBotConfig telegramBotConfig, BillingsService billingsService) {
-        return new LoadingParcelsTelegramBot(
-                telegramBotConfig.getToken(),
-                telegramBotConfig.getName(),
-                commandSender(billingsService)
         );
     }
 

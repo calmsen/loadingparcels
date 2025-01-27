@@ -1,5 +1,6 @@
 package ru.calmsen.loadingparcels.validator;
 
+import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 /**
  * Проверяет корректность посылок, доступных при инициализации приложения.
  */
+@Component
 public class ParcelValidator {
     private static boolean isParcelEmpty(Parcel parcel) {
         return parcel == null || parcel.getContent().isEmpty() || parcel.getContent().stream().anyMatch(List::isEmpty);

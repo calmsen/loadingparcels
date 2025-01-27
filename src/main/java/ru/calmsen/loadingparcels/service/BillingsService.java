@@ -1,6 +1,7 @@
 package ru.calmsen.loadingparcels.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.calmsen.loadingparcels.config.BillingConfig;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 import ru.calmsen.loadingparcels.model.domain.Billing;
@@ -13,6 +14,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
+@Service
 @RequiredArgsConstructor
 public class BillingsService {
     private final BillingConfig billingConfig;

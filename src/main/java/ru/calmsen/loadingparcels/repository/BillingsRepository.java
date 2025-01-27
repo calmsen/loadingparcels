@@ -1,16 +1,23 @@
 package ru.calmsen.loadingparcels.repository;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ru.calmsen.loadingparcels.model.domain.Billing;
+import ru.calmsen.loadingparcels.repository.constant.BillingQuery;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 
-@NoArgsConstructor
+@Repository
+@RequiredArgsConstructor
 public class BillingsRepository {
-    private final List<Billing> billings = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
     /**
      * Добавить счет
@@ -18,7 +25,14 @@ public class BillingsRepository {
      * @param billing счет
      */
     public void addBilling(Billing billing) {
-        billings.add(billing);
+        jdbcTemplate.update(BillingQuery.INSERT,
+                billing.getUser(),
+                billing.getDescription(),
+                billing.getType(),
+                Timestamp.valueOf(billing.getDate().atTime(LocalTime.MIDNIGHT)),
+                billing.getQuantity(),
+                billing.getCost()
+        );
     }
 
     /**
@@ -30,11 +44,20 @@ public class BillingsRepository {
      * @return список счетов
      */
     public List<Billing> getBillings(String user, LocalDate fromDate, LocalDate toDate) {
-        return billings.stream()
-                .filter(x -> x.getUser().equals(user))
-                .filter(x -> !x.getDate().isBefore(fromDate))
-                .filter(x -> !x.getDate().isAfter(toDate))
+        return jdbcTemplate.query(BillingQuery.FIND_ALL, this::toBilling, user, fromDate, toDate)
+                .stream()
                 .sorted(Comparator.comparing(Billing::getDate).reversed())
                 .toList();
+    }
+
+    private Billing toBilling(ResultSet rs, int rowNum) throws SQLException {
+        return new Billing(
+                rs.getString("user"),
+                rs.getString("description"),
+                rs.getString("type"),
+                rs.getTimestamp("date").toLocalDateTime().toLocalDate(),
+                rs.getInt("quantity"),
+                rs.getBigDecimal("cost")
+        );
     }
 }

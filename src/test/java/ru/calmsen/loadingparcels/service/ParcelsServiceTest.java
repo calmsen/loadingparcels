@@ -2,15 +2,17 @@ package ru.calmsen.loadingparcels.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 import ru.calmsen.loadingparcels.exception.ParcelValidatorException;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
+import ru.calmsen.loadingparcels.model.dto.ParcelDto;
 import ru.calmsen.loadingparcels.repository.ParcelsRepository;
 import ru.calmsen.loadingparcels.service.loadingalgorithm.LoadingAlgorithm;
 import ru.calmsen.loadingparcels.service.loadingalgorithm.OneParcelLoadingAlgorithm;
@@ -30,30 +32,28 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class ParcelsServiceTest {
 
-    @Mock
+    @MockitoBean
     private ParcelsRepository parcelsRepository;
 
-    @Mock
+    @MockitoBean
     private ParcelsParser parcelsParser;
 
-    @Mock
+    @MockitoBean
     private TrucksParser trucksParser;
 
-    @Mock
+    @MockitoBean
     private ParcelValidator parcelValidator;
 
-    @Mock
+    @MockitoBean
     private Map<LoadingMode, LoadingAlgorithm> loadingAlgorithms;
 
-    @Mock
+    @MockitoBean
     private FileReader fileReader;
 
-    @Mock
-    private BillingsService billingsService;
-
-    @InjectMocks
+    @Autowired
     private ParcelsService parcelsService;
 
     @Test
@@ -152,10 +152,10 @@ public class ParcelsServiceTest {
     public void findAllParcels_Success() {
         // Arrange
         List<Parcel> parcels = List.of(new Parcel("Parcel1", "x", 's'), new Parcel("Parcel2", "x", 's'));
-        when(parcelsRepository.findAllParcels()).thenReturn(parcels);
+        when(parcelsRepository.findAllParcels(1, 1)).thenReturn(parcels);
 
         // Act
-        List<Parcel> result = parcelsService.findAllParcels();
+        List<Parcel> result = parcelsService.findAllParcels(1, 1);
 
         // Assert
         assertThat(result).isEqualTo(parcels);
@@ -164,7 +164,7 @@ public class ParcelsServiceTest {
     @Test
     public void findParcel_ParcelExists() {
         // Arrange
-        Parcel parcel = new Parcel("Parcel1", "x", 's');
+        Parcel parcel = new Parcel("Parcel2", "x", 's');
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(parcel));
 
         // Act
@@ -190,11 +190,18 @@ public class ParcelsServiceTest {
     @Test
     public void addParcel_ParcelDoesNotExist() {
         // Arrange
-        Parcel parcel = new Parcel("Parcel1", "x", 's');
+        var parcelDto = ParcelDto.builder()
+                .name("Parcel1")
+                .form("x")
+                .symbol('x')
+                .width(1)
+                .height(1)
+                .dimensions(1)
+                .build();
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
 
         // Act
-        parcelsService.addParcel(parcel);
+        parcelsService.addParcel(parcelDto);
 
         // Assert (No exception should be thrown)
     }
@@ -202,11 +209,19 @@ public class ParcelsServiceTest {
     @Test
     public void addParcel_ParcelAlreadyExists() {
         // Arrange
-        Parcel parcel = new Parcel("Parcel1", "x", 's');
+        var parcel = new Parcel("Parcel1", "x", 's');
+        var parcelDto = ParcelDto.builder()
+                .name("Parcel1")
+                .form("x")
+                .symbol('s')
+                .width(1)
+                .height(1)
+                .dimensions(1)
+                .build();
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(parcel));
 
         // Act
-        Throwable thrown = catchThrowable(() -> parcelsService.addParcel(parcel));
+        Throwable thrown = catchThrowable(() -> parcelsService.addParcel(parcelDto));
 
         // Act and Assert
         assertThat(thrown).isInstanceOf(BusinessException.class)
@@ -216,11 +231,19 @@ public class ParcelsServiceTest {
     @Test
     public void updateParcel_ParcelExists() {
         // Arrange
-        Parcel parcel = new Parcel("Parcel1", "x", 's');
+        var parcel = new Parcel("Parcel1", "x", 's');
+        var parcelDto = ParcelDto.builder()
+                .name("Parcel1")
+                .form("x")
+                .symbol('s')
+                .width(1)
+                .height(1)
+                .dimensions(1)
+                .build();
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(parcel));
 
         // Act
-        parcelsService.updateParcel(parcel);
+        parcelsService.updateParcel(parcelDto);
 
         // Assert (No exception should be thrown)
     }
@@ -228,11 +251,18 @@ public class ParcelsServiceTest {
     @Test
     public void updateParcel_ParcelDoesNotExist() {
         // Arrange
-        Parcel parcel = new Parcel("Parcel1", "x", 's');
+        var parcelDto = ParcelDto.builder()
+                .name("Parcel1")
+                .form("x")
+                .symbol('s')
+                .width(1)
+                .height(1)
+                .dimensions(1)
+                .build();
         when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
 
         // Act
-        Throwable thrown = catchThrowable(() -> parcelsService.updateParcel(parcel));
+        Throwable thrown = catchThrowable(() -> parcelsService.updateParcel(parcelDto));
 
         // Act and Assert
         assertThat(thrown).isInstanceOf(BusinessException.class)

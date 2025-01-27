@@ -1,5 +1,7 @@
 package ru.calmsen.loadingparcels.util;
 
+import org.springframework.shell.command.annotation.Command;
+import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.exception.FileReaderException;
 
 import java.io.File;
@@ -9,6 +11,7 @@ import java.util.List;
 /**
  * Чтение текстового файла
  */
+@Component
 public class FileReader {
     /**
      * Читает текстовые данные из файла построчно

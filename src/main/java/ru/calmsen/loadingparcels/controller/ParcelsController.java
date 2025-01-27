@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import ru.calmsen.loadingparcels.command.CommandSender;
-import ru.calmsen.loadingparcels.command.constant.CommandParameter;
+import ru.calmsen.loadingparcels.command.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.*;
 
 import java.util.Map;
@@ -25,16 +24,22 @@ public class ParcelsController {
      *
      * @param name      название посылки. Если не указано, то выбираются все посылки
      * @param outFormat формат вывода
+     * @param pageNumber номер страницы
+     * @param pageSize кол-во посылок на странице
      * @return список посылок
      */
     @ShellMethod("Найти посылку")
     public String find(
             @ShellOption(defaultValue = "", help = "Название посылки") String name,
-            @ShellOption(value = CommandParameter.FindParcel.OUT_FORMAT, defaultValue = "TXT", help = "Формат вывода") String outFormat
+            @ShellOption(value = CommandParameter.FindParcel.OUT_FORMAT, defaultValue = "TXT", help = "Формат вывода") String outFormat,
+            @ShellOption(value = CommandParameter.FindParcel.PAGE_NUMBER, defaultValue = "1", help = "Номер страницы") String pageNumber,
+            @ShellOption(value = CommandParameter.FindParcel.PAGE_SIZE, defaultValue = "1", help = "Количество посылок на странице") String pageSize
     ) {
         return findParcelCommand.execute(Map.of(
             CommandParameter.FindParcel.NAME, name,
-            CommandParameter.FindParcel.OUT_FORMAT, outFormat
+            CommandParameter.FindParcel.OUT_FORMAT, outFormat,
+            CommandParameter.FindParcel.PAGE_NUMBER, pageNumber,
+            CommandParameter.FindParcel.PAGE_SIZE, pageSize
         ));
     }
 
@@ -115,9 +120,9 @@ public class ParcelsController {
             @ShellOption(value = CommandParameter.LoadParcels.OUT_FORMAT, defaultValue = CommandParameter.LoadParcels.OUT_FORMAT_DEFAULT_VALUE) String outFormat,
             @ShellOption(value = CommandParameter.LoadParcels.LOADING_MODE, defaultValue = CommandParameter.LoadParcels.LOADING_MODE_DEFAULT_VALUE) String loadingMode,
             @ShellOption(value = CommandParameter.LoadParcels.TRUCKS, defaultValue = "") String trucks,
-            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_COUNT, defaultValue = "") String trucksCount,
-            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_WIDTH, defaultValue = "") String trucksWidth,
-            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_HEIGHT, defaultValue = "") String trucksHeight,
+            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_COUNT, defaultValue = CommandParameter.LoadParcels.TRUCKS_COUNT_DEFAULT_VALUE) String trucksCount,
+            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_WIDTH, defaultValue = CommandParameter.LoadParcels.TRUCKS_WIDTH_DEFAULT_VALUE) String trucksWidth,
+            @ShellOption(value = CommandParameter.LoadParcels.TRUCKS_HEIGHT, defaultValue = CommandParameter.LoadParcels.TRUCKS_HEIGHT_DEFAULT_VALUE) String trucksHeight,
             @ShellOption(value = CommandParameter.USER, defaultValue = "") String user
     ) {
         return loadParcelsCommand.execute(Map.of(

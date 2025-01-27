@@ -2,6 +2,7 @@ package ru.calmsen.loadingparcels.command;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
  * Класс обработчика команд.
  */
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class CommandSender {
     public static final String DEFAULT_COMMAND = "load input.csv";

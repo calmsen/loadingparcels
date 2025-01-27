@@ -3,13 +3,13 @@ package ru.calmsen.loadingparcels.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.calmsen.loadingparcels.command.constant.CommandParameter;
+import ru.calmsen.loadingparcels.command.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.BillingCommand;
 
 import java.util.Map;
 
 /**
- * Контроллер для работы с посылками
+ * Контроллер для работы со счетами
  */
 @ShellComponent
 @RequiredArgsConstructor

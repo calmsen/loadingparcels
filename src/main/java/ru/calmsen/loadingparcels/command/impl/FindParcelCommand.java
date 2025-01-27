@@ -1,9 +1,8 @@
 package ru.calmsen.loadingparcels.command.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.FindParcelContextMapper;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
@@ -17,6 +16,7 @@ import java.util.Map;
  * Команда поиска посылок.
  */
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class FindParcelCommand extends Command<FindParcelCommand.Context> {
     private final ParcelsService parcelsService;
@@ -37,7 +37,7 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
 
         var parcels = context.parcelName != null
                 ? List.of(parcelsService.findParcel(context.parcelName))
-                : parcelsService.findAllParcels();
+                : parcelsService.findAllParcels(context.pageNumber, context.pageSize);
         return parcelsViews.get(context.viewFormat).buildOutputData(parcels);
     }
 
@@ -48,8 +48,12 @@ public class FindParcelCommand extends Command<FindParcelCommand.Context> {
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Context {
         private String parcelName;
         private ViewFormat viewFormat;
+        private int pageNumber;
+        private int pageSize;
     }
 }

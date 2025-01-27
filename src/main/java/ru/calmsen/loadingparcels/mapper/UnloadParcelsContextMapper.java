@@ -2,6 +2,7 @@ package ru.calmsen.loadingparcels.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import ru.calmsen.loadingparcels.command.impl.UnloadParcelsCommand;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 /**
  * Маппер для контекста команды unload.
  */
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class UnloadParcelsContextMapper {
     @Mapping(target = "inFile", source = "unload")
     @Mapping(target = "outFile", source = "out-file")

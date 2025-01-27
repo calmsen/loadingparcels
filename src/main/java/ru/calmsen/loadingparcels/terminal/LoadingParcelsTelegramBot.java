@@ -2,6 +2,7 @@ package ru.calmsen.loadingparcels.terminal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -9,16 +10,17 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.calmsen.loadingparcels.command.CommandSender;
+import ru.calmsen.loadingparcels.config.TelegramBotConfig;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class LoadingParcelsTelegramBot extends TelegramLongPollingBot {
     private final String botName;
     private final CommandSender commandSender;
 
-    public LoadingParcelsTelegramBot(String botToken, String botName, CommandSender commandSender) {
-        super(botToken);
-        this.botName = botName;
+    public LoadingParcelsTelegramBot(TelegramBotConfig config, CommandSender commandSender) {
+        super(config.getToken());
+        this.botName = config.getName();
         this.commandSender = commandSender;
     }
 

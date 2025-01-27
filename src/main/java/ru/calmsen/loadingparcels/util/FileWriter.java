@@ -1,11 +1,12 @@
 package ru.calmsen.loadingparcels.util;
 
+import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.exception.FileWriterException;
 
 /**
  * Запись данных в файл
  */
-
+@Component
 public class FileWriter {
     /**
      * Записывает в файл данные

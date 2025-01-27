@@ -2,11 +2,13 @@ package ru.calmsen.loadingparcels.terminal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.command.CommandSender;
 
 import java.util.Scanner;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class LoadingParcelsConsole {
     private final CommandSender commandSender;

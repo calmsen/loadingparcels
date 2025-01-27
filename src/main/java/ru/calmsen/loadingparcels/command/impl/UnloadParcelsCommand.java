@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.UnloadParcelsContextMapper;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
@@ -19,6 +20,7 @@ import java.util.Map;
  * Команда разгрузки машин.
  */
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> {
     private final ParcelsService parcelsService;

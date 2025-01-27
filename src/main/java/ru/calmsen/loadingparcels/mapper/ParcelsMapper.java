@@ -1,6 +1,7 @@
 package ru.calmsen.loadingparcels.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.dto.ParcelDto;
 
@@ -10,15 +11,17 @@ import java.util.Map;
 /**
  * Маппер для моделей parcel.
  */
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class ParcelsMapper {
-    public Parcel toParcel(Map<String, String> map) {
+    public Parcel toParcel(ParcelDto parcelDto) {
         return new Parcel(
-                map.get(Parcel.Fields.name),
-                map.get(Parcel.Fields.form),
-                map.get(Parcel.Fields.symbol).charAt(0)
+                parcelDto.getName(),
+                parcelDto.getForm(),
+                parcelDto.getSymbol()
         );
     }
+
+    public abstract ParcelDto toParcelDto(Map<String, String> map);
 
     public abstract ParcelDto toParcelDto(Parcel parcel);
 

@@ -1,6 +1,7 @@
 package ru.calmsen.loadingparcels.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Маппер для моделей truck.
  */
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class TrucksMapper {
     public abstract List<TruckDto> toTrucksDto(List<Truck> trucks);
 
