@@ -11,5 +11,4 @@ import ru.calmsen.loadingparcels.model.domain.Parcel;
  */
 @Repository
 public interface ParcelsRepository extends JpaRepository<Parcel, String> {
-    Page<Parcel> findAll(Pageable pageable);
 }
