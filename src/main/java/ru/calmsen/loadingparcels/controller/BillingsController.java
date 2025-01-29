@@ -3,6 +3,7 @@ package ru.calmsen.loadingparcels.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
 import ru.calmsen.loadingparcels.command.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.BillingCommand;
 
@@ -22,14 +23,20 @@ public class BillingsController {
      * @param user идентификатор пользователя
      * @param from дата от (включительно)
      * @param to   дата до (включительно)
+     * @param outFormat    формат вывода
      * @return детали счета
      */
     @ShellMethod("Детали счета")
-    public String billing(String user, String from, String to) {
+    public String billing(
+            String user,
+            String from,
+            String to,
+            @ShellOption(value = CommandParameter.Billing.OUT_FORMAT, defaultValue = CommandParameter.Billing.OUT_FORMAT_DEFAULT_VALUE) String outFormat) {
         return billingCommand.execute(Map.of(
             CommandParameter.USER, user,
             CommandParameter.Billing.FROM, from,
-            CommandParameter.Billing.TO, to
+            CommandParameter.Billing.TO, to,
+            CommandParameter.Billing.OUT_FORMAT, outFormat
         ));
     }
 }

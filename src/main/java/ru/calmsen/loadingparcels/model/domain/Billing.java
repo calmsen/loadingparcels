@@ -1,20 +1,27 @@
 package ru.calmsen.loadingparcels.model.domain;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "billing")
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class Billing {
-    private final String user;
-    private final String description;
-    private final String type;
-    private final LocalDate date;
-    private final int quantity;
-    private final BigDecimal cost;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "\"user\"", nullable = false)
+    private String user;
+    private String description;
+    private String type;
+    private LocalDate date;
+    private int quantity;
+    private BigDecimal cost;
 }

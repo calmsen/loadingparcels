@@ -31,9 +31,9 @@ public class ParcelsController {
     @ShellMethod("Найти посылку")
     public String find(
             @ShellOption(defaultValue = "", help = "Название посылки") String name,
-            @ShellOption(value = CommandParameter.FindParcel.OUT_FORMAT, defaultValue = "TXT", help = "Формат вывода") String outFormat,
-            @ShellOption(value = CommandParameter.FindParcel.PAGE_NUMBER, defaultValue = "1", help = "Номер страницы") String pageNumber,
-            @ShellOption(value = CommandParameter.FindParcel.PAGE_SIZE, defaultValue = "1", help = "Количество посылок на странице") String pageSize
+            @ShellOption(value = CommandParameter.FindParcel.OUT_FORMAT, defaultValue = CommandParameter.FindParcel.OUT_FORMAT_DEFAULT_VALUE, help = "Формат вывода") String outFormat,
+            @ShellOption(value = CommandParameter.FindParcel.PAGE_NUMBER, defaultValue = CommandParameter.FindParcel.PAGE_NUMBER_DEFAULT_VALUE, help = "Номер страницы") String pageNumber,
+            @ShellOption(value = CommandParameter.FindParcel.PAGE_SIZE, defaultValue = CommandParameter.FindParcel.PAGE_SIZE_DEFAULT_VALUE, help = "Количество посылок на странице") String pageSize
     ) {
         return findParcelCommand.execute(Map.of(
             CommandParameter.FindParcel.NAME, name,

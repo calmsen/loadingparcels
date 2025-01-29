@@ -3,6 +3,7 @@ package ru.calmsen.loadingparcels.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 import ru.calmsen.loadingparcels.exception.ParcelValidatorException;
@@ -48,11 +49,7 @@ public class ParcelsService {
         var parcels = parcelsParser.parseParcelsFromFile(fileName);
         validateParcels(parcels);
 
-        for (var parcel : parcels) {
-            parcelsRepository.findParcel(parcel.getName())
-                    .ifPresentOrElse(parcelsRepository::updateParcel,
-                            () -> parcelsRepository.addParcel(parcel));
-        }
+        parcelsRepository.saveAll(parcels);
     }
 
     /**
@@ -113,7 +110,16 @@ public class ParcelsService {
      * @return список посылок
      */
     public List<Parcel> findAllParcels(int pageNumber, int pageSize) {
-        return parcelsRepository.findAllParcels(pageNumber, pageSize);
+        if (pageNumber <= 0) {
+            pageNumber = 1;
+        }
+
+        if (pageSize <= 0) {
+            pageSize = 1;
+        }
+
+        return parcelsRepository.findAll(PageRequest.of(pageNumber - 1, pageSize))
+                .getContent();
     }
 
     /**
@@ -123,7 +129,7 @@ public class ParcelsService {
      * @return объект посылки
      */
     public Parcel findParcel(String name) {
-        return parcelsRepository.findParcel(name)
+        return parcelsRepository.findById(name)
                 .orElseThrow(() -> new BusinessException("Посылка не найдена: " + name));
     }
 
@@ -133,11 +139,11 @@ public class ParcelsService {
      * @param parcel объект посылки
      */
     public void addParcel(ParcelDto parcel) {
-        if (parcelsRepository.findParcel(parcel.getName()).isPresent()) {
+        if (parcelsRepository.findById(parcel.getName()).isPresent()) {
             throw new BusinessException("Такая посылка уже есть: " + parcel.getName());
         }
 
-        parcelsRepository.addParcel(parcelsMapper.toParcel(parcel));
+        parcelsRepository.save(parcelsMapper.toParcel(parcel));
     }
 
     /**
@@ -146,9 +152,9 @@ public class ParcelsService {
      * @param parcel объект посылки
      */
     public void updateParcel(ParcelDto parcel) {
-        parcelsRepository.findParcel(parcel.getName())
+        parcelsRepository.findById(parcel.getName())
                 .ifPresentOrElse(x -> {
-                    parcelsRepository.updateParcel(parcelsMapper.toParcel(parcel));
+                    parcelsRepository.save(parcelsMapper.toParcel(parcel));
                 }, () -> {
                     throw new BusinessException("Посылка не найдена: " + parcel.getName());
                 });
@@ -160,9 +166,9 @@ public class ParcelsService {
      * @param parcelName наименование посылки
      */
     public void deleteParcel(String parcelName) {
-        parcelsRepository.findParcel(parcelName)
+        parcelsRepository.findById(parcelName)
                 .ifPresentOrElse(x -> {
-                    parcelsRepository.deleteParcel(parcelName);
+                    parcelsRepository.deleteById(parcelName);
                 }, () -> {
                     throw new BusinessException("Посылка не найдена: " + parcelName);
                 });
@@ -178,7 +184,7 @@ public class ParcelsService {
         List<Parcel> parcels = new ArrayList<>();
         List<String> notFoundParcels = new ArrayList<>();
         for (var parcelName : parcelNames) {
-            parcelsRepository.findParcel(parcelName).ifPresentOrElse(
+            parcelsRepository.findById(parcelName).ifPresentOrElse(
                     parcels::add,
                     () -> notFoundParcels.add(parcelName));
         }

@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
     public static LocalDate toDate(String value) {
-        return toDate(DD_MM_YYYY);
+        return toDate(value, DD_MM_YYYY);
     }
 
     public static LocalDate toDate(String value, String dateFormat) {

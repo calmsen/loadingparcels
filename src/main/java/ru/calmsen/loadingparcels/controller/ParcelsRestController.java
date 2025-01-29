@@ -52,11 +52,15 @@ public class ParcelsRestController {
     })
     @Operation(summary = "Список посылок")
     @GetMapping
-    public String findParcels(
+    public ResponseEntity<String> findParcels(
             @Parameter(description = "Формат вывода") @RequestParam(defaultValue = "JSON", required = false) ViewFormat viewFormat,
             @Parameter(description = "Номер страницы") @RequestParam(defaultValue = CommandParameter.FindParcel.PAGE_NUMBER_DEFAULT_VALUE, required = false) int pageNumber,
             @Parameter(description = "Кол-во посылок на странице") @RequestParam(defaultValue = CommandParameter.FindParcel.PAGE_SIZE_DEFAULT_VALUE, required = false) int pageSize) {
-        return findParcelCommand.execute(new FindParcelCommand.Context(null, viewFormat, pageNumber, pageSize));
+        return ResponseEntity.ok(
+                findParcelCommand.execute(
+                        new FindParcelCommand.Context(null, viewFormat, pageNumber, pageSize)
+                )
+        );
     }
 
     /**
@@ -78,11 +82,15 @@ public class ParcelsRestController {
     })
     @Operation(summary = "Найти посылку")
     @GetMapping("{name}")
-    public String findParcel(
+    public ResponseEntity<String> findParcel(
             @Parameter(description = "Название посылки") @PathVariable String name,
             @Parameter(description = "Формат вывода") @RequestParam(defaultValue = "JSON", required = false) ViewFormat viewFormat
     ) {
-        return findParcelCommand.execute(new FindParcelCommand.Context(name, viewFormat, 1, 1));
+        return ResponseEntity.ok(
+                findParcelCommand.execute(
+                        new FindParcelCommand.Context(name, viewFormat, 1, 1)
+                )
+        );
     }
 
     /**
@@ -174,7 +182,7 @@ public class ParcelsRestController {
     })
     @Operation(summary = "Погрузка посылок")
     @PostMapping("/actions/load")
-    public String loadParcels(@Parameter(description = "Объект запроса погрузки") @RequestBody LoadParcelsCommand.Context request) {
+    public ResponseEntity<String> loadParcels(@Parameter(description = "Объект запроса погрузки") @RequestBody LoadParcelsCommand.Context request) {
         request.setViewFormat(
                 ObjectUtils.firstNonNull(request.getViewFormat(), ViewFormat.JSON)
         );
@@ -182,7 +190,7 @@ public class ParcelsRestController {
                 ObjectUtils.firstNonNull(request.getLoadingMode(), LoadingMode.ONEPARCEL)
         );
 
-        return loadParcelsCommand.execute(request);
+        return ResponseEntity.ok(loadParcelsCommand.execute(request));
     }
 
     /**
@@ -203,10 +211,10 @@ public class ParcelsRestController {
     })
     @Operation(summary = "Разгрузка посылок")
     @PostMapping("/actions/unload")
-    public String unloadParcels(@Parameter(description = "Объект запроса разгрузки") @RequestBody UnloadParcelsCommand.Context request) {
+    public ResponseEntity<String> unloadParcels(@Parameter(description = "Объект запроса разгрузки") @RequestBody UnloadParcelsCommand.Context request) {
         request.setViewFormat(
                 ObjectUtils.firstNonNull(request.getViewFormat(), ViewFormat.JSON)
         );
-        return unloadParcelsCommand.execute(request);
+        return ResponseEntity.ok(unloadParcelsCommand.execute(request));
     }
 }

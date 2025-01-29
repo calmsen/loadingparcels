@@ -1,13 +1,17 @@
 package ru.calmsen.loadingparcels.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 import ru.calmsen.loadingparcels.exception.ParcelValidatorException;
+import ru.calmsen.loadingparcels.mapper.ParcelsMapperImpl;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.PlacedParcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
@@ -35,26 +39,40 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class ParcelsServiceTest {
 
-    @MockitoBean
+    @Mock
     private ParcelsRepository parcelsRepository;
 
-    @MockitoBean
+    @Mock
     private ParcelsParser parcelsParser;
 
-    @MockitoBean
+    @Mock
     private TrucksParser trucksParser;
 
-    @MockitoBean
+    @Mock
     private ParcelValidator parcelValidator;
 
-    @MockitoBean
+    @Mock
     private Map<LoadingMode, LoadingAlgorithm> loadingAlgorithms;
 
-    @MockitoBean
+    @Mock
     private FileReader fileReader;
 
-    @Autowired
     private ParcelsService parcelsService;
+    @Autowired
+    private BillingsService billingsService;
+
+    @BeforeEach
+    void setUp() {
+        parcelsService = new ParcelsService(
+                new ParcelsMapperImpl(),
+                parcelsParser,
+                trucksParser,
+                parcelValidator,
+                loadingAlgorithms,
+                parcelsRepository,
+                fileReader,
+                billingsService);
+    }
 
     @Test
     public void initParcels_ValidFile_ParcelsAdded() {
@@ -91,7 +109,7 @@ public class ParcelsServiceTest {
     public void loadParcels_ParcelNamesProvided_LoadsParcels() {
         // Arrange
         List<String> parcelNames = List.of("Parcel1", "Parcel2");
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
         when(loadingAlgorithms.get(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
@@ -107,7 +125,7 @@ public class ParcelsServiceTest {
         String fileName = "testFile.txt";
         List<String> fileContent = List.of("Parcel1", "Parcel2");
         when(fileReader.readAllLines(fileName)).thenReturn(fileContent);
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
         when(loadingAlgorithms.get(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
@@ -122,7 +140,7 @@ public class ParcelsServiceTest {
         // Arrange
         List<String> parcelNames = List.of("Parcel1", "Parcel3");
         List<Parcel> parcels = List.of(new Parcel("Parcel1", "x", 's'));
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.empty());
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.empty());
 
         // Act
         Throwable thrown = catchThrowable(() -> parcelsService.loadParcels("user1", parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6))));
@@ -137,7 +155,7 @@ public class ParcelsServiceTest {
         // Arrange
         String fileName = "testFile.txt";
         var parcel = new Parcel("Parcel1", "x", 's');
-        List<Truck> trucks = List.of(new Truck(6 ,6, new PlacedParcel(parcel, 0, 0)));
+        List<Truck> trucks = List.of(new Truck(6, 6, new PlacedParcel(parcel, 0, 0)));
         when(trucksParser.parseTrucksFromFile(fileName)).thenReturn(trucks);
 
         // Act
@@ -152,7 +170,7 @@ public class ParcelsServiceTest {
     public void findAllParcels_Success() {
         // Arrange
         List<Parcel> parcels = List.of(new Parcel("Parcel1", "x", 's'), new Parcel("Parcel2", "x", 's'));
-        when(parcelsRepository.findAllParcels(1, 1)).thenReturn(parcels);
+        when(parcelsRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(parcels));
 
         // Act
         List<Parcel> result = parcelsService.findAllParcels(1, 1);
@@ -165,7 +183,7 @@ public class ParcelsServiceTest {
     public void findParcel_ParcelExists() {
         // Arrange
         Parcel parcel = new Parcel("Parcel2", "x", 's');
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(parcel));
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(parcel));
 
         // Act
         Parcel result = parcelsService.findParcel("Parcel1");
@@ -177,7 +195,7 @@ public class ParcelsServiceTest {
     @Test
     public void findParcel_ParcelDoesNotExist() {
         // Arrange
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // Act
         Throwable thrown = catchThrowable(() -> parcelsService.findParcel("Parcel1"));
@@ -198,7 +216,7 @@ public class ParcelsServiceTest {
                 .height(1)
                 .dimensions(1)
                 .build();
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // Act
         parcelsService.addParcel(parcelDto);
@@ -218,7 +236,7 @@ public class ParcelsServiceTest {
                 .height(1)
                 .dimensions(1)
                 .build();
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(parcel));
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(parcel));
 
         // Act
         Throwable thrown = catchThrowable(() -> parcelsService.addParcel(parcelDto));
@@ -240,7 +258,7 @@ public class ParcelsServiceTest {
                 .height(1)
                 .dimensions(1)
                 .build();
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(parcel));
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(parcel));
 
         // Act
         parcelsService.updateParcel(parcelDto);
@@ -259,7 +277,7 @@ public class ParcelsServiceTest {
                 .height(1)
                 .dimensions(1)
                 .build();
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // Act
         Throwable thrown = catchThrowable(() -> parcelsService.updateParcel(parcelDto));
@@ -272,7 +290,7 @@ public class ParcelsServiceTest {
     @Test
     public void deleteParcel_ParcelExists() {
         // Arrange
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')));
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')));
 
         // Act
         parcelsService.deleteParcel("Parcel1");
@@ -283,7 +301,7 @@ public class ParcelsServiceTest {
     @Test
     public void deleteParcel_ParcelDoesNotExist() {
         // Arrange
-        when(parcelsRepository.findParcel(anyString())).thenReturn(Optional.empty());
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // Act
         Throwable thrown = catchThrowable(() -> parcelsService.deleteParcel("Parcel1"));

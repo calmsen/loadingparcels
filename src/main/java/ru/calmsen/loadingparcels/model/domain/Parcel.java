@@ -1,6 +1,13 @@
 package ru.calmsen.loadingparcels.model.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.PostLoad;
+
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
 import java.util.ArrayList;
@@ -12,16 +19,25 @@ import java.util.stream.Collectors;
 /**
  * Доменная модель посылки.
  */
+@Entity
+@Table(name = "parcel")
 @Getter
+@NoArgsConstructor
 @FieldNameConstants
 public class Parcel {
-    private final List<List<Character>> content;
-    private final int width;
-    private final int height;
-    private final String form;
-    private final int dimensions;
-    private final char symbol;
-    private final String name;
+    @Transient
+    private List<List<Character>> content;
+    @Transient
+    private int width;
+    @Transient
+    private int height;
+    @Transient
+    private int dimensions;
+
+    @Id
+    private String name;
+    private String form;
+    private char symbol;
 
     public Parcel(List<List<Character>> content) {
         this.content = content;
@@ -41,6 +57,14 @@ public class Parcel {
         this.form = form;
         this.symbol = symbol;
         this.name = name;
+    }
+
+    @PostLoad
+    private void onLoad() {
+        this.content = toContent(form, symbol);
+        this.dimensions = toDimensions(content);
+        this.width = toWidth(content);
+        this.height = toHeight(content);
     }
 
     /**
@@ -82,7 +106,7 @@ public class Parcel {
     }
 
     private int toDimensions(List<List<Character>> content) {
-        var symbols = this.content.stream()
+        var symbols = content.stream()
                 .flatMap(Collection::stream)
                 .filter(this::noneSpace)
                 .toList();
@@ -95,7 +119,7 @@ public class Parcel {
 
     private int toWidth(List<List<Character>> content) {
         var maxWidth = 0;
-        for (List<Character> characters : this.content) {
+        for (List<Character> characters : content) {
             if (maxWidth < characters.size()) {
                 maxWidth = characters.size();
             }
@@ -104,13 +128,13 @@ public class Parcel {
     }
 
     private int toHeight(List<List<Character>> content) {
-        return this.content.size();
+        return content.size();
     }
 
     private String toForm(List<List<Character>> content) {
         var sb = new StringBuilder();
         for (int i = 0; i < content.size(); i++) {
-            var row = this.content.get(i);
+            var row = content.get(i);
             for (Character ch : row) {
                 sb.append(noneSpace(ch) ? 'x' : ' ');
             }
@@ -123,7 +147,7 @@ public class Parcel {
     }
 
     private char toSymbol(List<List<Character>> content) {
-        return this.content.stream()
+        return content.stream()
                 .flatMap(Collection::stream)
                 .filter(this::noneSpace)
                 .findFirst().orElse('x');

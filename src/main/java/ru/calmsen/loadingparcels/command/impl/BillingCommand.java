@@ -7,16 +7,12 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.BillingContextMapper;
-import ru.calmsen.loadingparcels.model.domain.Billing;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.service.BillingsService;
 import ru.calmsen.loadingparcels.view.BillingsView;
-import ru.calmsen.loadingparcels.view.ParcelsView;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Команда "Детали счета"
@@ -35,7 +31,7 @@ public class BillingCommand extends Command<BillingCommand.Context> {
 
     @Override
     public String execute(Context context) {
-        var billings = billingsService.getBillings(context.user, context.fromDate, context.toDate);
+        var billings = billingsService.findBillings(context.user, context.fromDate, context.toDate);
         return billingsViews.get(context.viewFormat).buildOutputData(billings);
     }
 

@@ -35,7 +35,8 @@ public class BillingsService {
         var segments = trucks.stream().mapToInt(Truck::getFilledPlaces).sum();
         var cost = billingConfig.getLoadingCostPerSegment().multiply(BigDecimal.valueOf(segments));
         LocalDate date = LocalDate.now(clock);
-        billingsRepository.addBilling(new Billing(
+        billingsRepository.save(new Billing(
+                null,
                 user,
                 String.format(
                         "%s;Погрузка;%d машин;%d посылок;%.2f рублей",
@@ -65,7 +66,8 @@ public class BillingsService {
         var segments = trucks.stream().mapToInt(Truck::getFilledPlaces).sum();
         var cost = billingConfig.getUnloadingCostPerSegment().multiply(BigDecimal.valueOf(segments));
         LocalDate date = LocalDate.now(clock);
-        billingsRepository.addBilling(new Billing(
+        billingsRepository.save(new Billing(
+                null,
                 user,
                 String.format(
                         "%s;Разгрузка;%d машин;%d посылок;%.2f рублей",
@@ -81,12 +83,12 @@ public class BillingsService {
         ));
     }
 
-    public List<Billing> getBillings(String user, LocalDate fromDate, LocalDate toDate) {
+    public List<Billing> findBillings(String user, LocalDate fromDate, LocalDate toDate) {
         if (user == null || user.isEmpty()) {
             throw new BusinessException("Необходимо указать идентификатор пользователя");
         }
 
-        return billingsRepository.getBillings(user, fromDate, toDate);
+        return billingsRepository.findAllByUserAndDateBetweenOrderByDateDesc(user, fromDate, toDate);
     }
 
 }
