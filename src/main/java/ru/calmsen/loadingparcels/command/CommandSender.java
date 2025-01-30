@@ -8,7 +8,6 @@ import ru.calmsen.loadingparcels.exception.BusinessException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Класс обработчика команд.

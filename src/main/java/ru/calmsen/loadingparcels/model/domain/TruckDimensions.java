@@ -3,9 +3,6 @@ package ru.calmsen.loadingparcels.model.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Размеры машины.
  * TODO: поменять сигнатуру метода loadParcels -> вместо списка Truck передать список TruckDimensions, а вместо void вернуть список Truck.

@@ -1,7 +1,6 @@
 package ru.calmsen.loadingparcels.view;
 
 import ru.calmsen.loadingparcels.model.domain.Billing;
-import ru.calmsen.loadingparcels.model.domain.Parcel;
 
 import java.util.List;
 

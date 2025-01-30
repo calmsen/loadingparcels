@@ -3,10 +3,9 @@ package ru.calmsen.loadingparcels.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import ru.calmsen.loadingparcels.exception.BusinessException;
@@ -33,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 public class ParcelsServiceTest {
 
     @Mock
@@ -57,9 +56,10 @@ public class ParcelsServiceTest {
     @Mock
     private FileReader fileReader;
 
-    private ParcelsService parcelsService;
-    @Autowired
+    @Mock
     private BillingsService billingsService;
+
+    private ParcelsService parcelsService;
 
     @BeforeEach
     void setUp() {
@@ -81,12 +81,13 @@ public class ParcelsServiceTest {
         List<Parcel> parcels = List.of(new Parcel("Parcel1", "x", 's'), new Parcel("Parcel2", "x", 's'));
         when(parcelsParser.parseParcelsFromFile(fileName)).thenReturn(parcels);
         when(parcelValidator.validate(any(Parcel.class))).thenReturn(List.of());
+        when(parcelsRepository.saveAll(parcels)).thenReturn(parcels);
 
         // Act
         parcelsService.initParcels(fileName);
 
         // Assert
-        // No exception should be thrown, and parcels should be added to the repository
+        verify(parcelsRepository).saveAll(parcels);
     }
 
     @Test
@@ -109,14 +110,16 @@ public class ParcelsServiceTest {
     public void loadParcels_ParcelNamesProvided_LoadsParcels() {
         // Arrange
         List<String> parcelNames = List.of("Parcel1", "Parcel2");
-        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(new Parcel("Parcel1", "x", 's')), Optional.of(new Parcel("Parcel2", "x", 's')));
+        List<Parcel> parcels = List.of(new Parcel("Parcel1", "x", 's'), new Parcel("Parcel2", "x", 's'));
+        when(parcelsRepository.findById(anyString())).thenReturn(Optional.of(parcels.get(0)), Optional.of(parcels.get(1)));
         when(loadingAlgorithms.get(any())).thenReturn(new OneParcelLoadingAlgorithm());
 
         // Act
         parcelsService.loadParcels("user1", parcelNames, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
 
         // Assert
-        // No exception should be thrown, and loading algorithm should be called
+        verify(parcelsRepository).findById("Parcel1");
+        verify(parcelsRepository).findById("Parcel2");
     }
 
     @Test
@@ -132,7 +135,7 @@ public class ParcelsServiceTest {
         parcelsService.loadParcels("user1", fileName, LoadingMode.ONEPARCEL, List.of(new Truck(6, 6), new Truck(6, 6)));
 
         // Assert
-        // No exception should be thrown, and loading algorithm should be called
+        verify(fileReader).readAllLines(fileName);
     }
 
     @Test
@@ -208,10 +211,11 @@ public class ParcelsServiceTest {
     @Test
     public void addParcel_ParcelDoesNotExist() {
         // Arrange
+        var parcel = new Parcel("Parcel1", "x", 's');
         var parcelDto = ParcelDto.builder()
                 .name("Parcel1")
                 .form("x")
-                .symbol('x')
+                .symbol('s')
                 .width(1)
                 .height(1)
                 .dimensions(1)
@@ -221,7 +225,13 @@ public class ParcelsServiceTest {
         // Act
         parcelsService.addParcel(parcelDto);
 
-        // Assert (No exception should be thrown)
+        // Assert
+        ArgumentCaptor<Parcel> captor = ArgumentCaptor.forClass(Parcel.class);
+        verify(parcelsRepository).save(captor.capture());
+
+        Parcel savedParcel = captor.getValue();
+        assertThat(savedParcel)
+                .usingRecursiveComparison().isEqualTo(parcel);
     }
 
     @Test
@@ -263,7 +273,13 @@ public class ParcelsServiceTest {
         // Act
         parcelsService.updateParcel(parcelDto);
 
-        // Assert (No exception should be thrown)
+        // Assert
+        ArgumentCaptor<Parcel> captor = ArgumentCaptor.forClass(Parcel.class);
+        verify(parcelsRepository).save(captor.capture());
+
+        Parcel savedParcel = captor.getValue();
+        assertThat(savedParcel)
+                .usingRecursiveComparison().isEqualTo(parcel);
     }
 
     @Test
@@ -295,7 +311,8 @@ public class ParcelsServiceTest {
         // Act
         parcelsService.deleteParcel("Parcel1");
 
-        // Assert (No exception should be thrown)
+        // Assert
+        verify(parcelsRepository).deleteById("Parcel1");
     }
 
     @Test

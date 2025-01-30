@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.ParcelsMapper;
-import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.dto.ParcelDto;
 import ru.calmsen.loadingparcels.service.ParcelsService;
 

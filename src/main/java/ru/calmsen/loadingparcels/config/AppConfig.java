@@ -1,21 +1,13 @@
 package ru.calmsen.loadingparcels.config;
 
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
-import ru.calmsen.loadingparcels.command.CommandProvider;
-import ru.calmsen.loadingparcels.command.CommandSender;
-import ru.calmsen.loadingparcels.command.impl.*;
-import ru.calmsen.loadingparcels.controller.BillingsController;
 import ru.calmsen.loadingparcels.mapper.*;
 import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
-import ru.calmsen.loadingparcels.repository.BillingsRepository;
-import ru.calmsen.loadingparcels.repository.ParcelsRepository;
-import ru.calmsen.loadingparcels.service.BillingsService;
 import ru.calmsen.loadingparcels.service.ParcelsService;
 import ru.calmsen.loadingparcels.service.loadingalgorithm.*;
 import ru.calmsen.loadingparcels.service.parser.ParcelsParser;
@@ -24,15 +16,12 @@ import ru.calmsen.loadingparcels.service.parser.impl.JsonTrucksParser;
 import ru.calmsen.loadingparcels.service.parser.impl.TxtParcelsParser;
 import ru.calmsen.loadingparcels.terminal.LoadingParcelsTelegramBot;
 import ru.calmsen.loadingparcels.util.FileReader;
-import ru.calmsen.loadingparcels.util.FileWriter;
-import ru.calmsen.loadingparcels.validator.ParcelValidator;
 import ru.calmsen.loadingparcels.view.BillingsView;
 import ru.calmsen.loadingparcels.view.ParcelsView;
 import ru.calmsen.loadingparcels.view.TrucksView;
 import ru.calmsen.loadingparcels.view.impl.*;
 
 import java.time.Clock;
-import java.util.List;
 import java.util.Map;
 
 @Configuration

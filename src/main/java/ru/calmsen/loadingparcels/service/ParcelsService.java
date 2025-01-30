@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.calmsen.loadingparcels.exception.BusinessException;
 import ru.calmsen.loadingparcels.exception.ParcelValidatorException;
 import ru.calmsen.loadingparcels.mapper.ParcelsMapper;
@@ -45,6 +46,7 @@ public class ParcelsService {
      *
      * @param fileName наименование файла.
      */
+    @Transactional
     public void initParcels(String fileName) {
         var parcels = parcelsParser.parseParcelsFromFile(fileName);
         validateParcels(parcels);
