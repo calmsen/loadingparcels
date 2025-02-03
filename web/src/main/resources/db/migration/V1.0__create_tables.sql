@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS public.parcel(
+    name VARCHAR PRIMARY KEY,
+    form VARCHAR NOT NULL,
+    symbol VARCHAR(1) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.billing(
+    id SERIAL  PRIMARY KEY,
+    "user" VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    type VARCHAR NOT NULL,
+    date TIMESTAMPTZ NOT NULL,
+    quantity INTEGER NOT NULL,
+    cost NUMERIC(12,2) NOT NULL
+);
