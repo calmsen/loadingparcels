@@ -15,7 +15,6 @@ import ru.calmsen.loadingparcels.service.parser.TrucksParser;
 import ru.calmsen.loadingparcels.service.parser.impl.JsonTrucksParser;
 import ru.calmsen.loadingparcels.service.parser.impl.TxtParcelsParser;
 import ru.calmsen.loadingparcels.util.FileReader;
-import ru.calmsen.loadingparcels.view.BillingsView;
 import ru.calmsen.loadingparcels.view.ParcelsView;
 import ru.calmsen.loadingparcels.view.TrucksView;
 import ru.calmsen.loadingparcels.view.impl.*;
@@ -41,15 +40,6 @@ public class AppConfig {
     @Bean
     public TrucksParser trucksParser(FileReader fileReader, TrucksMapper trucksMapper) {
         return new JsonTrucksParser(fileReader, trucksMapper);
-    }
-
-    @Bean
-    public Map<ViewFormat, BillingsView> billingsView() {
-        return Map.of(
-                ViewFormat.TXT, new TxtBillingsView(),
-                ViewFormat.JSON, new JsonBillingsView(),
-                ViewFormat.CSV, new TxtBillingsView()
-        );
     }
 
     @Bean

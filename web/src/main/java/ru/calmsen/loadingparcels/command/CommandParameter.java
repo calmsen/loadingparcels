@@ -57,12 +57,4 @@ public class CommandParameter {
         public static final String WITH_COUNT_DEFAULT_VALUE = "false";
         public static final String OUT_FORMAT_DEFAULT_VALUE = "TXT";
     }
-
-    public static class Billing{
-        public static final String FROM = "from";
-        public static final String TO = "to";
-        public static final String OUT_FORMAT = "out-format";
-
-        public static final String OUT_FORMAT_DEFAULT_VALUE = "TXT";
-    }
 }

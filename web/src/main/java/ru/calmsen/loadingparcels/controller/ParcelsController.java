@@ -201,7 +201,7 @@ public class ParcelsController {
      */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список с посылками",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Truck[].class))}),
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Parcel[].class))}),
             @ApiResponse(responseCode = "400", description = "Неверно передан запрос",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
             @ApiResponse(responseCode = "422", description = "Запрос не прошёл проверку бизнес-правил",

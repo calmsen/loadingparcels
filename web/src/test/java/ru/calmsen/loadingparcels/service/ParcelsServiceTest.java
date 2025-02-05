@@ -83,6 +83,7 @@ public class ParcelsServiceTest {
         when(parcelValidator.validate(any(Parcel.class))).thenReturn(List.of());
         when(parcelsRepository.saveAll(parcels)).thenReturn(parcels);
 
+
         // Act
         parcelsService.initParcels(fileName);
 

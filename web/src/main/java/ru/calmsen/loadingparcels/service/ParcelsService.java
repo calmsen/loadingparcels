@@ -78,6 +78,7 @@ public class ParcelsService {
      * @param loadingMode тип погрузки
      * @param trucks      список машин
      */
+    @Transactional
     public void loadParcels(String user, String fileName, LoadingMode loadingMode, List<Truck> trucks) {
         var parcelNames = fileReader.readAllLines(fileName);
         var parcels = findParcels(parcelNames);
@@ -94,6 +95,7 @@ public class ParcelsService {
      * @param fileName наименование файла со списком загруженных машин
      * @return список посылок
      */
+    @Transactional
     public List<Parcel> unloadTrucks(String user, String fileName) {
         var trucks = trucksParser.parseTrucksFromFile(fileName);
         var parcels = trucks.stream()
