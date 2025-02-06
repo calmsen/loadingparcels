@@ -41,10 +41,7 @@ public class BillingsService {
             return;
         }
 
-        billingsRepository.save(
-                toBilling(message, billingConfig.getLoadingCostPerSegment(), "Погрузка")
-        );
-
+        addBilling(message, billingConfig.getLoadingCostPerSegment(), "Погрузка");
         addInboxMessage(message.getMessageId());
     }
 
@@ -60,10 +57,7 @@ public class BillingsService {
             return;
         }
 
-        billingsRepository.save(
-                toBilling(message, billingConfig.getUnloadingCostPerSegment(), "Разгрузка")
-        );
-
+        addBilling(message, billingConfig.getUnloadingCostPerSegment(), "Разгрузка");
         addInboxMessage(message.getMessageId());
     }
 
@@ -84,6 +78,12 @@ public class BillingsService {
         LocalDate fromDate = toDate.minusDays(30);
 
         return billingsRepository.findAllByUserAndDateBetweenOrderByDateDesc(user, fromDate, toDate);
+    }
+
+    private void addBilling(LoadParcelsBillingDto message, BigDecimal costPerSegment, String operationType) {
+        billingsRepository.save(
+                toBilling(message, costPerSegment, operationType)
+        );
     }
 
     private void addInboxMessage(UUID messageId) {
