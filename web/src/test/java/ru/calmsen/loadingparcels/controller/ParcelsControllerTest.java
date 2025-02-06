@@ -232,7 +232,7 @@ class ParcelsControllerTest extends AbstractPostgresContainer {
                 .andExpect(content().json(expectedResponseJson));
 
         Mockito.verify(outboxRepository).save(argThat(message ->
-                message.getOwner().equals("user1") &&
+                message.getUser().equals("user1") &&
                 message.getMessageType().equals("loadParcelsBilling") &&
                 message.getPayload().contains("\"user\": \"user1\"") &&
                 message.getPayload().contains("\"trucksCount\": 2") &&
@@ -328,7 +328,7 @@ class WithFileReaderMock extends AbstractPostgresContainer {
                 .andExpect(content().json(expectedResponseJson));
 
         Mockito.verify(outboxRepository).save(argThat(message ->
-                message.getOwner().equals("user1") &&
+                message.getUser().equals("user1") &&
                         message.getMessageType().equals("unloadParcelsBilling") &&
                         message.getPayload().contains("\"user\": \"user1\"") &&
                         message.getPayload().contains("\"trucksCount\": 1") &&

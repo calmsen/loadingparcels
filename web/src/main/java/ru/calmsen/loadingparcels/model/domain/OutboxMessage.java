@@ -1,15 +1,17 @@
 package ru.calmsen.loadingparcels.model.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name = "outbox")
+@NoArgsConstructor
+@AllArgsConstructor
 public class OutboxMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +26,7 @@ public class OutboxMessage {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private String owner;
+    @Column(name = "\"user\"", nullable = false)
+    private String user;
 }
 

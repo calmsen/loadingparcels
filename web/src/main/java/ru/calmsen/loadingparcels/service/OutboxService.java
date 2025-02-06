@@ -33,7 +33,7 @@ public class OutboxService {
     private Message<String> buildKafkaMessage(OutboxMessage message) {
         return MessageBuilder
                 .withPayload(message.getPayload())
-                .setHeader(KafkaHeaders.KEY, message.getOwner().getBytes(StandardCharsets.UTF_8))
+                .setHeader(KafkaHeaders.KEY, message.getUser().getBytes(StandardCharsets.UTF_8))
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
                 .build();
     }
