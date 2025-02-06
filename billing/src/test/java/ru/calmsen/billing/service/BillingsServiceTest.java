@@ -57,7 +57,7 @@ class BillingsServiceTest {
         verify(billingsRepository).save(argThat(billing ->
                 billing.getUser().equals("user1") &&
                         billing.getDescription().contains("Погрузка") &&
-                        billing.getType().equals("loadParcels") &&
+                        billing.getType().equals("Погрузка") &&
                         billing.getDate().equals(LocalDate.now(fixedClock)) &&
                         billing.getQuantity() == 5 &&
                         billing.getCost().compareTo(loadingCost.multiply(BigDecimal.valueOf(5))) == 0
@@ -65,7 +65,6 @@ class BillingsServiceTest {
 
         verify(inboxRepository).save(argThat(inboxMessage ->
                 inboxMessage.getId().equals(messageId) &&
-                        inboxMessage.getOwner().equals("user1") &&
                         inboxMessage.getCreatedAt().equals(LocalDateTime.now(fixedClock))
         ));
     }
@@ -97,7 +96,7 @@ class BillingsServiceTest {
         verify(billingsRepository).save(argThat(billing ->
                 billing.getUser().equals("user1") &&
                         billing.getDescription().contains("Разгрузка") &&
-                        billing.getType().equals("unloadParcels") &&
+                        billing.getType().equals("Разгрузка") &&
                         billing.getDate().equals(LocalDate.now(fixedClock)) &&
                         billing.getQuantity() == 5 &&
                         billing.getCost().compareTo(unloadingCost.multiply(BigDecimal.valueOf(5))) == 0
@@ -105,7 +104,6 @@ class BillingsServiceTest {
 
         verify(inboxRepository).save(argThat(inboxMessage ->
                 inboxMessage.getId().equals(messageId) &&
-                        inboxMessage.getOwner().equals("user1") &&
                         inboxMessage.getCreatedAt().equals(LocalDateTime.now(fixedClock))
         ));
     }

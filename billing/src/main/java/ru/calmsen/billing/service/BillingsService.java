@@ -41,26 +41,11 @@ public class BillingsService {
             return;
         }
 
-        var cost = billingConfig.getLoadingCostPerSegment().multiply(BigDecimal.valueOf(message.getFilledPlaces()));
-        LocalDate date = LocalDate.now(clock);
-        billingsRepository.save(new Billing(
-                null,
-                message.getUser(),
-                String.format(
-                        Billing.DescriptionFormat,
-                        "Погрузка",
-                        DateUtil.toString(date),
-                        message.getTrucksCount(),
-                        message.getParcelsCount(),
-                        cost
-                ),
-                "loadParcels",
-                date,
-                message.getFilledPlaces(),
-                cost
-        ));
+        billingsRepository.save(
+                toBilling(message, billingConfig.getLoadingCostPerSegment(), "Погрузка")
+        );
 
-        addInboxMessage(message.getMessageId(), message.getUser());
+        addInboxMessage(message.getMessageId());
     }
 
     /**
@@ -75,26 +60,11 @@ public class BillingsService {
             return;
         }
 
-        var cost = billingConfig.getUnloadingCostPerSegment().multiply(BigDecimal.valueOf(message.getFilledPlaces()));
-        LocalDate date = LocalDate.now(clock);
-        billingsRepository.save(new Billing(
-                null,
-                message.getUser(),
-                String.format(
-                        Billing.DescriptionFormat,
-                        DateUtil.toString(date),
-                        "Разгрузка",
-                        message.getTrucksCount(),
-                        message.getParcelsCount(),
-                        cost
-                ),
-                "unloadParcels",
-                date,
-                message.getFilledPlaces(),
-                cost
-        ));
+        billingsRepository.save(
+                toBilling(message, billingConfig.getUnloadingCostPerSegment(), "Разгрузка")
+        );
 
-        addInboxMessage(message.getMessageId(), message.getUser());
+        addInboxMessage(message.getMessageId());
     }
 
     public List<Billing> findBillings(String user, LocalDate fromDate, LocalDate toDate) {
@@ -116,11 +86,34 @@ public class BillingsService {
         return billingsRepository.findAllByUserAndDateBetweenOrderByDateDesc(user, fromDate, toDate);
     }
 
-    private void addInboxMessage(UUID messageId, String user) {
+    private void addInboxMessage(UUID messageId) {
         var message = new InboxMessage();
         message.setId(messageId);
         message.setCreatedAt(LocalDateTime.now(clock));
-        message.setOwner(user);
         inboxRepository.save(message);
+    }
+
+    private Billing toBilling(LoadParcelsBillingDto message, BigDecimal costPerSegment, String operationType) {
+        var cost = costPerSegment.multiply(BigDecimal.valueOf(message.getFilledPlaces()));
+        LocalDate date = LocalDate.now(clock);
+        return Billing.builder()
+                .user(message.getUser())
+                .description(toDescription(message, operationType, date, cost))
+                .type(operationType)
+                .date(date)
+                .quantity(message.getFilledPlaces())
+                .cost(cost)
+                .build();
+    }
+
+    private String toDescription(LoadParcelsBillingDto message, String operationType, LocalDate date, BigDecimal cost) {
+        return String.format(
+                Billing.DescriptionFormat,
+                operationType,
+                DateUtil.toString(date),
+                message.getTrucksCount(),
+                message.getParcelsCount(),
+                cost
+        );
     }
 }

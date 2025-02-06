@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import ru.calmsen.billing.command.Command;
+import ru.calmsen.billing.exception.BusinessException;
 import ru.calmsen.billing.mapper.BillingContextMapper;
 import ru.calmsen.billing.model.domain.enums.Period;
 import ru.calmsen.billing.model.domain.enums.ViewFormat;
@@ -32,6 +33,10 @@ public class BillingCommand extends Command<BillingCommand.Context> {
 
     @Override
     public String execute(Context context) {
+        if (context.period == Period.NONE && (context.fromDate == null || context.toDate == null)) {
+            throw new BusinessException("Не заданы даты 'от' и 'до'");
+        }
+
         var billings = context.period == Period.LAST_MONTH
             ? billingsService.findBillingsForLastMonth(context.user)
             : billingsService.findBillings(context.user, context.fromDate, context.toDate);

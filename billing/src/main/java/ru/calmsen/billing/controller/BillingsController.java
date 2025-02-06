@@ -60,10 +60,6 @@ public class BillingsController {
             @Parameter(description = "Дата до (включительно)") @RequestParam(required = false) @DateTimeFormat(pattern = DateUtil.DD_MM_YYYY) LocalDate to,
             @Parameter(description = "Период") @RequestParam(defaultValue = "NONE", required = false) Period period,
             @Parameter(description = "Формат вывода") @RequestParam(defaultValue = "JSON", required = false) ViewFormat viewFormat) {
-        if (period == Period.NONE && (from == null || to == null)) {
-            throw new IllegalArgumentException("Не заданы даты 'от' и 'до'");
-        }
-
         return ResponseEntity.ok(billingCommand.execute(
                 BillingCommand.Context.builder()
                         .user(user)

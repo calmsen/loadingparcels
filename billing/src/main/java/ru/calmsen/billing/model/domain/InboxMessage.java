@@ -19,8 +19,5 @@ public class InboxMessage {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private String owner;
 }
 
