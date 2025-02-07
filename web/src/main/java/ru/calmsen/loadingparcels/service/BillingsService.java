@@ -4,17 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.calmsen.loadingparcels.exception.BusinessException;
+import ru.calmsen.loadingparcels.mapper.BillingMapper;
 import ru.calmsen.loadingparcels.mapper.OutboxMapper;
 import ru.calmsen.loadingparcels.model.domain.Truck;
 import ru.calmsen.loadingparcels.repository.OutboxRepository;
+import ru.calmsen.loadingparcels.util.JsonUtil;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BillingsService {
-    private final OutboxRepository outboxRepository;
-    private final OutboxMapper outboxMapper;
+    private final BillingMapper billingMapper;
+    private final OutboxService outboxService;
 
     /**
      * Добавить счет за операцию погрузки/разгрузки машин
@@ -29,7 +31,7 @@ public class BillingsService {
             throw new BusinessException("Необходимо указать пользователя");
         }
 
-        var message = outboxMapper.toOutboxMessage("addParcelsBilling", operationType, user, trucks);
-        outboxRepository.save(message);
+        var messagePayload = billingMapper.toParcelsBillingDto(operationType, user, trucks);
+        outboxService.createMessage("addParcelsBilling", JsonUtil.toJson(messagePayload), user);
     }
 }
