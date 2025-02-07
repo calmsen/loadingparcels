@@ -67,7 +67,7 @@ public class ParcelsService {
 
         var loadingAlgorithm = loadingAlgorithms.get(loadingMode);
         loadingAlgorithm.loadParcels(parcels, trucks);
-        billingsService.addLoadParcelsBilling(user, trucks);
+        billingsService.addParcelsBilling("Погрузка", user, trucks);
     }
 
     /**
@@ -85,7 +85,7 @@ public class ParcelsService {
 
         var loadingAlgorithm = loadingAlgorithms.get(loadingMode);
         loadingAlgorithm.loadParcels(parcels, trucks);
-        billingsService.addLoadParcelsBilling(user, trucks);
+        billingsService.addParcelsBilling("Погрузка", user, trucks);
     }
 
     /**
@@ -102,7 +102,7 @@ public class ParcelsService {
                 .flatMap(truck -> truck.getParcels().stream())
                 .map(PlacedParcel::getParcel)
                 .toList();
-        billingsService.addUnloadParcelsBilling(user, trucks);
+        billingsService.addParcelsBilling("Разгрузка", user, trucks);
         return parcels;
     }
 

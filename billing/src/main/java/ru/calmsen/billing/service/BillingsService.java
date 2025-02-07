@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.calmsen.billing.config.BillingConfig;
 import ru.calmsen.billing.exception.BusinessException;
+import ru.calmsen.billing.mapper.BillingMapper;
 import ru.calmsen.billing.model.domain.Billing;
 import ru.calmsen.billing.model.domain.InboxMessage;
-import ru.calmsen.billing.model.dto.LoadParcelsBillingDto;
+import ru.calmsen.billing.model.dto.ParcelsBillingDto;
 import ru.calmsen.billing.repository.BillingsRepository;
 import ru.calmsen.billing.repository.InboxRepository;
-import ru.calmsen.billing.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -27,37 +27,22 @@ public class BillingsService {
     private final BillingConfig billingConfig;
     private final BillingsRepository billingsRepository;
     private final InboxRepository inboxRepository;
+    private final BillingMapper billingMapper;
     private final Clock clock;
 
     /**
-     * Добавить счет за погрузку машин
+     * Добавить счет за операцию погрузки/разгрузки машин
      *
-     * @param message   сообщение
+     * @param message сообщение
      */
     @Transactional
     @CacheEvict(value = "billings", key = "#message.user + '-last-month'")
-    public void addLoadParcelsBilling(LoadParcelsBillingDto message) {
+    public void addParcelsBilling(ParcelsBillingDto message) {
         if (inboxRepository.findById(message.getMessageId()).isPresent()) {
             return;
         }
 
-        addBilling(message, billingConfig.getLoadingCostPerSegment(), "Погрузка");
-        addInboxMessage(message.getMessageId());
-    }
-
-    /**
-     * Добавить счет за разгрузку машин
-     *
-     * @param message   сообщение
-     */
-    @Transactional
-    @CacheEvict(value = "billings", key = "#message.user + '-last-month'")
-    public void addUnloadParcelsBilling(LoadParcelsBillingDto message) {
-        if (inboxRepository.findById(message.getMessageId()).isPresent()) {
-            return;
-        }
-
-        addBilling(message, billingConfig.getUnloadingCostPerSegment(), "Разгрузка");
+        addBilling(message);
         addInboxMessage(message.getMessageId());
     }
 
@@ -80,9 +65,9 @@ public class BillingsService {
         return billingsRepository.findAllByUserAndDateBetweenOrderByDateDesc(user, fromDate, toDate);
     }
 
-    private void addBilling(LoadParcelsBillingDto message, BigDecimal costPerSegment, String operationType) {
+    private void addBilling(ParcelsBillingDto message) {
         billingsRepository.save(
-                toBilling(message, costPerSegment, operationType)
+                billingMapper.toBilling(message, calculateCost(message))
         );
     }
 
@@ -93,27 +78,10 @@ public class BillingsService {
         inboxRepository.save(message);
     }
 
-    private Billing toBilling(LoadParcelsBillingDto message, BigDecimal costPerSegment, String operationType) {
-        var cost = costPerSegment.multiply(BigDecimal.valueOf(message.getFilledPlaces()));
-        LocalDate date = LocalDate.now(clock);
-        return Billing.builder()
-                .user(message.getUser())
-                .description(toDescription(message, operationType, date, cost))
-                .type(operationType)
-                .date(date)
-                .quantity(message.getFilledPlaces())
-                .cost(cost)
-                .build();
-    }
-
-    private String toDescription(LoadParcelsBillingDto message, String operationType, LocalDate date, BigDecimal cost) {
-        return String.format(
-                Billing.DescriptionFormat,
-                operationType,
-                DateUtil.toString(date),
-                message.getTrucksCount(),
-                message.getParcelsCount(),
-                cost
-        );
+    private BigDecimal calculateCost(ParcelsBillingDto message) {
+        var costPerSegment = message.getOperationType().equals("Погрузка")
+                ? billingConfig.getLoadingCostPerSegment()
+                : billingConfig.getUnloadingCostPerSegment();
+        return costPerSegment.multiply(BigDecimal.valueOf(message.getFilledPlaces()));
     }
 }

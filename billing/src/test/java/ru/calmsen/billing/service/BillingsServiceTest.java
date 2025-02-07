@@ -4,12 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.calmsen.billing.config.BillingConfig;
+import ru.calmsen.billing.mapper.BillingMapper;
+import ru.calmsen.billing.mapper.BillingMapperImpl;
 import ru.calmsen.billing.model.domain.InboxMessage;
 import ru.calmsen.billing.model.domain.Billing;
-import ru.calmsen.billing.model.dto.LoadParcelsBillingDto;
+import ru.calmsen.billing.model.dto.ParcelsBillingDto;
 import ru.calmsen.billing.repository.BillingsRepository;
 import ru.calmsen.billing.repository.InboxRepository;
 import ru.calmsen.billing.exception.BusinessException;
@@ -40,19 +41,22 @@ class BillingsServiceTest {
     @BeforeEach
     void setUp() {
         fixedClock = Clock.fixed(Instant.parse("2023-06-15T10:00:00Z"), ZoneId.systemDefault());
-        billingsService = new BillingsService(billingConfig, billingsRepository, inboxRepository, fixedClock);
+
+        var billingsMapper = new BillingMapperImpl();
+        billingsMapper.setClock(fixedClock);
+        billingsService = new BillingsService(billingConfig, billingsRepository, inboxRepository, billingsMapper, fixedClock);
     }
 
     @Test
-    void addLoadParcelsBilling_NewMessage_ShouldSaveBillingAndInboxMessage() {
+    void addParcelsBilling_NewMessage_ShouldSaveBillingAndInboxMessage() {
         UUID messageId = UUID.randomUUID();
-        LoadParcelsBillingDto message = new LoadParcelsBillingDto(messageId, "user1", 2, 10, 5);
+        ParcelsBillingDto message = new ParcelsBillingDto(messageId, "user1", 2, 10, 5, "Погрузка");
         BigDecimal loadingCost = BigDecimal.valueOf(10);
 
         when(inboxRepository.findById(messageId)).thenReturn(Optional.empty());
         when(billingConfig.getLoadingCostPerSegment()).thenReturn(loadingCost);
 
-        billingsService.addLoadParcelsBilling(message);
+        billingsService.addParcelsBilling(message);
 
         verify(billingsRepository).save(argThat(billing ->
                 billing.getUser().equals("user1") &&
@@ -70,52 +74,13 @@ class BillingsServiceTest {
     }
 
     @Test
-    void addLoadParcelsBilling_ExistingMessage_ShouldNotSaveBillingOrInboxMessage() {
+    void addParcelsBilling_ExistingMessage_ShouldNotSaveBillingOrInboxMessage() {
         UUID messageId = UUID.randomUUID();
-        LoadParcelsBillingDto message = new LoadParcelsBillingDto(messageId, "user1", 2, 10, 5);
+        ParcelsBillingDto message = new ParcelsBillingDto(messageId, "user1", 2, 10, 5, "Погрузка");
 
         when(inboxRepository.findById(messageId)).thenReturn(Optional.of(new InboxMessage()));
 
-        billingsService.addLoadParcelsBilling(message);
-
-        verify(billingsRepository, never()).save(any());
-        verify(inboxRepository, never()).save(any());
-    }
-
-    @Test
-    void addUnloadParcelsBilling_NewMessage_ShouldSaveBillingAndInboxMessage() {
-        UUID messageId = UUID.randomUUID();
-        LoadParcelsBillingDto message = new LoadParcelsBillingDto(messageId, "user1", 2, 10, 5);
-        BigDecimal unloadingCost = BigDecimal.valueOf(15);
-
-        when(inboxRepository.findById(messageId)).thenReturn(Optional.empty());
-        when(billingConfig.getUnloadingCostPerSegment()).thenReturn(unloadingCost);
-
-        billingsService.addUnloadParcelsBilling(message);
-
-        verify(billingsRepository).save(argThat(billing ->
-                billing.getUser().equals("user1") &&
-                        billing.getDescription().contains("Разгрузка") &&
-                        billing.getType().equals("Разгрузка") &&
-                        billing.getDate().equals(LocalDate.now(fixedClock)) &&
-                        billing.getQuantity() == 5 &&
-                        billing.getCost().compareTo(unloadingCost.multiply(BigDecimal.valueOf(5))) == 0
-        ));
-
-        verify(inboxRepository).save(argThat(inboxMessage ->
-                inboxMessage.getId().equals(messageId) &&
-                        inboxMessage.getCreatedAt().equals(LocalDateTime.now(fixedClock))
-        ));
-    }
-
-    @Test
-    void addUnloadParcelsBilling_ExistingMessage_ShouldNotSaveBillingOrInboxMessage() {
-        UUID messageId = UUID.randomUUID();
-        LoadParcelsBillingDto message = new LoadParcelsBillingDto(messageId, "user1", 2, 10, 5);
-
-        when(inboxRepository.findById(messageId)).thenReturn(Optional.of(new InboxMessage()));
-
-        billingsService.addUnloadParcelsBilling(message);
+        billingsService.addParcelsBilling(message);
 
         verify(billingsRepository, never()).save(any());
         verify(inboxRepository, never()).save(any());

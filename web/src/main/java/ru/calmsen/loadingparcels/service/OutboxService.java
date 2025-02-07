@@ -2,6 +2,7 @@ package ru.calmsen.loadingparcels.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
@@ -22,7 +23,7 @@ public class OutboxService {
     private final StreamBridge streamBridge;
 
     @Transactional
-    public void publishOutboxMessage(OutboxMessage message) {
+    public void processOutboxMessage(OutboxMessage message) {
         streamBridge.send(
                 String.format("%s-out-0", message.getMessageType()),
                 buildKafkaMessage(message)
@@ -38,7 +39,7 @@ public class OutboxService {
                 .build();
     }
 
-    public List<OutboxMessage> findAll() {
-        return outboxRepository.findAll();
+    public List<OutboxMessage> findMessages(int limit) {
+        return outboxRepository.findByOrderByCreatedAtAsc(PageRequest.of(0, limit));
     }
 }

@@ -233,12 +233,13 @@ class ParcelsControllerTest extends AbstractPostgresContainer {
 
         Mockito.verify(outboxRepository).save(argThat(message ->
                 message.getUser().equals("user1") &&
-                message.getMessageType().equals("loadParcelsBilling") &&
+                message.getMessageType().equals("addParcelsBilling") &&
                 message.getPayload().contains("\"user\": \"user1\"") &&
                 message.getPayload().contains("\"trucksCount\": 2") &&
                 message.getPayload().contains("\"parcelsCount\": 2") &&
-                message.getPayload().contains("\"filledPlaces\": 3"))
-        );
+                message.getPayload().contains("\"filledPlaces\": 3") &&
+                message.getPayload().contains("\"operationType\": \"Погрузка\"")
+        ));
     }
 }
 
@@ -329,11 +330,12 @@ class WithFileReaderMock extends AbstractPostgresContainer {
 
         Mockito.verify(outboxRepository).save(argThat(message ->
                 message.getUser().equals("user1") &&
-                        message.getMessageType().equals("unloadParcelsBilling") &&
+                        message.getMessageType().equals("addParcelsBilling") &&
                         message.getPayload().contains("\"user\": \"user1\"") &&
                         message.getPayload().contains("\"trucksCount\": 1") &&
                         message.getPayload().contains("\"parcelsCount\": 2") &&
-                        message.getPayload().contains("\"filledPlaces\": 18")
+                        message.getPayload().contains("\"filledPlaces\": 18") &&
+                        message.getPayload().contains("\"operationType\": \"Разгрузка\"")
         ));
     }
 }

@@ -9,10 +9,11 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LoadParcelsBillingDto {
+public class ParcelsBillingDto {
     private UUID messageId;
     private String user;
     private int trucksCount;
     private int parcelsCount;
     private int filledPlaces;
+    private String operationType;
 }
