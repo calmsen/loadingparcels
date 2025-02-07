@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.command.Command;
 import ru.calmsen.loadingparcels.mapper.UnloadParcelsContextMapper;
@@ -37,6 +38,8 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
     @Override
     public String execute(Context context) {
         log.info("Начало разгрузки посылок из файла {}", context.inFile);
+        fillViewFormatIfEmpty(context);
+
         var parcels = parcelsService.unloadTrucks(context.user, context.inFile);
         var output = getOutputData(context, parcels);
         writeOutputData(context.outFile, output);
@@ -54,6 +57,12 @@ public class UnloadParcelsCommand extends Command<UnloadParcelsCommand.Context> 
         return context.withCount
                 ? parcelsViewsWithCount.get(viewFormat).buildOutputData(parcels)
                 : parcelsViews.get(viewFormat).buildOutputData(parcels);
+    }
+
+    private void fillViewFormatIfEmpty(UnloadParcelsCommand.Context context) {
+        if (context.viewFormat == null) {
+            context.viewFormat = ViewFormat.JSON;
+        }
     }
 
     private void writeOutputData(String fileName, String output) {

@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,6 @@ import ru.calmsen.loadingparcels.command.CommandParameter;
 import ru.calmsen.loadingparcels.command.impl.*;
 import ru.calmsen.loadingparcels.model.domain.Parcel;
 import ru.calmsen.loadingparcels.model.domain.Truck;
-import ru.calmsen.loadingparcels.model.domain.enums.LoadingMode;
 import ru.calmsen.loadingparcels.model.domain.enums.ViewFormat;
 import ru.calmsen.loadingparcels.model.dto.ParcelDto;
 
@@ -183,13 +181,6 @@ public class ParcelsController {
     @Operation(summary = "Погрузка посылок")
     @PostMapping("/actions/load")
     public ResponseEntity<String> loadParcels(@Parameter(description = "Объект запроса погрузки") @RequestBody LoadParcelsCommand.Context request) {
-        request.setViewFormat(
-                ObjectUtils.firstNonNull(request.getViewFormat(), ViewFormat.JSON)
-        );
-        request.setLoadingMode(
-                ObjectUtils.firstNonNull(request.getLoadingMode(), LoadingMode.ONEPARCEL)
-        );
-
         return ResponseEntity.ok(loadParcelsCommand.execute(request));
     }
 
@@ -201,7 +192,7 @@ public class ParcelsController {
      */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список с посылками",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Truck[].class))}),
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Parcel[].class))}),
             @ApiResponse(responseCode = "400", description = "Неверно передан запрос",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
             @ApiResponse(responseCode = "422", description = "Запрос не прошёл проверку бизнес-правил",
@@ -212,9 +203,6 @@ public class ParcelsController {
     @Operation(summary = "Разгрузка посылок")
     @PostMapping("/actions/unload")
     public ResponseEntity<String> unloadParcels(@Parameter(description = "Объект запроса разгрузки") @RequestBody UnloadParcelsCommand.Context request) {
-        request.setViewFormat(
-                ObjectUtils.firstNonNull(request.getViewFormat(), ViewFormat.JSON)
-        );
         return ResponseEntity.ok(unloadParcelsCommand.execute(request));
     }
 }

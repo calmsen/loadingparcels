@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.calmsen.loadingparcelsbot.config.TelegramBotConfig;
+import ru.calmsen.loadingparcelsbot.service.BillingService;
 import ru.calmsen.loadingparcelsbot.service.LoadingParcelsService;
 
 import java.util.Arrays;
@@ -20,11 +21,13 @@ import java.util.Map;
 public class LoadingParcelsTelegramBot extends TelegramLongPollingBot {
     private final String botName;
     private final LoadingParcelsService loadingParcelsService;
+    private final BillingService billingService;
 
-    public LoadingParcelsTelegramBot(TelegramBotConfig config, LoadingParcelsService loadingParcelsService) {
+    public LoadingParcelsTelegramBot(TelegramBotConfig config, LoadingParcelsService loadingParcelsService, BillingService billingService) {
         super(config.getToken());
         this.botName = config.getName();
         this.loadingParcelsService = loadingParcelsService;
+        this.billingService = billingService;
     }
 
     /**
@@ -40,7 +43,7 @@ public class LoadingParcelsTelegramBot extends TelegramLongPollingBot {
 
             var commandName = message.split(" ")[0];
             var args = toMap(message);
-            sendMessage(chatId, loadingParcelsService.send(commandName, args));
+            sendMessage(chatId, processCommand(commandName, args));
         }
     }
 
@@ -64,6 +67,12 @@ public class LoadingParcelsTelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             log.error("Произошла ошибка", e);
         }
+    }
+
+    private String processCommand(String commandName, Map<String, String> args) {
+        return commandName.equals("billing")
+                ? billingService.send(commandName, args)
+                : loadingParcelsService.send(commandName, args);
     }
 
     /**

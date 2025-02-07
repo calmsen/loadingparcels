@@ -46,6 +46,7 @@ class JsonParcelsViewTest {
         JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
         return gson.toJson(jsonElement);
     }
+
     static class StringSerializer implements JsonSerializer<String> {
         @Override
         public JsonElement serialize(String src, Type typeOfSrc, JsonSerializationContext context) {

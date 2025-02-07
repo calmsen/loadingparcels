@@ -40,7 +40,10 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
     @Override
     public String execute(Context context) {
         log.info("Начало погрузки посылок из файла");
+        fillViewFormatIfEmpty(context);
+        fillLoadingModeIfEmpty(context);
         fillTrucksIfEmpty(context);
+
         var trucks = loadTrucks(context);
         var output = getOutputData(context, filterEmptyTrucks(trucks));
         writeOutputData(context.outFile, output);
@@ -53,10 +56,6 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
         return contextMapper.toContext(args);
     }
 
-    private List<Truck> filterEmptyTrucks(List<Truck> trucks) {
-        return trucks.stream().filter(x -> !x.isEmpty()).toList();
-    }
-
     private List<Truck> loadTrucks(Context context) {
         if (context.trucks == null || context.trucks.isEmpty()) {
             return List.of();
@@ -64,8 +63,7 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
 
         if (context.parcelNames != null && !context.parcelNames.isEmpty()) {
             parcelsService.loadParcels(context.user, context.parcelNames, context.loadingMode, context.trucks);
-        }
-        else {
+        } else {
             parcelsService.loadParcels(context.user, context.inFile, context.loadingMode, context.trucks);
         }
 
@@ -83,6 +81,22 @@ public class LoadParcelsCommand extends Command<LoadParcelsCommand.Context> {
         }
 
         fileWriter.write(fileName, output);
+    }
+
+    private List<Truck> filterEmptyTrucks(List<Truck> trucks) {
+        return trucks.stream().filter(x -> !x.isEmpty()).toList();
+    }
+
+    private void fillLoadingModeIfEmpty(Context context) {
+        if (context.loadingMode == null) {
+            context.loadingMode = LoadingMode.ONEPARCEL;
+        }
+    }
+
+    private void fillViewFormatIfEmpty(Context context) {
+        if (context.viewFormat == null) {
+            context.viewFormat = ViewFormat.JSON;
+        }
     }
 
     private void fillTrucksIfEmpty(LoadParcelsCommand.Context context) {
