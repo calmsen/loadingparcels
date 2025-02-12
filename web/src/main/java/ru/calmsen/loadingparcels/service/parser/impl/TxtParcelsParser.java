@@ -26,7 +26,7 @@ public class TxtParcelsParser implements ParcelsParser {
      */
     @Override
     public List<Parcel> parseParcelsFromFile(String fileName) {
-        var lines = fileReader.readAllLines(fileName)
+        var lines = fileReader.readAllLinesFromResource(fileName)
                 .stream()
                 .iterator();
         List<Parcel> parcels = new ArrayList<>();

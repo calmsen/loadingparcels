@@ -4,7 +4,11 @@ import org.springframework.stereotype.Component;
 import ru.calmsen.loadingparcels.exception.FileReaderException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,7 +17,7 @@ import java.util.List;
 @Component
 public class FileReader {
     /**
-     * Читает текстовые данные из файла построчно
+     * Читает текстовые данные из файла
      *
      * @param fileName наименование файла
      * @return список строк с данными
@@ -24,6 +28,16 @@ public class FileReader {
         } catch (Exception e) {
             throw new FileReaderException("Не удалось прочитать файл: " + fileName, e);
         }
+    }
+
+    /**
+     * Читает текстовые данные из ресурса
+     *
+     * @param resourceName наименование ресурса
+     * @return список строк с данными
+     */
+    public List<String> readAllLinesFromResource(String resourceName) {
+        return Arrays.stream(readStringFromResource(resourceName).split("\n")).toList();
     }
 
     /**
@@ -40,11 +54,24 @@ public class FileReader {
         }
     }
 
-    private File getFile(String fileName) {
-        var resource = getClass().getClassLoader().getResource(fileName);
-        if (resource != null) {
-            return new File(resource.getFile());
+    /**
+     * Читает текстовые данные из ресурса
+     *
+     * @param resourceName наименование ресурса
+     * @return текстовые данные из ресурса
+     */
+    public String readStringFromResource(String resourceName) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            if (inputStream == null) {
+                throw new FileReaderException("Ресурс не найден: " + resourceName);
+            }
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new FileReaderException("Не удалось прочитать файл: " + resourceName, e);
         }
+    }
+
+    private File getFile(String fileName) {
         return new File(fileName);
     }
 }
